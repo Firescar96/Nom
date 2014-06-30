@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +16,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.cloud.backend.*;
 import com.google.cloud.backend.core.*;
+import com.google.cloud.backend.core.CloudBackendFragment.OnListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -43,6 +57,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,8 +66,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -505,7 +521,7 @@ public class MainActivity extends Activity {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    sendRegistrationIdToBackend();
+                    sendRegistrationIdToBackend(regid);
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the
@@ -519,7 +535,8 @@ public class MainActivity extends Activity {
                     // Require the user to click a button again, or perform
                     // exponential back-off.
                 }
-                
+
+                System.out.println(msg);
                 return msg;
             }
 
@@ -531,26 +548,74 @@ public class MainActivity extends Activity {
      * or CCS to send messages to your app. Not needed for this demo since the
      * device sends upstream messages to a server that echoes back the message
      * using the 'from' address in the message.
+     * @return 
      */
-    private void sendRegistrationIdToBackend() {
-    	new AsyncTask<Object, Object, Object>() {
-			@Override
-			protected Object doInBackground(Object... arg0) {
+    private String sendRegistrationIdToBackend(String regID) {
                 String msg = "";
-                try {
-                    Bundle data = new Bundle();
-                        data.putString("username","FIRESCAR");
-                        String id = Integer.toString(msgId.incrementAndGet());
-                        gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
-                        msg = "Sent message";
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                }
+                new AsyncTask<String,Object,Object>() {
+        			@Override
+        			protected Object doInBackground(String... regID) {
+    	                String msg = "";
+    	                InputStream inputStream = null;
+    	                    
+    	                    try {
+    	                    	
+    	                        // 1. create HttpClient
+    	                        HttpClient httpclient = new DefaultHttpClient();
+    	             
+    	                        // 2. make POST request to the given URL
+    	                        HttpPost httpPost = new HttpPost("http://nchinda2.mit.edu:666");
+    	             
+    	                        String json = "";
+    	             
+    	                        // 3. build jsonObject
+    	                        JSONObject jsonObject = new JSONObject();
+    	                        String id = Integer.toString(msgId.incrementAndGet());
+    	                        jsonObject.accumulate("id", id);
+    	                        jsonObject.accumulate("regId", regID);
+    	                        jsonObject.accumulate("username", "Firescar96");
+    	             
+    	                        // 4. convert JSONObject to JSON to String
+    	                        json = jsonObject.toString();
+    	             
+    	                        // 5. set json to StringEntity
+    	                        StringEntity se = new StringEntity(json);
+    	             
+    	                        // 6. set httpPost Entity
+    	                        httpPost.setEntity(se);
+    	             
+    	                        // 7. Set some headers to inform server about the type of the content   
+    	                        httpPost.setHeader("Accept", "application/json");
+    	                        httpPost.setHeader("Content-type", "application/json");
+    	                        
+    	                        HttpParams httpParams = httpclient.getParams();
+    	                        HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+    	                        HttpConnectionParams.setSoTimeout(httpParams, 5000);
+    	                        httpPost.setParams(httpParams);
+    	                        
+    	                        // 8. Execute POST request to the given URL
+    	                        System.out.println("executing"+json);
+    	                        HttpResponse httpResponse = httpclient.execute(httpPost);
+    	                        System.out.println("done executor");
+    	                        // 9. receive response as inputStream
+    	                        inputStream = httpResponse.getEntity().getContent();
+    	             
+    	                        // 10. convert inputstream to string
+    	                        if(inputStream != null)
+    	                            msg = convertInputStreamToString(inputStream);
+    	                        else
+    	                            msg = "Did not work!";
+    	             
+    	                    } catch (Exception e) {
+    	                        Log.d("InputStream", e.getLocalizedMessage());
+    	                    }
+    	                System.out.println(msg);
+    	                return msg;
+    	            }
+    	        }.execute(regID, null, null);
                 System.out.println(msg);
                 return msg;
             }
-        }.execute(null, null, null);
-    }
     
     /**
      * Stores the registration ID and app versionCode in the application's
@@ -569,9 +634,56 @@ public class MainActivity extends Activity {
         editor.commit();
     }
     
+    /**
+     * Method called via OnListener in {@link CloudBackendFragment}.
+     */
+    @Override
+    public void onCreateFinished() {
+        listPosts();
+    }
+
+    /**
+     * Retrieves the list of all posts from the backend and updates the UI. For
+     * demonstration in this sample, the query that is executed is:
+     * "SELECT * FROM Guestbook ORDER BY _createdAt DESC LIMIT 50" This query
+     * will be re-executed when matching entity is updated.
+     */
+    private void listPosts() {
+        // create a response handler that will receive the result or an error
+        CloudCallbackHandler<List<CloudEntity>> handler =
+                new CloudCallbackHandler<List<CloudEntity>>() {
+                    @Override
+                    public void onComplete(List<CloudEntity> results) {
+                        System.out.println("Results from Cloud");
+                        System.out.println(results);
+                    }
+
+                    @Override
+                    public void onError(IOException exception) {
+                        System.out.println(exception.getMessage());
+                    }
+                };
+    }
+    
+    /**
+     * Method called via OnListener in {@link CloudBackendFragment}.
+     */
+    @Override
+    public void onBroadcastMessageReceived(List<CloudEntity> l) {
+        for (CloudEntity e : l) {
+            String message = (String) e.get("message");
+            int duration = Integer.parseInt((String) e.get("duration"));
+            Toast.makeText(this, message, duration).show();
+            Log.i(Consts.TAG, "A message was recieved with content: " + message);
+            System.out.println("NEW MESSAGE"+message);
+        }
+    }
+    
+
     public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+        	 System.out.println("NEW MESSAGE");
             // Explicitly specify that GcmIntentService will handle the intent.
             ComponentName comp = new ComponentName(context.getPackageName(),
                     GcmIntentService.class.getName());
@@ -581,7 +693,8 @@ public class MainActivity extends Activity {
         }
     }
     
-    public class GcmIntentService extends IntentService {
+    public class GcmIntentService extends IntentService 
+    {
         public static final int NOTIFICATION_ID = 1;
         private NotificationManager mNotificationManager;
         NotificationCompat.Builder builder;
@@ -671,6 +784,7 @@ public class MainActivity extends Activity {
         }
     }
     
+    
     public void onPrivacySelect(View v)
     {
     	v.setSelected(true);
@@ -692,15 +806,58 @@ public class MainActivity extends Activity {
     			@Override
     			protected Object doInBackground(Object... arg0) {
 	                String msg = "";
-	                try {
-	                    Bundle data = new Bundle();
-	                        data.putString("eat_time", "anytime");
+	                InputStream inputStream = null;
+	                    
+	                    try {
+	                    	
+	                        // 1. create HttpClient
+	                        HttpClient httpclient = new DefaultHttpClient();
+	             
+	                        // 2. make POST request to the given URL
+	                        HttpPost httpPost = new HttpPost("http://nchinda2.mit.edu:666");
+	             
+	                        String json = "";
+	             
+	                        // 3. build jsonObject
+	                        JSONObject jsonObject = new JSONObject();
 	                        String id = Integer.toString(msgId.incrementAndGet());
-	                        gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
-	                        msg = "Sent message";
-	                } catch (IOException ex) {
-	                    msg = "Error :" + ex.getMessage();
-	                }
+	                        jsonObject.accumulate("id", id);
+	                        jsonObject.accumulate("regId", getRegistrationId(context));
+	             
+	                        // 4. convert JSONObject to JSON to String
+	                        json = jsonObject.toString();
+	             
+	                        // 5. set json to StringEntity
+	                        StringEntity se = new StringEntity(json);
+	             
+	                        // 6. set httpPost Entity
+	                        httpPost.setEntity(se);
+	             
+	                        // 7. Set some headers to inform server about the type of the content   
+	                        httpPost.setHeader("Accept", "application/json");
+	                        httpPost.setHeader("Content-type", "application/json");
+	                        
+	                        HttpParams httpParams = httpclient.getParams();
+	                        HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+	                        HttpConnectionParams.setSoTimeout(httpParams, 5000);
+	                        httpPost.setParams(httpParams);
+	                        
+	                        // 8. Execute POST request to the given URL
+	                        System.out.println("executing"+json);
+	                        HttpResponse httpResponse = httpclient.execute(httpPost);
+	                        System.out.println("done executor");
+	                        // 9. receive response as inputStream
+	                        inputStream = httpResponse.getEntity().getContent();
+	             
+	                        // 10. convert inputstream to string
+	                        if(inputStream != null)
+	                            msg = convertInputStreamToString(inputStream);
+	                        else
+	                            msg = "Did not work!";
+	             
+	                    } catch (Exception e) {
+	                        Log.d("InputStream", e.getLocalizedMessage());
+	                    }
 	                System.out.println(msg);
 	                return msg;
 	            }
@@ -715,6 +872,18 @@ public class MainActivity extends Activity {
     	}
     }
 	
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+ 
+        inputStream.close();
+        return result;
+ 
+    }  
+    
 	protected void onDestroy()
 	{
 		super.onDestroy();
