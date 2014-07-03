@@ -1,0 +1,88 @@
+if (Meteor.isClient) {
+  Template.hello.greeting = function () {
+    return "Welcome to Backend.";
+  };
+
+  Template.hello.events({
+    'click input': function () {
+      // template data, if any, is available in 'this'
+      if (typeof console !== 'undefined')
+        console.log("You pressed the button");
+    }
+  });
+}
+
+Router.map(function () {
+  this.route('/', {
+    where: 'server',
+    action: function () {
+      HandleData(this.request.query);
+    }
+  });
+});
+
+function HandleData()
+{
+	Router.map(function () {
+  this.route('foo', {
+    where: 'server',
+    action: function () {
+      doSomethingWithParams(this.request.query);
+    }
+  });
+});
+}
+
+if (Meteor.isServer) {
+  Meteor.startup(function () {
+    var gcm = Npm.require('node-gcm');
+
+// create a message with default values
+var message = new gcm.Message();
+
+// or with object values
+var message = new gcm.Message({
+    collapseKey: 'demo',
+    delayWhileIdle: true,
+    timeToLive: 3,
+    data: {
+        key1: 'message1',
+        key2: 'message2'
+    }
+});
+
+var sender = new gcm.Sender('AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk');
+var registrationIds = [];
+
+// OPTIONAL
+// add new key-value in data object
+message.addDataWithKeyValue('key1','message1');
+message.addDataWithKeyValue('key2','message2');
+
+// or add a data object
+message.addDataWithObject({
+    key1: 'message1',
+    key2: 'message2'
+});
+
+// or with backwards compability of previous versions
+message.addData('key1','message1');
+message.addData('key2','message2');
+
+
+message.collapseKey = 'demo';
+message.delayWhileIdle = true;
+message.timeToLive = 3;
+message.dryRun = true;
+// END OPTIONAL
+
+// At least one required
+registrationIds.push('APA91bHls6vtVyydjiAqLtFfG4OaqooMDO7VO8SlZNkH9tcNbHr22UTo3pP4RxjOkhsXKEboHthsabB50SoSPx8VdJBRPQTbPyoF-4G56BFSYEdvgEBFX2qHq0y3lD6lK12xt_fv0hfjip6GAfA-C-X-gxdEg464wQ');
+/**
+ * Params: message-literal, registrationIds-array, No. of retries, callback-function
+ **/
+sender.send(message, registrationIds, 4, function (err, result) {
+    console.log(result);
+});
+  });
+}
