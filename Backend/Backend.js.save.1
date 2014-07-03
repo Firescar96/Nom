@@ -12,11 +12,6 @@ if (Meteor.isClient) {
   });
 }
 
-if (Meteor.isServer) {
-
-Users = new Meteor.Collection('users');
-Events = new Meteor.Collection('events');
-
 Router.map(function () {
   this.route("/", {
     where: "server",
@@ -24,6 +19,7 @@ Router.map(function () {
       console.log('################################################');
       console.log(this.request.method);
       console.log(this.request.headers);
+      console.log('this.params.id: ' + this.params.id);
 
       console.log('------------------------------');
       console.log(this.request.body);
@@ -46,24 +42,13 @@ var HandleData = function(query)
  	console.log("data received");
 	console.log(query);
 	
-	if(query.username != undefined && query.regId != undefined && Users.findOne({name:query.to}) == undefined)
-	{
-		Users.insert({name: query.username, regId: query.regId});	
-		console.log("New user: " + query.username);	
-	}
-	else if(query.username != undefined && query.regId != undefined)
-	{
-		Users.update({name: query.username}, {regId: query.regId});	
-		console.log("Updated user: " + query.username);	
-	}
-	
-	/*var nodegcm = Npm.require('node-gcm');
+	var gcm = Npm.require('node-gcm');
 
 	// create a message with default values
-	var message = new nodegcm.Message();
+	var message = new gcm.Message();
 	
 	// or with object values
-	var message = new nodegcm.Message({
+	var message = new gcm.Message({
 	    collapseKey: 'demo',
 	    delayWhileIdle: true,
 	    timeToLive: 3,
@@ -73,7 +58,7 @@ var HandleData = function(query)
 	    }
 	});
 	
-	var sender = new nodegcm.Sender('AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk');
+	var sender = new gcm.Sender('AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk');
 	var registrationIds = [];
 	
 	// OPTIONAL
@@ -100,36 +85,18 @@ var HandleData = function(query)
 	
 	// At least one required
 	registrationIds.push(query.regId);
-*/
 	/**
 	 * Params: message-literal, registrationIds-array, No. of retries, callback-function
 	 **/
-	/*sender.send(message, registrationIds, 4, function (err, result) {
+	sender.send(message, registrationIds, 4, function (err, result) {
 	    console.log(result);
-	});*/
-	var toUsr = Users.findOne({name:query.to});
-	console.log(toUsr);
-	console.log(toUsr.name);
-	if(toUsr.regId && query.event)
-	{
-		var GCM = Npm.require('gcm').GCM;
+	});
+
 	
-		var apiKey = 'AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk';
-		var gcm = new GCM(apiKey);
-	
-		var mess = {
-	   	registration_id: toUsr.regId , // required
-	    	"data.event": "{privacy:\""+query.event.privacy+"\",info:\""+query.event.info+"\"}"
-		};
-	
-		gcm.send(mess, function(err, messageId){
-	    	if (err) {
-	    		console.log("Something has gone wrong!");
-	    	} else {
-	        	console.log("Sent with message ID: ", messageId);
-	    	}
-		});
-	}
+
 }
 
+if (Meteor.isServer) {
+  Meteor.startup(function () {
+  });
 }
