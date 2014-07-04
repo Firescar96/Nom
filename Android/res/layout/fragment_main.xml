@@ -54,22 +54,30 @@
         android:orientation="vertical"
         android:visibility="visible" >
 
-        <ListView
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5">
+            <ListView
             android:id="@+id/closed_events"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".5"
+            android:layout_height="wrap_content"
             android:background="#fff" >
-
         </ListView>
+        
+        </RelativeLayout>
 
-        <ListView
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5">
+            <ListView
             android:id="@+id/open_events"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".5" >
-
+            android:layout_height="wrap_content">
         </ListView>
+        
+        </RelativeLayout>
 
     </LinearLayout>
 

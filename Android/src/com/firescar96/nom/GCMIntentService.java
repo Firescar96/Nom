@@ -103,10 +103,7 @@ public class GCMIntentService extends IntentService {
             	// Post notification of received message.
                 System.out.println("Received: " + extras.toString());
                 
-                JSONObject eveData = null;
-				try {
-					eveData=new JSONObject("{\"event\":"+extras.get("event")+"}");
-				
+				try {			
 	                if(extras.get("username") != null)
 	                {
 						context.appData.getJSONArray("usernames").put(extras.get("username"));
@@ -114,11 +111,9 @@ public class GCMIntentService extends IntentService {
 	                
 	                if(extras.get("event") != null)
 	                {
-						context.appData.getJSONObject("events").getJSONArray(eveData.getJSONObject("event").getString("privacy")).put(eveData.getJSONObject("event").getString("info"));	
-	                	
-	                	Message msg = Message.obtain();
-	                	msg.obj = "event.open";                     
-	                	contextHandler.sendMessage(msg);
+	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
+	                	String info = eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
+						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(info);	
 	                }
                 
 				} catch (JSONException e1) {

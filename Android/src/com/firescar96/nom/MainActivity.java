@@ -31,6 +31,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.IntentService;
@@ -43,6 +44,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -54,6 +56,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TimePicker;
 
 public class MainActivity extends Activity{
 
@@ -143,6 +146,8 @@ public class MainActivity extends Activity{
         mViewPager = (ViewPager) findViewById(R.id.main_activity);
         mViewPager.setAdapter(eventsPagerAdapter);
         mViewPager.setOffscreenPageLimit(2);
+        
+        scheduleTimeUpdate();
     }
 
 
@@ -234,11 +239,6 @@ public class MainActivity extends Activity{
 		});
     }
 
-    public void populateUsers(View view)
-    {
-    	
-    }
-    
     public class EventsArrayAdapter extends ArrayAdapter<String> {
 
         HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
@@ -264,6 +264,24 @@ public class MainActivity extends Activity{
 
       }
 
+    public void populateUsers(View view)
+    {
+    	
+    }
+    
+    
+    public void scheduleTimeUpdate()
+    {
+
+		AlarmManager alarmMgr;
+		PendingIntent alarmIntent;
+		
+		alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, MainActivity.class);
+		alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+		alarmMgr.setRepeating (AlarmManager.RTC, ((int)System.currentTimeMillis()/60000)*60000, 60000, alarmIntent);
+    }
     
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -430,7 +448,10 @@ public class MainActivity extends Activity{
 	                        jsonObject.accumulate("to", "Firescar96");
 	                        JSONObject eventSon = new JSONObject();
 	                        eventSon.accumulate("privacy", "open");
-	                        eventSon.accumulate("info", "hungry 15 minutes" + id);
+	                        TimePicker opTime = (TimePicker)findViewById(R.id.openTime);
+	                        eventSon.accumulate("hour", opTime.getCurrentHour());
+	                        eventSon.accumulate("minute", opTime.getCurrentMinute());
+	                        eventSon.accumulate("host", "Firescar96");
 	                        jsonObject.accumulate("event", eventSon);
 	             
 	                        // 4. convert JSONObject to JSON to String
@@ -503,4 +524,11 @@ public class MainActivity extends Activity{
 	            out.close();
 			}catch(IOException e) {}
 	}
+	
+	public void onReceive(Context context, Intent intent) 
+    {   
+        // Put here YOUR code.
+        //Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // For example
+		System.out.println(intent.getAction());
+    }
 }
