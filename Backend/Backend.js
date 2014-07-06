@@ -119,7 +119,12 @@ var HandleData = function(query)
 	
 		var mess = {
 	   	registration_id: toUsr.regId , // required
-	    	"data.event": "{privacy:\""+query.event.privacy+"\",info:\""+query.event.info+"\"}"
+	    	"data.event": "{\
+	    		privacy:\""+query.event.privacy+"\",\
+	    		hour:\""+query.event.hour+"\",\
+	    		minute:\""+query.event.minute+"\",\
+	    		host:\""+query.event.host+"\"\
+	    	}"
 		};
 	
 		gcm.send(mess, function(err, messageId){
