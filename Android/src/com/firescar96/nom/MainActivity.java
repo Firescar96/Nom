@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -68,21 +70,22 @@ public class MainActivity extends Activity{
      * may be best to switch to a
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter eventsPagerAdapter;
+    MainPagerAdapter eventsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    MainViewPager mViewPager;
 
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     
+    protected static MainActivity context;
+    
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
     SharedPreferences prefs;
-    MainActivity context;
     String regid;
     
     JSONObject appData;
@@ -93,7 +96,6 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
 
         context = this;
-        GCMIntentService.context = this;
         
         //Check device for Play Services APK. If check succeeds, proceed with
         //GCM registration.
@@ -114,8 +116,6 @@ public class MainActivity extends Activity{
         	PrintWriter out;
 			try {
 				out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
-				out.println("");
-	            out.close();
 			}catch(IOException e) {}
             
         }
@@ -135,21 +135,35 @@ public class MainActivity extends Activity{
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			System.out.println("recreating appdata");
+			JSONObject eve = new JSONObject();
+			JSONObject usr = new JSONObject();
+			JSONArray open = new JSONArray();
+			JSONArray cloe = new JSONArray();
+			appData = new JSONObject();
+			try {
+				eve.put("open", open);
+				eve.put("closed", cloe);
+				appData.put("events", eve);
+				appData.put("username", usr);
+			} catch (JSONException e1) {}
 		}
-		
 		// Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        eventsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        eventsPagerAdapter = new MainPagerAdapter(getFragmentManager());
         
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.main_activity);
+        mViewPager = (MainViewPager) findViewById(R.id.main_activity);
         mViewPager.setAdapter(eventsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setOffscreenPageLimit(1);
         
-        scheduleTimeUpdate();
-    }
+		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, MainActivity.class);
+		intent.setAction("com.firescar96.nom.update.times");
+		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
+		alarmMgr.setRepeating (AlarmManager.RTC, /*((int)System.currentTimeMillis()/60000)*60000*/System.currentTimeMillis(), 60000, alarmIntent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -158,7 +172,7 @@ public class MainActivity extends Activity{
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
+    
     // Play Services APK check here too.
     @Override
     protected void onResume() {
@@ -180,63 +194,125 @@ public class MainActivity extends Activity{
 
     public void populateEvents(View view) //TODO:Restructure appData to list publicity as child of events not sister
     {
-    	JSONArray listData = null;
-		try {
-			listData = appData.getJSONObject("events").getJSONArray("closed");
-		}catch (JSONException e) {}
-    	
-    	//Setup the listview adapter for closed events
-    	ListView listview = (ListView) view.findViewById(R.id.closed_events);
+    	try {
+			JSONArray opDat = appData.getJSONObject("events").getJSONArray("open");
+			JSONArray cloDat = appData.getJSONObject("events").getJSONArray("closed");
+			
+	
+	    	//Setup the listview adapter for open events
+			ListView opView = (ListView) view.findViewById(R.id.open_events);
+			ArrayList<String> opList = new ArrayList<String>();
+			//Setup the listview adapter for closed events
+			ListView cloView = (ListView) view.findViewById(R.id.closed_events);
+			ArrayList<String> cloList = new ArrayList<String>();
+			
+			for(int i=0; i< opDat.length(); i++)
+			{System.out.println(opDat.get(i));
+				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
+				
+				int hour = Integer.parseInt(((JSONObject) opDat.get(i)).getString("hour"));
+				int minute = Integer.parseInt(((JSONObject) opDat.get(i)).getString("minute"));
+				
+				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
+				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
+				
+				/*if(curHour < hour)
+					if(curMin < 59)
+						curMin++;
+					else
+					{
+						curMin = 0;
+						curHour++;
+					}
+				else
+					curMin++;*/
+				
+				if(curHour==hour && curMin==minute)
+				{
+					((JSONObject) opDat.get(i)).put("hour", "Now");
+					((JSONObject) opDat.get(i)).put("minute", "Now");
+				}
 
-		ArrayList<String> list = new ArrayList<String>();
-		System.out.println(appData);
-		for(int i = 0; i<listData.length(); i++) 
-		{
-			try {
-				list.add((String) listData.get(i));
-			}catch (JSONException e) {}
+				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+				String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) opDat.get(i)).getString("host");
+				opList.add(info);
+			}
+			
+			for(int i=0; i< cloDat.length(); i++)
+			{
+				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
+				
+				int hour = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("hour"));
+				int minute = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("minute"));
+				
+				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
+				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
+				
+				/*if(curHour < hour)
+				if(curMin < 59)
+					curMin++;
+				else
+				{
+					curMin = 0;
+					curHour++;
+				}
+			else
+				curMin++;*/
+			
+			if(curHour==hour && curMin==minute)
+			{
+				((JSONObject) cloDat.get(i)).put("hour", "Now");
+				((JSONObject) cloDat.get(i)).put("minute", "Now");
+			}
+			
+			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+			String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) cloDat.get(i)).getString("host");
+				cloList.add(info);
+			}
+			
+			EventsArrayAdapter opAdapter = new EventsArrayAdapter(context,
+			    android.R.layout.simple_list_item_1, opList);
+			opView.setAdapter(opAdapter);
+	    	eventsPagerAdapter.notifyDataSetChanged();
+	    	
+			EventsArrayAdapter adapter = new EventsArrayAdapter(context,
+			    android.R.layout.simple_list_item_1, cloList);
+			cloView.setAdapter(adapter);
+	    	eventsPagerAdapter.notifyDataSetChanged();
+	
+	    	opView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
+				{
+					final String item = (String) parent.getItemAtPosition(position);
+					view.animate().setDuration(1000).alpha(0);
+					view.animate().setDuration(1000).alpha(1);
+				}
+			});
+	    	
+			cloView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
+				{
+					final String item = (String) parent.getItemAtPosition(position);
+					view.animate().setDuration(1000).alpha(0);
+					view.animate().setDuration(1000).alpha(1);
+				}
+			});
+    	} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		EventsArrayAdapter adapter = new EventsArrayAdapter(this,
-		    android.R.layout.simple_list_item_1, list);
-		listview.setAdapter(adapter);
-
-		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
-			{
-				final String item = (String) parent.getItemAtPosition(position);
-				view.animate().setDuration(1000).alpha(0);
-				view.animate().setDuration(1000).alpha(1);
-			}
-
-		});
-		
-		//Setup the same for open events
-		listview = (ListView) view.findViewById(R.id.open_events);
-		list = new ArrayList<String>();
-		try {
-			listData = appData.getJSONObject("events").getJSONArray("open");
-			for(int i = 0; i<listData.length(); i++) 
-			{
-				list.add((String) listData.get(i));
-			}
-		}catch (JSONException e) {}
-		
-		
-		adapter = new EventsArrayAdapter(this,
-		    android.R.layout.simple_list_item_1, list);
-		listview.setAdapter(adapter);
-
-		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
-			{
-				final String item = (String) parent.getItemAtPosition(position);
-				view.animate().setDuration(1000).alpha(0);
-				view.animate().setDuration(1000).alpha(1);
-			}
-		});
     }
 
     public class EventsArrayAdapter extends ArrayAdapter<String> {
@@ -272,91 +348,131 @@ public class MainActivity extends Activity{
     
     public void scheduleTimeUpdate()
     {
+    	System.out.println("Hello");
+    	try {
+			JSONArray opDat = appData.getJSONObject("events").getJSONArray("open");
+			JSONArray cloDat = appData.getJSONObject("events").getJSONArray("closed");
+			
 
-		AlarmManager alarmMgr;
-		PendingIntent alarmIntent;
-		
-		alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, MainActivity.class);
-		alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        	//Setup the listview adapter for open events
+    		ListView opView = (ListView) findViewById(R.id.open_events);
+    		ArrayList<String> opList = new ArrayList<String>();
+    		//Setup the listview adapter for closed events
+    		ListView cloView = (ListView) findViewById(R.id.closed_events);
+    		ArrayList<String> cloList = new ArrayList<String>();
+    		
+			for(int i=0; i< opDat.length(); i++)
+			{System.out.println(opDat.get(i));
+				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
+				
+				int hour = Integer.parseInt(((JSONObject) opDat.get(i)).getString("hour"));
+				int minute = Integer.parseInt(((JSONObject) opDat.get(i)).getString("minute"));
+				
+				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
+				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
+				
+				/*if(curHour < hour)
+				if(curMin < 59)
+					curMin++;
+				else
+				{
+					curMin = 0;
+					curHour++;
+				}
+			else
+				curMin++;*/
+			
+			if(curHour==hour && curMin==minute)
+			{
+				((JSONObject) opDat.get(i)).put("hour", "Now");
+				((JSONObject) opDat.get(i)).put("minute", "Now");
+			}
 
-		alarmMgr.setRepeating (AlarmManager.RTC, ((int)System.currentTimeMillis()/60000)*60000, 60000, alarmIntent);
+			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+			String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) opDat.get(i)).getString("host");
+				opList.add(info);
+			}
+			
+			for(int i=0; i< cloDat.length(); i++)
+			{
+				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
+				
+				int hour = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("hour"));
+				int minute = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("minute"));
+				
+				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
+				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
+				
+				/*if(curHour < hour)
+				if(curMin < 59)
+					curMin++;
+				else
+				{
+					curMin = 0;
+					curHour++;
+				}
+			else
+				curMin++;*/
+			
+			if(curHour==hour && curMin==minute)
+			{
+				((JSONObject) cloDat.get(i)).put("hour", "Now");
+				((JSONObject) cloDat.get(i)).put("minute", "Now");
+			}
+
+			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+			String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) cloDat.get(i)).getString("host");
+				cloList.add(info);
+			}
+    		
+    		EventsArrayAdapter opAdapter = new EventsArrayAdapter(context,
+    		    android.R.layout.simple_list_item_1, opList);
+    		opView.setAdapter(opAdapter);
+        	eventsPagerAdapter.notifyDataSetChanged();
+        	
+    		EventsArrayAdapter adapter = new EventsArrayAdapter(context,
+    		    android.R.layout.simple_list_item_1, cloList);
+    		cloView.setAdapter(adapter);
+        	eventsPagerAdapter.notifyDataSetChanged();
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+    public static JSONArray JSONArrayremove(final JSONArray from,final int idx) {
+        final List<JSONObject> objs = asList(from);
+        objs.remove(idx);
 
-    	public ArrayList<Integer> oldFragments = new ArrayList<Integer>();
-    	private ArrayList<Fragment> views = new ArrayList<Fragment>();
-    	
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+        final JSONArray ja = new JSONArray();
+        for (final JSONObject obj : objs) {
+            ja.put(obj);
         }
 
-        @Override
-        public Fragment getItem(int position) {
-        	
-        	Fragment newFragment = null;
-        	
-            switch (position)
-            {
-            case 0:
-            	newFragment = new MainFragment();
-            	break;
-            case 1:
-            	if(findViewById(R.id.open_button) == null)
-            		newFragment = new OpenShareFragment();
-            	else if(findViewById(R.id.open_button).isSelected())
-            		newFragment = new OpenShareFragment();
-            	else if(findViewById(R.id.closed_button).isSelected())
-            		newFragment = new ClosedShareFragment();
-            	break;
-            default:
-            	newFragment = new MainFragment();
-            	break;
+        return ja;
+    }
+
+    public static List<JSONObject> asList(final JSONArray ja) {
+        final int len = ja.length();
+        final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
+        for (int i = 0; i < len; i++) {
+            final JSONObject obj = ja.optJSONObject(i);
+            if (obj != null) {
+                result.add(obj);
             }
-            
-            views.add(newFragment);
-            return newFragment;
         }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
-        }
-        
-        @Override
-        public int getItemPosition(Object object)
-        {
-        	int index = views.indexOf (object);
-        	for(int i = 0; i < oldFragments.size(); i++)
-        		if(oldFragments.get(i) == index)
-        		{
-        			views.remove(index);
-        			oldFragments.remove(i);
-        			return POSITION_NONE;
-        		}
-        	
-              return POSITION_UNCHANGED;
-        }
+        return result;
     }
 
     /**
@@ -424,6 +540,7 @@ public class MainActivity extends Activity{
     
     public void onShareClick(View v) 
     {
+    	mViewPager.setPagingEnabled(true);
     	if(findViewById(R.id.open_button).isSelected())
     	{
     		new AsyncTask<Object, Object, Object>() {
@@ -524,11 +641,4 @@ public class MainActivity extends Activity{
 	            out.close();
 			}catch(IOException e) {}
 	}
-	
-	public void onReceive(Context context, Intent intent) 
-    {   
-        // Put here YOUR code.
-        //Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // For example
-		System.out.println(intent.getAction());
-    }
 }

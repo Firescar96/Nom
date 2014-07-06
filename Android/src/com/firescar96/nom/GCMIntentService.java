@@ -77,7 +77,7 @@ public class GCMIntentService extends IntentService {
     
     static GoogleCloudMessaging gcm;
     static AtomicInteger msgId = new AtomicInteger();
-    static MainActivity context;
+    static MainActivity context = MainActivity.context;
     static String regId;
     
     @Override
@@ -112,8 +112,9 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("event") != null)
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
-	                	String info = eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
-						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(info);	
+	                	String info = "Food in "+eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
+	                	System.out.println(info);
+						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
 	                }
                 
 				} catch (JSONException e1) {
@@ -123,7 +124,7 @@ public class GCMIntentService extends IntentService {
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
-        GCMBroadcastReceiver.completeWakefulIntent(intent);
+        MainBroadcastReceiver.completeWakefulIntent(intent);
     }
 
     private Handler contextHandler = new Handler() {
@@ -132,27 +133,7 @@ public class GCMIntentService extends IntentService {
                 super.handleMessage(msg);
                 if(msg.obj.equals("event.open"))
                 {
-                	JSONArray listData = null;
-            		try {
-            			listData = context.appData.getJSONObject("events").getJSONArray("open");
-            		}catch (JSONException e) {}
-                	
-                	//Setup the listview adapter for open events
-            		ListView listview = (ListView) context.findViewById(R.id.open_events);
-
-            		ArrayList<String> list = new ArrayList<String>();
-            		System.out.println(context.appData);
-            		for(int i = 0; i<listData.length(); i++) 
-            		{
-            			try {
-            				list.add((String) listData.get(i));
-            			}catch (JSONException e) {}
-            		}
-            		
-            		MainActivity.EventsArrayAdapter adapter = context.new EventsArrayAdapter(context,
-            		    android.R.layout.simple_list_item_1, list);
-            		listview.setAdapter(adapter);
-                	context.eventsPagerAdapter.notifyDataSetChanged();
+                	context.scheduleTimeUpdate();
                 }
             }
         };
