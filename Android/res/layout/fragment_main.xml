@@ -50,26 +50,35 @@
         android:layout_below="@+id/closed_button"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="36dp"
-        android:background="#d00"
+        android:background="#c0c"
         android:orientation="vertical"
         android:visibility="visible" >
 
-        <ListView
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5">
+            <ListView
             android:id="@+id/closed_events"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".5"
-            android:background="#fff" >
-
+            android:layout_height="wrap_content"
+            android:background="#fff">
         </ListView>
+        
+        </RelativeLayout>
 
-        <ListView
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5">
+            <ListView
             android:id="@+id/open_events"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".5" >
-
+            android:layout_height="wrap_content"
+            android:background="#d00">
         </ListView>
+        
+        </RelativeLayout>
 
     </LinearLayout>
 
