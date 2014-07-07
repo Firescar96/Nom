@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -157,13 +158,6 @@ public class MainActivity extends Activity{
         mViewPager = (MainViewPager) findViewById(R.id.main_activity);
         mViewPager.setAdapter(eventsPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
-        
-		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, MainActivity.class);
-		intent.setAction("com.firescar96.nom.update.times");
-		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-		alarmMgr.setRepeating (AlarmManager.RTC, /*((int)System.currentTimeMillis()/60000)*60000*/System.currentTimeMillis(), 60000, alarmIntent);
     }
 
     @Override
@@ -214,6 +208,11 @@ public class MainActivity extends Activity{
 					JSONArrayremove(opDat,i);
 					continue;
 				}
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
 				
 				int hour = Integer.parseInt(((JSONObject) opDat.get(i)).getString("hour"));
 				int minute = Integer.parseInt(((JSONObject) opDat.get(i)).getString("minute"));
@@ -221,22 +220,11 @@ public class MainActivity extends Activity{
 				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
 				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
 				
-				/*if(curHour < hour)
-					if(curMin < 59)
-						curMin++;
-					else
-					{
-						curMin = 0;
-						curHour++;
-					}
-				else
-					curMin++;*/
-				
-				if(curHour==hour && curMin==minute)
+				/*if(curHour==hour && curMin==minute)
 				{
 					((JSONObject) opDat.get(i)).put("hour", "Now");
 					((JSONObject) opDat.get(i)).put("minute", "Now");
-				}
+				}*/
 
 				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
 				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
@@ -246,9 +234,14 @@ public class MainActivity extends Activity{
 			
 			for(int i=0; i< cloDat.length(); i++)
 			{
-				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
+				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
 				{
-					JSONArrayremove(opDat,i);
+					JSONArrayremove(cloDat,i);
+					continue;
+				}
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				{
+					JSONArrayremove(cloDat,i);
 					continue;
 				}
 				
@@ -257,23 +250,12 @@ public class MainActivity extends Activity{
 				
 				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
 				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-				
-				/*if(curHour < hour)
-				if(curMin < 59)
-					curMin++;
-				else
-				{
-					curMin = 0;
-					curHour++;
-				}
-			else
-				curMin++;*/
 			
-			if(curHour==hour && curMin==minute)
-			{
-				((JSONObject) cloDat.get(i)).put("hour", "Now");
-				((JSONObject) cloDat.get(i)).put("minute", "Now");
-			}
+				/*if(curHour==hour && curMin==minute)
+				{
+					((JSONObject) cloDat.get(i)).put("hour", "Now");
+					((JSONObject) cloDat.get(i)).put("minute", "Now");
+				}*/
 			
 			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
 			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
@@ -310,10 +292,7 @@ public class MainActivity extends Activity{
 					view.animate().setDuration(1000).alpha(1);
 				}
 			});
-    	} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	} catch (JSONException e) {}
     }
 
     public class EventsArrayAdapter extends ArrayAdapter<String> {
@@ -369,41 +348,40 @@ public class MainActivity extends Activity{
 					JSONArrayremove(opDat,i);
 					continue;
 				}
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				{
+					JSONArrayremove(opDat,i);
+					continue;
+				}
 				
 				int hour = Integer.parseInt(((JSONObject) opDat.get(i)).getString("hour"));
 				int minute = Integer.parseInt(((JSONObject) opDat.get(i)).getString("minute"));
 				
 				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
 				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-				
-				/*if(curHour < hour)
-				if(curMin < 59)
-					curMin++;
-				else
-				{
-					curMin = 0;
-					curHour++;
-				}
-			else
-				curMin++;*/
 			
-			if(curHour==hour && curMin==minute)
-			{
-				((JSONObject) opDat.get(i)).put("hour", "Now");
-				((JSONObject) opDat.get(i)).put("minute", "Now");
-			}
-
-			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
-			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
-			String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) opDat.get(i)).getString("host");
+				/*if(curHour==hour && curMin==minute)
+				{
+					((JSONObject) opDat.get(i)).put("hour", "Now");
+					((JSONObject) opDat.get(i)).put("minute", "Now");
+				}*/
+	
+				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+				String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) opDat.get(i)).getString("host");
 				opList.add(info);
 			}
 			
 			for(int i=0; i< cloDat.length(); i++)
 			{
-				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
+				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
 				{
-					JSONArrayremove(opDat,i);
+					JSONArrayremove(cloDat,i);
+					continue;
+				}
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				{
+					JSONArrayremove(cloDat,i);
 					continue;
 				}
 				
@@ -412,27 +390,16 @@ public class MainActivity extends Activity{
 				
 				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
 				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-				
-				/*if(curHour < hour)
-				if(curMin < 59)
-					curMin++;
-				else
-				{
-					curMin = 0;
-					curHour++;
-				}
-			else
-				curMin++;*/
 			
-			if(curHour==hour && curMin==minute)
-			{
-				((JSONObject) cloDat.get(i)).put("hour", "Now");
-				((JSONObject) cloDat.get(i)).put("minute", "Now");
-			}
+				/*if(curHour==hour && curMin==minute)
+				{
+					((JSONObject) cloDat.get(i)).put("hour", "Now");
+					((JSONObject) cloDat.get(i)).put("minute", "Now");
+				}*/
 
-			int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
-			int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
-			String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) cloDat.get(i)).getString("host");
+				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+				String info = "Food in "+nHour+":"+nMin+" with "+((JSONObject) cloDat.get(i)).getString("host");
 				cloList.add(info);
 			}
     		
@@ -487,6 +454,13 @@ public class MainActivity extends Activity{
             {
         		((MainActivity)getActivity()).populateEvents(view);
         		((MainActivity)getActivity()).populateUsers(view);
+        		
+        		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        		Intent intent = new Intent(context, MainBroadcastReceiver.class);
+        		intent.setAction("com.firescar96.nom.update.times");
+        		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        		alarmMgr.setRepeating (AlarmManager.RTC, ((int)System.currentTimeMillis()/60000)*60000/*System.currentTimeMillis()*/, 60000, alarmIntent);
             }
         	
             return view;
@@ -569,6 +543,9 @@ public class MainActivity extends Activity{
 	                        TimePicker opTime = (TimePicker)findViewById(R.id.openTime);
 	                        eventSon.accumulate("hour", opTime.getCurrentHour());
 	                        eventSon.accumulate("minute", opTime.getCurrentMinute());
+	                        Calendar curTime = Calendar.getInstance();
+	                        curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), opTime.getCurrentHour(), opTime.getCurrentMinute());
+	                        eventSon.accumulate("date", curTime.getTimeInMillis());
 	                        eventSon.accumulate("host", "Firescar96");
 	                        jsonObject.accumulate("event", eventSon);
 	             

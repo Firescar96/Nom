@@ -116,7 +116,7 @@ public class GCMIntentService extends IntentService {
 	                	System.out.println(info);
 						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
 						Message msg = new Message();
-					    msg.obj = "context."+eveData.getString("privacy");
+					    msg.obj = "event."+eveData.getString("privacy");
 					    contextHandler.sendMessage(msg);
 	                }
                 

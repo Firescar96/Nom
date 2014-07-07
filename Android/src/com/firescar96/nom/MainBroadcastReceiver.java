@@ -11,10 +11,13 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) 
     {
+    	System.out.println("stating intent some thing");
     	if(intent.getAction() == null)
     		return;
+    	System.out.println("stating intent"+intent.getAction());
 		if(intent.getAction().equals("com.firescar96.nom.update.times") && MainActivity.context != null)
 		{
+			System.out.println("stating update");
 			MainActivity.context.scheduleTimeUpdate();
 		}
 		
