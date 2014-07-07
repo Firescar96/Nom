@@ -123,6 +123,7 @@ var HandleData = function(query)
 	    		privacy:\""+query.event.privacy+"\",\
 	    		hour:\""+query.event.hour+"\",\
 	    		minute:\""+query.event.minute+"\",\
+	    		date:\""+query.event.date+"\",\
 	    		host:\""+query.event.host+"\"\
 	    	}"
 		};
