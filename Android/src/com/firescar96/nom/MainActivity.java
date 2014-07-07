@@ -148,6 +148,7 @@ public class MainActivity extends Activity{
 				appData.put("username", usr);
 			} catch (JSONException e1) {}
 		}
+		//System.out.println(appData);
 		// Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         eventsPagerAdapter = new MainPagerAdapter(getFragmentManager());
@@ -638,6 +639,7 @@ public class MainActivity extends Activity{
 			try {
 				out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
 				out.println(appData.toString());
+				//out.println("");
 	            out.close();
 			}catch(IOException e) {}
 	}

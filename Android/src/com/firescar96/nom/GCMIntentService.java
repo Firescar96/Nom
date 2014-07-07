@@ -115,6 +115,9 @@ public class GCMIntentService extends IntentService {
 	                	String info = "Food in "+eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
 	                	System.out.println(info);
 						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
+						Message msg = new Message();
+					    msg.obj = "context."+eveData.getString("privacy");
+					    contextHandler.sendMessage(msg);
 	                }
                 
 				} catch (JSONException e1) {
