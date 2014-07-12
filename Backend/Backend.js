@@ -10,6 +10,16 @@ if (Meteor.isClient) {
         console.log("You pressed the button");
     }
   });
+  
+  rests = new Meteor.Collection("RESTS")
+
+	Meteor.subscribe(function() {
+ 		rests.find().observe({
+   		added: function(item){
+				window.location = "com.firescar96.nom.appUser";
+    		}
+ 	 	});
+	});
 }
 
 if (Meteor.isServer) {
@@ -37,6 +47,18 @@ Router.map(function () {
       if (this.request.method == 'POST') {
 				HandleData(this.request.body);
       }
+
+      if (this.request.method == 'GET') {
+      	rests = new Meteor.Collection("REST")
+
+			Meteor.publish("RESTS", function(){
+			 rests.find();
+			});
+			
+			rests.remove({}); // remove all
+			rests.insert({message: "Some message to show on every client."});
+      		console.log("gotten");
+      }
     }
   });
 });
@@ -46,15 +68,15 @@ var HandleData = function(query)
  	console.log("data received");
 	console.log(query);
 	
-	if(query.username != undefined && query.regId != undefined && Users.findOne({name:query.to}) == undefined)
+	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.to}) == undefined)
 	{
-		Users.insert({name: query.username, regId: query.regId});	
-		console.log("New user: " + query.username);	
+		Users.insert({name: query.host, regId: query.regId});	
+		console.log("New user: " + query.host);	
 	}
-	else if(query.username != undefined && query.regId != undefined)
+	else if(query.host != undefined && query.regId != undefined)
 	{
-		Users.update({name: query.username}, {regId: query.regId});	
-		console.log("Updated user: " + query.username);	
+		Users.update({name: query.host}, {regId: query.regId});	
+		console.log("Updated user: " + query.host);	
 	}
 	
 	/*var nodegcm = Npm.require('node-gcm');
@@ -137,5 +159,4 @@ var HandleData = function(query)
 		});
 	}
 }
-
 }
