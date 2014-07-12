@@ -104,9 +104,9 @@ public class GCMIntentService extends IntentService {
                 System.out.println("Received: " + extras.toString());
                 
 				try {			
-	                if(extras.get("username") != null)
+	                if(extras.get("mates") != null)
 	                {
-						context.appData.getJSONArray("usernames").put(extras.get("username"));
+						//context.appData.getJSONArray("mates").put(extras.get("mates"));
 	                }
 	                
 	                if(extras.get("event") != null)
@@ -256,7 +256,7 @@ public class GCMIntentService extends IntentService {
                     String id = Integer.toString(msgId.incrementAndGet());
                     jsonObject.accumulate("id", id);
                     jsonObject.accumulate("regId", regId);
-                    jsonObject.accumulate("username", "Firescar96");
+                    jsonObject.accumulate("host", "FIRESCAR96");
          
                     // 4. convert JSONObject to JSON to String
                     json = jsonObject.toString();

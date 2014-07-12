@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
@@ -35,19 +34,13 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.IntentService;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v13.app.FragmentStatePagerAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -71,7 +64,7 @@ public class MainActivity extends Activity{
      * may be best to switch to a
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
-    MainPagerAdapter eventsPagerAdapter;
+    MainPagerAdapter mainPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -138,6 +131,7 @@ public class MainActivity extends Activity{
 		} catch (JSONException e) {
 			System.out.println("recreating appdata");
 			JSONObject eve = new JSONObject();
+			JSONArray mate = new JSONArray();
 			JSONObject usr = new JSONObject();
 			JSONArray open = new JSONArray();
 			JSONArray cloe = new JSONArray();
@@ -146,17 +140,18 @@ public class MainActivity extends Activity{
 				eve.put("open", open);
 				eve.put("closed", cloe);
 				appData.put("events", eve);
-				appData.put("username", usr);
+				appData.put("mates", mate);
+				appData.put("host", usr);
 			} catch (JSONException e1) {}
 		}
 		//System.out.println(appData);
 		// Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        eventsPagerAdapter = new MainPagerAdapter(getFragmentManager());
+        mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (MainViewPager) findViewById(R.id.main_activity);
-        mViewPager.setAdapter(eventsPagerAdapter);
+        mViewPager.setAdapter(mainPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
     }
 
@@ -174,18 +169,6 @@ public class MainActivity extends Activity{
         super.onResume();
         checkPlayServices();
     }    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) 
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public void populateEvents(View view) //TODO:Restructure appData to list publicity as child of events not sister
     {
@@ -266,12 +249,12 @@ public class MainActivity extends Activity{
 			EventsArrayAdapter opAdapter = new EventsArrayAdapter(context,
 			    android.R.layout.simple_list_item_1, opList);
 			opView.setAdapter(opAdapter);
-	    	eventsPagerAdapter.notifyDataSetChanged();
+	    	mainPagerAdapter.notifyDataSetChanged();
 	    	
-			EventsArrayAdapter adapter = new EventsArrayAdapter(context,
+			EventsArrayAdapter cloAdapter = new EventsArrayAdapter(context,
 			    android.R.layout.simple_list_item_1, cloList);
-			cloView.setAdapter(adapter);
-	    	eventsPagerAdapter.notifyDataSetChanged();
+			cloView.setAdapter(cloAdapter);
+	    	mainPagerAdapter.notifyDataSetChanged();
 	
 	    	opView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -319,11 +302,6 @@ public class MainActivity extends Activity{
         }
 
       }
-
-    public void populateUsers(View view)
-    {
-    	
-    }
     
     
     public void scheduleTimeUpdate()
@@ -406,12 +384,12 @@ public class MainActivity extends Activity{
     		EventsArrayAdapter opAdapter = new EventsArrayAdapter(context,
     		    android.R.layout.simple_list_item_1, opList);
     		opView.setAdapter(opAdapter);
-        	eventsPagerAdapter.notifyDataSetChanged();
+        	mainPagerAdapter.notifyDataSetChanged();
         	
     		EventsArrayAdapter adapter = new EventsArrayAdapter(context,
     		    android.R.layout.simple_list_item_1, cloList);
     		cloView.setAdapter(adapter);
-        	eventsPagerAdapter.notifyDataSetChanged();
+        	mainPagerAdapter.notifyDataSetChanged();
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -453,7 +431,6 @@ public class MainActivity extends Activity{
         	if(((MainActivity)getActivity()).appData != null)
             {
         		((MainActivity)getActivity()).populateEvents(view);
-        		((MainActivity)getActivity()).populateUsers(view);
         		
         		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         		Intent intent = new Intent(context, MainBroadcastReceiver.class);
@@ -473,15 +450,6 @@ public class MainActivity extends Activity{
                                  Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             return inflater.inflate(R.layout.fragment_add_open, container, false);
-        }
-    }
-    
-    public static class ClosedShareFragment extends Fragment {
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            // Inflate the layout for this fragment
-            return inflater.inflate(R.layout.fragment_add_closed, container, false);
         }
     }
 
@@ -509,8 +477,8 @@ public class MainActivity extends Activity{
     	else
     		findViewById(R.id.open_button).setSelected(false);
     	
-    	eventsPagerAdapter.oldFragments.add(1);
-    	eventsPagerAdapter.notifyDataSetChanged();
+    	mainPagerAdapter.oldFragments.add(1);
+    	mainPagerAdapter.notifyDataSetChanged();
     }
     
     public void onShareClick(View v) 
@@ -608,6 +576,11 @@ public class MainActivity extends Activity{
  
     } 
     
+    public void addNommate(View v)
+	{
+		((ClosedShareFragment)mainPagerAdapter.curFrag).addNommate(v);
+	}
+    
 	protected void onStop()
 	{
 		super.onDestroy();
@@ -616,7 +589,7 @@ public class MainActivity extends Activity{
 			try {
 				out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
 				out.println(appData.toString());
-				//out.println("");
+				//out.println("");	//uncomment to reset the database
 	            out.close();
 			}catch(IOException e) {}
 	}

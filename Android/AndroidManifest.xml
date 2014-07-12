@@ -33,17 +33,14 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.firescar96.nom.AddClosedActivity"
-            android:label="@string/title_activity_add_closed"
-            android:parentActivityName="com.firescar96.nom.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.firescar96.nom.MainActivity" />
+            <intent-filter>
+				<data android:scheme="com.firescar96.nom.addUser"/>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE"/>
+			</intent-filter>
         </activity>
         
         <receiver

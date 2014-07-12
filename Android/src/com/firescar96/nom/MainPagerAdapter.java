@@ -8,7 +8,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
-import com.firescar96.nom.MainActivity.ClosedShareFragment;
+import com.firescar96.nom.ClosedShareFragment;
 import com.firescar96.nom.MainActivity.MainFragment;
 import com.firescar96.nom.MainActivity.OpenShareFragment;
 
@@ -19,6 +19,8 @@ import com.firescar96.nom.MainActivity.OpenShareFragment;
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
 	MainActivity context = MainActivity.context;
+	
+	public Fragment curFrag;
 	
 	public ArrayList<Integer> oldFragments = new ArrayList<Integer>();
 	private ArrayList<Fragment> views = new ArrayList<Fragment>();
@@ -51,6 +53,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         }
         
         views.add(newFragment);
+        curFrag = newFragment;
         return newFragment;
     }
 

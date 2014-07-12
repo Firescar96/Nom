@@ -3,7 +3,7 @@
     tools:context="com.firescar96.nom.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/matesList"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
