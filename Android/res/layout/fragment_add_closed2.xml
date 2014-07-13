@@ -48,7 +48,6 @@
         android:layout_below="@id/closeShare"
         android:background="#909"
         android:choiceMode="multipleChoice"
-        android:listSelector="?android:attr/listChoiceIndicatorMultiple"
         android:visibility="visible" >
 
     </ListView>

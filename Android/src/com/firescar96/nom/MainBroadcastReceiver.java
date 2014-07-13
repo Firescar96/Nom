@@ -15,7 +15,7 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
     		return;
 		if(intent.getAction().equals("com.firescar96.nom.update.times") && MainActivity.context != null)
 		{
-			MainActivity.context.scheduleTimeUpdate();
+			MainActivity.context.mainPagerAdapter.main.populateEvents();
 		}
 		
 		if(intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE"))

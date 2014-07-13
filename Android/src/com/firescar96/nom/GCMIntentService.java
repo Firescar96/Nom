@@ -14,31 +14,33 @@
 
 package com.firescar96.nom;
 
-import com.firescar96.nom.MainActivity.EventsArrayAdapter;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.cloud.backend.core.Consts;
 
-import android.app.Application;
+import android.annotation.TargetApi;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.NotificationCompat;
+import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
@@ -48,7 +50,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,11 +63,6 @@ public class GCMIntentService extends IntentService {
 		super(name);
 		// TODO Auto-generated constructor stub
 	}
-    
-	private static final String GCM_KEY_SUBID = "subId";
-
-    private static final String GCM_TYPEID_QUERY = "query";
-
     private static final String PROPERTY_REG_ID = "registration_id";
 
     private static final String PROPERTY_APP_VERSION = "app_version";
@@ -112,11 +108,19 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("event") != null)
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
+	                	if(eveData.getLong("date") < Calendar.getInstance().getTimeInMillis())
+	                		return;
+	                	
 	                	String info = "Food in "+eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
 	                	System.out.println(info);
 						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
 						Message msg = new Message();
-					    msg.obj = "event."+eveData.getString("privacy");
+						Bundle data = new Bundle();
+						data.putString("type", "event."+eveData.getString("privacy"));
+						data.putString("host", eveData.getString("host"));
+						data.putString("hour", eveData.getString("hour"));
+						data.putString("minute", eveData.getString("minute"));
+					    msg.obj = data;
 					    contextHandler.sendMessage(msg);
 	                }
                 
@@ -134,12 +138,63 @@ public class GCMIntentService extends IntentService {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(msg.obj.equals("event.open") || msg.obj.equals("event.closed"))
+                if(((Bundle)msg.obj).getString("type").equals("event.closed"))
                 {
-                	context.scheduleTimeUpdate();
+                	int hour = Integer.parseInt(((Bundle)msg.obj).getString("hour"));
+    				int minute = Integer.parseInt(((Bundle)msg.obj).getString("minute"));
+
+    				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
+    				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
+
+    				/*if(curHour==hour && curMin==minute)
+    				{
+    					((JSONObject) opDat.get(i)).put("hour", "Now");
+    					((JSONObject) opDat.get(i)).put("minute", "Now");
+    				}*/
+
+    				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
+    				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+    				
+                	Notify("Food in"+nHour+":"+nMin,"Eat with"+((Bundle)msg.obj).getString("host")); 
+                }
+                if(((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open"))
+                {
+                	context.mainPagerAdapter.main.populateEvents();
                 }
             }
         };
+        
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+		private void Notify(String notificationTitle, String notificationMessage) 
+        {
+        	NotificationCompat.Builder mBuilder =
+        	        new NotificationCompat.Builder(this)
+        	        .setSmallIcon(R.drawable.ic_launcher)
+        	        .setContentTitle(notificationTitle)
+        	        .setContentText(notificationMessage);
+        	// Creates an explicit intent for an Activity in your app
+        	Intent resultIntent = new Intent(this, MainActivity.class);
+
+        	// The stack builder object will contain an artificial back stack for the
+        	// started Activity.
+        	// This ensures that navigating backward from the Activity leads out of
+        	// your application to the Home screen.
+        	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        	// Adds the back stack for the Intent (but not the Intent itself)
+        	stackBuilder.addParentStack(MainActivity.class);
+        	// Adds the Intent that starts the Activity to the top of the stack
+        	stackBuilder.addNextIntent(resultIntent);
+        	PendingIntent resultPendingIntent =
+        	        stackBuilder.getPendingIntent(
+        	            0,
+        	            PendingIntent.FLAG_UPDATE_CURRENT
+        	        );
+        	mBuilder.setContentIntent(resultPendingIntent);
+        	NotificationManager mNotificationManager =
+        	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        	// mId allows you to update the notification later on.
+        	mNotificationManager.notify((int) System.currentTimeMillis(), mBuilder.build());
+        	 }
     
     /**
      * Gets the current registration ID for application on GCM service.

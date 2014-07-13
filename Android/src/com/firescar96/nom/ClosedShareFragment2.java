@@ -3,9 +3,7 @@ package com.firescar96.nom;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -16,34 +14,28 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.firescar96.nom.MainActivity.EventsArrayAdapter;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TimePicker;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -53,15 +45,67 @@ public class ClosedShareFragment2 extends Fragment {
 
 	static ClosedShareFragment2 thisFrag;
 	static View frame;
-	ArrayList eventMates;
+	static JSONArray mateData;
+	static ArrayList<String> mateList;
+	static ArrayAdapter<String> mateAdapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
 		thisFrag = this;
 		frame = inflater.inflate(R.layout.fragment_add_closed2, container, false);
-		eventMates = new ArrayList();
+		try {
+			mateData = context.appData.getJSONArray("mates");
+		} catch (JSONException e) {}
+		mateList = new ArrayList<String>();
+		//Setup the listview adapter for closed events
+		ListView useView = (ListView) frame.findViewById(R.id.matesList);
+		mateAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList);
+		useView.setAdapter(mateAdapter);
+		
+		useView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
+			{
+				view.animate().setDuration(1000).alpha(0);
+				view.animate().setDuration(1000).alpha(1);
+				if(((ColorDrawable)view.getBackground()) == null)
+					view.setBackgroundColor(Color.rgb(224, 0, 224));
+				else
+					view.setBackground(null);
+			}
+		});
+		useView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id)
+            {
+            	AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            	alertDialog.setTitle("Confirm Action");
+            	alertDialog.setMessage("Remove this Nommate");
+            	alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,"Yes", new DialogInterface.OnClickListener() {
+            	   public void onClick(DialogInterface dialog, int which) {
+            		   	mateList.remove(position);
+            		   	mateData = new JSONArray();
+						for(int i=0; i< mateList.size(); i++)
+						{
+							mateData.put(mateList.get(i));
+						}
+						try {
+							context.appData.put("mates", mateData);
+						} catch (JSONException e) {}
+   	            		mateAdapter.notifyDataSetChanged();
+            	   }
+            	});
+            	alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"No", new DialogInterface.OnClickListener() {
+	            	   public void onClick(DialogInterface dialog, int which) {}
+	            });
+            	// Set the Icon for the Dialog
+            	alertDialog.setIcon(android.R.drawable.ic_menu_delete);
+            	alertDialog.show();
+                return true;
+            }
+        }); 
+		
 		populateUsers();
 		return frame;
 	}
@@ -69,59 +113,15 @@ public class ClosedShareFragment2 extends Fragment {
 	public static void populateUsers()
 	{
 		try {
-			JSONArray useDat = context.appData.getJSONArray("mates");
-			System.out.println(useDat);
-			//Setup the listview adapter for closed events
-			ListView useView = (ListView) frame.findViewById(R.id.matesList);
-			ArrayList<String> useList = new ArrayList<String>();
-
-			for(int i=0; i< useDat.length(); i++)
+			mateData = context.appData.getJSONArray("mates");	
+			mateList.clear();
+			for(int i=0; i< mateData.length(); i++)
 			{
-				useList.add(useDat.getString(i));
+				mateList.add(mateData.getString(i));
 			}
-
-			UsersArrayAdapter useAdapter = thisFrag.new UsersArrayAdapter(context,
-					android.R.layout.simple_list_item_1, useList);
-			useView.setAdapter(useAdapter);
-
-			useView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
-				{
-					final String item = (String) parent.getItemAtPosition(position);
-					view.animate().setDuration(1000).alpha(0);
-					view.animate().setDuration(1000).alpha(1);
-					if(((ColorDrawable)view.getBackground()) == null)
-						view.setBackgroundColor(Color.rgb(224, 0, 224));
-					else
-						view.setBackground(null);
-				}
-			});
+			
 		} catch (JSONException e) {}
-	}
-
-	public class UsersArrayAdapter extends ArrayAdapter<String> {
-
-		HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-		public UsersArrayAdapter(Context context, int textViewResourceId,
-				List<String> objects) {
-			super(context, textViewResourceId, objects);
-			for (int i = 0; i < objects.size(); ++i) {
-				mIdMap.put(objects.get(i), i);
-			}
-		}
-
-		@Override
-		public long getItemId(int position) {
-			String item = getItem(position);
-			return mIdMap.get(item);
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
+		mateAdapter.notifyDataSetChanged();
 	}
 
 	public void addNommate(View v)
@@ -232,7 +232,7 @@ public class ClosedShareFragment2 extends Fragment {
 				public void onClick(DialogInterface dialog, int id) {
 					EditText name = (EditText) popView.findViewById(R.id.nomMateName);
 					try {
-						context.appData.getJSONArray("mates").put(name.getText().toString());
+						context.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase());
 						System.out.println(name);
 						System.out.println(context.appData.getJSONArray("mates"));
 						populateUsers();
