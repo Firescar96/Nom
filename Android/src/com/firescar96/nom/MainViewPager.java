@@ -20,7 +20,6 @@ public class MainViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-    	System.out.print(enabled);
         if (this.enabled) {
             return super.onTouchEvent(event);
         }

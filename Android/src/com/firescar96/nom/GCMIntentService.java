@@ -104,9 +104,9 @@ public class GCMIntentService extends IntentService {
                 System.out.println("Received: " + extras.toString());
                 
 				try {			
-	                if(extras.get("mates") != null)
+	                if(extras.get("mate") != null)
 	                {
-						//context.appData.getJSONArray("mates").put(extras.get("mates"));
+						//context.appData.getJSONArray("mates").put(extras.get("mate"));
 	                }
 	                
 	                if(extras.get("event") != null)
@@ -134,7 +134,7 @@ public class GCMIntentService extends IntentService {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(msg.obj.equals("event.open"))
+                if(msg.obj.equals("event.open") || msg.obj.equals("event.closed"))
                 {
                 	context.scheduleTimeUpdate();
                 }

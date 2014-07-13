@@ -8,7 +8,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
-import com.firescar96.nom.ClosedShareFragment;
+import com.firescar96.nom.ClosedShareFragment2;
 import com.firescar96.nom.MainActivity.MainFragment;
 import com.firescar96.nom.MainActivity.OpenShareFragment;
 
@@ -20,10 +20,15 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
 	MainActivity context = MainActivity.context;
 	
-	public Fragment curFrag;
+	public MainFragment main;
+	public OpenShareFragment open;
+	public ClosedShareFragment1 closed1;
+	public ClosedShareFragment2 closed2;
 	
 	public ArrayList<Integer> oldFragments = new ArrayList<Integer>();
 	private ArrayList<Fragment> views = new ArrayList<Fragment>();
+	
+	private int pageCount = 1;
 	
     public MainPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -38,29 +43,48 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         {
         case 0:
         	newFragment = new MainFragment();
+        	main = (MainFragment) newFragment;
         	break;
         case 1:
         	if(context.findViewById(R.id.open_button) == null)
+        	{
         		newFragment = new OpenShareFragment();
+        		open = (OpenShareFragment) newFragment;
+        	}
         	else if(context.findViewById(R.id.open_button).isSelected())
+        	{
         		newFragment = new OpenShareFragment();
+        		open = (OpenShareFragment) newFragment;
+        	}
         	else if(context.findViewById(R.id.closed_button).isSelected())
-        		newFragment = new ClosedShareFragment();
+        	{
+        		newFragment = new ClosedShareFragment1();
+        		closed1 = (ClosedShareFragment1) newFragment;
+        	}
+        	break;
+        case 2:
+        	newFragment = new ClosedShareFragment2();
+        	closed2 = (ClosedShareFragment2) newFragment;
         	break;
         default:
         	newFragment = new MainFragment();
+        	main = (MainFragment) newFragment;
         	break;
         }
         
         views.add(newFragment);
-        curFrag = newFragment;
         return newFragment;
     }
 
+    public void setCount(int p) {
+        // Show 3 total pages.
+        pageCount = p;
+    }
+    
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 2;
+        return pageCount;
     }
 
     @Override

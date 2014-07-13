@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/closed_events"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#c0c"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin" >
+
+    <TextView
+        android:id="@+id/section_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/mediaShare"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onShareClick"
+        android:text="Share Invite" />
+
+    <Button
+        android:id="@+id/closeShare"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mediaShare"
+        android:onClick="onShareClick"
+        android:text="Publish Private Invite" />
+
+   <Button
+       android:id="@+id/addMateButton"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+       android:layout_alignParentLeft="true"
+       android:layout_alignParentRight="true"
+       android:layout_marginBottom="16dp"
+       android:onClick="addNommate"
+       android:text="Add Nommate" />
+
+    <ListView
+        android:id="@+id/matesList"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_above="@id/addMateButton"
+        android:layout_below="@id/closeShare"
+        android:background="#909"
+        android:choiceMode="multipleChoice"
+        android:listSelector="?android:attr/listChoiceIndicatorMultiple"
+        android:visibility="visible" >
+
+    </ListView>
+</RelativeLayout>

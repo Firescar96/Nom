@@ -152,7 +152,7 @@ public class MainActivity extends Activity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (MainViewPager) findViewById(R.id.main_activity);
         mViewPager.setAdapter(mainPagerAdapter);
-        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setOffscreenPageLimit(2);
     }
 
     @Override
@@ -217,12 +217,12 @@ public class MainActivity extends Activity{
 			
 			for(int i=0; i< cloDat.length(); i++)
 			{
-				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
 				{
 					JSONArrayremove(cloDat,i);
 					continue;
 				}
-				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) cloDat.get(i)).getString("date"))/1000)
 				{
 					JSONArrayremove(cloDat,i);
 					continue;
@@ -306,7 +306,6 @@ public class MainActivity extends Activity{
     
     public void scheduleTimeUpdate()
     {
-    	System.out.println("Hello");
     	try {
 			JSONArray opDat = appData.getJSONObject("events").getJSONArray("open");
 			JSONArray cloDat = appData.getJSONObject("events").getJSONArray("closed");
@@ -320,7 +319,7 @@ public class MainActivity extends Activity{
     		ArrayList<String> cloList = new ArrayList<String>();
     		
 			for(int i=0; i< opDat.length(); i++)
-			{System.out.println(opDat.get(i));
+			{
 				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
 				{
 					JSONArrayremove(opDat,i);
@@ -352,12 +351,12 @@ public class MainActivity extends Activity{
 			
 			for(int i=0; i< cloDat.length(); i++)
 			{
-				if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+				if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
 				{
 					JSONArrayremove(cloDat,i);
 					continue;
 				}
-				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
+				else if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) cloDat.get(i)).getString("date"))/1000)
 				{
 					JSONArrayremove(cloDat,i);
 					continue;
@@ -473,18 +472,27 @@ public class MainActivity extends Activity{
     	v.setSelected(true);
     	
     	if(v.getId() == R.id.open_button)
+    	{
+    		System.out.println("open");
     		findViewById(R.id.closed_button).setSelected(false);
+    		mainPagerAdapter.setCount(2);
+    	}
     	else
+    	{
+    		System.out.println("close");
     		findViewById(R.id.open_button).setSelected(false);
+    		mainPagerAdapter.setCount(3);
+    	}
     	
     	mainPagerAdapter.oldFragments.add(1);
+    	mainPagerAdapter.oldFragments.add(2);
     	mainPagerAdapter.notifyDataSetChanged();
     }
     
     public void onShareClick(View v) 
     {
     	mViewPager.setPagingEnabled(true);
-    	if(findViewById(R.id.open_button).isSelected())
+    	if(v.equals(findViewById(R.id.openShare)))
     	{
     		new AsyncTask<Object, Object, Object>() {
     			@Override
@@ -555,6 +563,10 @@ public class MainActivity extends Activity{
 	            }
 	        }.execute(null, null, null);
     	}
+    	else if(v.equals(findViewById(R.id.closeShare)))
+    	{
+    		mainPagerAdapter.closed2.closeShare(v);
+    	}
         else
     	{
     		Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -578,7 +590,7 @@ public class MainActivity extends Activity{
     
     public void addNommate(View v)
 	{
-		((ClosedShareFragment)mainPagerAdapter.curFrag).addNommate(v);
+		mainPagerAdapter.closed2.addNommate(v);
 	}
     
 	protected void onStop()
