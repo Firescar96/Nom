@@ -65,10 +65,7 @@ Router.map(function () {
 
 var HandleData = function(query)
 {
- 	console.log("data received");
-	console.log(query);
-	
-	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.to}) == undefined)
+	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.host}) == undefined)
 	{
 		Users.insert({name: query.host, regId: query.regId});	
 		console.log("New user: " + query.host);	
@@ -129,34 +126,42 @@ var HandleData = function(query)
 	/*sender.send(message, registrationIds, 4, function (err, result) {
 	    console.log(result);
 	});*/
-	var toUsr = Users.findOne({name:query.to});
-	console.log(toUsr);
-	console.log(toUsr.name);
-	if(toUsr.regId && query.event)
+	var nxtUsr = query.to.split(',');
+	console.log(nxtUsr);
+	for(var i in nxtUsr)
 	{
-		var GCM = Npm.require('gcm').GCM;
-	
-		var apiKey = 'AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk';
-		var gcm = new GCM(apiKey);
-	
-		var mess = {
-	   	registration_id: toUsr.regId , // required
-	    	"data.event": "{\
-	    		privacy:\""+query.event.privacy+"\",\
-	    		hour:\""+query.event.hour+"\",\
-	    		minute:\""+query.event.minute+"\",\
-	    		date:\""+query.event.date+"\",\
-	    		host:\""+query.event.host+"\"\
-	    	}"
-		};
-	
-		gcm.send(mess, function(err, messageId){
-	    	if (err) {
-	    		console.log("Something has gone wrong!");
-	    	} else {
-	        	console.log("Sent with message ID: ", messageId);
-	    	}
-		});
+		console.log(nxtUsr[i]);
+		var toUsr = Users.findOne({name:nxtUsr[i]});
+		
+		if (toUsr == null) 
+			continue;
+			
+		if(toUsr.regId && query.event)
+		{
+			var GCM = Npm.require('gcm').GCM;
+		
+			var apiKey = 'AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk';
+			var gcm = new GCM(apiKey);
+		
+			var mess = {
+		   	registration_id: toUsr.regId , // required
+		    	"data.event": "{\
+		    		privacy:\""+query.event.privacy+"\",\
+		    		hour:\""+query.event.hour+"\",\
+		    		minute:\""+query.event.minute+"\",\
+		    		date:\""+query.event.date+"\",\
+		    		host:\""+query.event.host+"\"\
+		    	}"
+			};
+		
+			gcm.send(mess, function(err, messageId){
+		    	if (err) {
+		    		console.log("Something has gone wrong!");
+		    	} else {
+		        	console.log("Sent with message ID: ", messageId);
+		    	}
+			});
+		}
 	}
 }
 }
