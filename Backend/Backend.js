@@ -49,7 +49,7 @@ Router.map(function () {
       }
 
       if (this.request.method == 'GET') {
-      	rests = new Meteor.Collection("REST")
+      	/*Collection("REST")
 
 			Meteor.publish("RESTS", function(){
 			 rests.find();
@@ -57,7 +57,15 @@ Router.map(function () {
 			
 			rests.remove({}); // remove all
 			rests.insert({message: "Some message to show on every client."});
-      		console.log("gotten");
+      		console.log("gotten");*/
+      	if(this.request.query.checkName != null)
+      	{
+      		console.log(this.request.query.checkName);
+      		var exists = Users.findOne({name:this.request.query.checkName}) != undefined;
+      		console.log(exists);
+      		this.response.writeHead(200, {'Content-Type': 'text/plain'});
+      		this.response.end(""+!exists);
+			}      
       }
     }
   });
@@ -72,7 +80,7 @@ var HandleData = function(query)
 	}
 	else if(query.host != undefined && query.regId != undefined)
 	{
-		Users.update({name: query.host}, {regId: query.regId});	
+		Users.update({name: query.host}, {$set: {regId: query.regId}});	
 		console.log("Updated user: " + query.host);	
 	}
 	
@@ -132,9 +140,11 @@ var HandleData = function(query)
 	{
 		console.log(nxtUsr[i]);
 		var toUsr = Users.findOne({name:nxtUsr[i]});
-		
+		console.log(toUsr);
 		if (toUsr == null) 
 			continue;
+		else
+			console.log("here");
 			
 		if(toUsr.regId && query.event)
 		{
