@@ -61,10 +61,19 @@ Router.map(function () {
       	if(this.request.query.checkName != null)
       	{
       		console.log(this.request.query.checkName);
-      		var exists = Users.findOne({name:this.request.query.checkName}) != undefined;
+      		var resUsr = Users.findOne({name:this.request.query.checkName});
+      		var exists = resUsr != undefined;
       		console.log(exists);
       		this.response.writeHead(200, {'Content-Type': 'text/plain'});
-      		this.response.end(""+!exists);
+      		if(exists)
+      		{
+      			if(resUsr.regId == this.request.query.regId)
+      				this.response.end("true");
+      			else
+      				this.response.end("false");
+      		}
+      		else
+      			this.response.end("true");
 			}      
       }
     }
@@ -75,13 +84,16 @@ var HandleData = function(query)
 {
 	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.host}) == undefined)
 	{
-		Users.insert({name: query.host, regId: query.regId});	
-		console.log("New user: " + query.host);	
-	}
-	else if(query.host != undefined && query.regId != undefined)
-	{
-		Users.update({name: query.host}, {$set: {regId: query.regId}});	
-		console.log("Updated user: " + query.host);	
+	var editUsr = Users.findOne({regId:query.regId});
+		if(editUsr == undefined)
+		{
+			Users.insert({name: query.host, regId: query.regId});	
+			console.log("New user: " + query.host);	
+		}else 
+		{
+			Users.update({regId: query.regId}, {$set: {name: query.host}});	
+			console.log("Updated user: " + query.host + " found using regId");	
+		}
 	}
 	
 	/*var nodegcm = Npm.require('node-gcm');
@@ -134,19 +146,30 @@ var HandleData = function(query)
 	/*sender.send(message, registrationIds, 4, function (err, result) {
 	    console.log(result);
 	});*/
-	var nxtUsr = query.to.split(',');
-	console.log(nxtUsr);
-	for(var i in nxtUsr)
+	if (query.event.privacy == "open") 
 	{
+		var toUsr = Users.find({}).fetch();
+	} else	
+	{
+		var nxtUsr = query.to.split(',');
+		console.log(nxtUsr);
 		console.log(nxtUsr[i]);
-		var toUsr = Users.findOne({name:nxtUsr[i]});
-		console.log(toUsr);
-		if (toUsr == null) 
+		var toUsr = [];
+		for(var i in nxtUsr)
+		{
+			toUsr.push(Users.findOne({name:nxtUsr[i]}));
+		}
+	}
+	
+	for(var i in toUsr)
+	{
+		console.log(toUsr[i]);
+		if (toUsr[i] == null) 
 			continue;
 		else
 			console.log("here");
 			
-		if(toUsr.regId && query.event)
+		if(toUsr[i].regId && query.event)
 		{
 			var GCM = Npm.require('gcm').GCM;
 		
@@ -154,11 +177,12 @@ var HandleData = function(query)
 			var gcm = new GCM(apiKey);
 		
 			var mess = {
-		   	registration_id: toUsr.regId , // required
+		   	registration_id: toUsr[i].regId , // required
 		    	"data.event": "{\
 		    		privacy:\""+query.event.privacy+"\",\
 		    		hour:\""+query.event.hour+"\",\
 		    		minute:\""+query.event.minute+"\",\
+		    		location:\""+query.event.location+"\",\
 		    		date:\""+query.event.date+"\",\
 		    		host:\""+query.event.host+"\"\
 		    	}"
