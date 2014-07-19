@@ -51,6 +51,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
 
@@ -132,7 +133,7 @@ public class MainActivity extends Activity{
 			System.out.println("recreating appdata");
 			JSONObject eve = new JSONObject();
 			JSONArray mate = new JSONArray();
-			JSONObject usr = new JSONObject();
+			String usr = new String();
 			JSONArray open = new JSONArray();
 			JSONArray cloe = new JSONArray();
 			appData = new JSONObject();
@@ -144,7 +145,6 @@ public class MainActivity extends Activity{
 				appData.put("host", usr);
 			} catch (JSONException e1) {}
 		}
-		//System.out.println(appData);
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
@@ -170,15 +170,6 @@ public class MainActivity extends Activity{
 		checkPlayServices();
 	}   
 
-	 public static class OpenShareFragment extends Fragment {
-		 @Override
-		 public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				 Bundle savedInstanceState) {
-			 // Inflate the layout for this fragment
-			 return inflater.inflate(R.layout.fragment_add_open, container, false);
-		 }
-	 }
-
 	 private boolean checkPlayServices() {
 		 int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 		 if (resultCode != ConnectionResult.SUCCESS) {
@@ -196,6 +187,17 @@ public class MainActivity extends Activity{
 
 	 public void onPrivacySelect(View v)
 	 {
+		 try {
+			if(appData.getString("host").length() == 0)
+				 {
+				 	mainPagerAdapter.main.requestHostname();
+				 	return;
+				 }
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
 		 v.setSelected(true);
 
 		 if(v.getId() == R.id.open_button)
@@ -216,79 +218,17 @@ public class MainActivity extends Activity{
 		 mainPagerAdapter.notifyDataSetChanged();
 	 }
 
+	 public void checkHostname(View v)
+	 {
+		 mainPagerAdapter.main.checkHostname(v);
+	 }
+	 
 	 public void onShareClick(View v) 
 	 {
 		 mViewPager.setPagingEnabled(true);
 		 if(v.equals(findViewById(R.id.openShare)))
 		 {
-			 new AsyncTask<Object, Object, Object>() {
-				 @Override
-				 protected Object doInBackground(Object... arg0) {
-					 String msg = "";
-					 InputStream inputStream = null;
-
-					 try {
-
-						 // 1. create HttpClient
-						 HttpClient httpclient = new DefaultHttpClient();
-
-						 // 2. make POST request to the given URL
-						 HttpPost httpPost = new HttpPost("http://nchinda2.mit.edu:666");
-
-						 String json = "";
-
-						 // 3. build jsonObject
-						 JSONObject jsonObject = new JSONObject();
-						 String id = Integer.toString(msgId.incrementAndGet());
-						 jsonObject.accumulate("to", "FIRESCAR96");
-						 JSONObject eventSon = new JSONObject();
-						 eventSon.accumulate("privacy", "open");
-						 TimePicker opTime = (TimePicker)findViewById(R.id.openTime);
-						 eventSon.accumulate("hour", opTime.getCurrentHour());
-						 eventSon.accumulate("minute", opTime.getCurrentMinute());
-						 Calendar curTime = Calendar.getInstance();
-						 curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), opTime.getCurrentHour(), opTime.getCurrentMinute());
-						 eventSon.accumulate("date", curTime.getTimeInMillis());
-						 eventSon.accumulate("host", "Firescar96");
-						 jsonObject.accumulate("event", eventSon);
-
-						 // 4. convert JSONObject to JSON to String
-						 json = jsonObject.toString();
-
-						 // 5. set json to StringEntity
-						 StringEntity se = new StringEntity(json);
-
-						 // 6. set httpPost Entity
-						 httpPost.setEntity(se);
-
-						 // 7. Set some headers to inform server about the type of the content   
-						 httpPost.setHeader("Accept", "application/json");
-						 httpPost.setHeader("Content-type", "application/json");
-
-						 HttpParams httpParams = httpclient.getParams();
-						 HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
-						 HttpConnectionParams.setSoTimeout(httpParams, 5000);
-						 httpPost.setParams(httpParams);
-
-						 // 8. Execute POST request to the given URL
-						 System.out.println("executing"+json);
-						 HttpResponse httpResponse = httpclient.execute(httpPost);
-						 // 9. receive response as inputStream
-						 inputStream = httpResponse.getEntity().getContent();
-
-						 // 10. convert inputstream to string
-						 if(inputStream != null)
-							 msg = convertInputStreamToString(inputStream);
-						 else
-							 msg = "Did not work!";
-
-					 } catch (Exception e) {
-						 Log.d("InputStream", e.getLocalizedMessage());
-					 }
-					 System.out.println(msg);
-					 return msg;
-				 }
-			 }.execute(null, null, null);
+			mainPagerAdapter.open.openShare(v);
 		 }
 		 else if(v.equals(findViewById(R.id.closeShare)))
 		 {
@@ -301,18 +241,6 @@ public class MainActivity extends Activity{
 			 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Lets meetup, here's my id" + GCMIntentService.getRegistrationId(context));
 			 startActivity(Intent.createChooser(shareIntent, "Share via"));
 		 }
-	 } 
-
-	 private static String convertInputStreamToString(InputStream inputStream) throws IOException{
-		 BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-		 String line = "";
-		 String result = "";
-		 while((line = bufferedReader.readLine()) != null)
-			 result += line;
-
-		 inputStream.close();
-		 return result;
-
 	 } 
 
 	 public void addNommate(View v)

@@ -11,7 +11,7 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) 
     {
-    	if(intent.getAction() == null)
+    	if(intent.getAction() == null || MainActivity.context == null)
     		return;
 		if(intent.getAction().equals("com.firescar96.nom.update.times") && MainActivity.context != null)
 		{

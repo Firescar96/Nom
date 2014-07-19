@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,60 +8,83 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/openShare"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/section_label"
-        android:onClick="onShareClick"
-        android:text="Publish Public Invite" />
-
-    <TextView
-        android:id="@+id/eatTimeLabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/openShare"
-        android:layout_below="@+id/openShare"
-        android:layout_marginTop="24dp"
-        android:gravity="center_horizontal"
-        android:text="You want to eat by..."
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="20sp" />
-
-    <TimePicker
-        android:id="@+id/openTime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/eatTimeLabel"
-        android:layout_centerVertical="true" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/eatTimeLabel"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="72dp" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="383dp" >
 
         <TextView
-            android:id="@+id/curTimeLabel"
+            android:id="@+id/section_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/openShare"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignTop="@+id/section_label"
+            android:onClick="onShareClick"
+            android:text="Publish Public Invite" />
+
+        <TextView
+            android:id="@+id/eatTimeLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/openShare"
+            android:layout_below="@+id/openShare"
+            android:layout_marginTop="24dp"
+            android:gravity="center_horizontal"
+            android:text="You want to eat by..."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/curTimeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Time: "
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_below="@+id/eatTimeLabel"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="72dp" >
 
-        <DigitalClock
-            android:id="@+id/digitalClock1"
+            <TextView
+                android:id="@+id/curTimeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Time: "
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <DigitalClock
+                android:id="@+id/digitalClock1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:text="DigitalClock" />
+        </LinearLayout>
+
+        <TimePicker
+            android:id="@+id/openTime"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/curTimeLayout" />
+
+        <TextView
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:text="DigitalClock" />
+            android:layout_below="@+id/openTime"
+            android:layout_marginTop="30dp"
+            android:text="Location:"
+            android:textSize="20sp" />
 
-    </LinearLayout>
+        <EditText
+            android:id="@+id/openLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/textView1"
+            android:ems="10" />
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>

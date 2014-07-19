@@ -159,6 +159,12 @@ public class GCMIntentService extends IntentService {
                 }
                 if(((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open"))
                 {
+                	try {
+						System.out.println(context.appData.getJSONObject("events"));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                 	context.mainPagerAdapter.main.populateEvents();
                 }
             }
@@ -258,7 +264,7 @@ public class GCMIntentService extends IntentService {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    sendRegistrationIdToBackend(regId);
+                    //sendRegistrationIdToBackend(regId);
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the
@@ -288,9 +294,8 @@ public class GCMIntentService extends IntentService {
      * using the 'from' address in the message.
      * @return 
      */
-    private static String sendRegistrationIdToBackend(String regID) {
+    public static String sendRegistrationIdToBackend() {
         String msg = "";
-    	final String regId = regID;
         new AsyncTask<Object,Object,Object>() {
 			@Override
 			protected Object doInBackground(Object ... param) {
@@ -311,7 +316,7 @@ public class GCMIntentService extends IntentService {
                     String id = Integer.toString(msgId.incrementAndGet());
                     jsonObject.accumulate("id", id);
                     jsonObject.accumulate("regId", regId);
-                    jsonObject.accumulate("host", "FIRESCAR96");
+                    jsonObject.accumulate("host", context.appData.getString("host"));
          
                     // 4. convert JSONObject to JSON to String
                     json = jsonObject.toString();

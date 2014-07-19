@@ -9,7 +9,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
 import com.firescar96.nom.ClosedShareFragment2;
-import com.firescar96.nom.MainActivity.OpenShareFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

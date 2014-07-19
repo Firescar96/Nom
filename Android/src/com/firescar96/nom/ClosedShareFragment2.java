@@ -124,11 +124,6 @@ public class ClosedShareFragment2 extends Fragment {
 		mateAdapter.notifyDataSetChanged();
 	}
 
-	public void addNommate(View v)
-	{
-		showDialog();
-	}
-
 	public void closeShare(View v)
 	{
 		new AsyncTask<Object, Object, Object>() {
@@ -161,7 +156,7 @@ public class ClosedShareFragment2 extends Fragment {
 					System.out.println(groupMatesNames);
 					
 					JSONObject jsonObject = new JSONObject();
-					jsonObject.accumulate("to", "FIRESCAR96"+groupMatesNames);
+					jsonObject.accumulate("to", context.appData.getString("host")+groupMatesNames);
 					JSONObject eventSon = new JSONObject();
 					eventSon.accumulate("privacy", "closed");
 					TimePicker cloTime = (TimePicker)context.findViewById(R.id.closeTime);
@@ -170,7 +165,8 @@ public class ClosedShareFragment2 extends Fragment {
 					Calendar curTime = Calendar.getInstance();
 					curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), cloTime.getCurrentHour(), cloTime.getCurrentMinute());
 					eventSon.accumulate("date", curTime.getTimeInMillis());
-					eventSon.accumulate("host", "PrivateParty");
+					eventSon.accumulate("host", context.appData.getString("host"));
+					eventSon.accumulate("location", ((EditText)context.findViewById(R.id.closeLocation)).getText());
 					jsonObject.accumulate("event", eventSon);
 
 					// 4. convert JSONObject to JSON to String
@@ -212,7 +208,8 @@ public class ClosedShareFragment2 extends Fragment {
 		}.execute(null, null, null);
 	}
 
-	public void showDialog() {
+	public void addNommate(View v)
+	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();
 		CustomDialogFragment newFragment = new CustomDialogFragment();
 		newFragment.show(fragmentManager, "dialog");
@@ -230,7 +227,7 @@ public class ClosedShareFragment2 extends Fragment {
 			.setView(popView)
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					EditText name = (EditText) popView.findViewById(R.id.nomMateName);
+					EditText name = (EditText) popView.findViewById(R.id.hostnameText);
 					try {
 						context.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase());
 						System.out.println(name);
