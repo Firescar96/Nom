@@ -3,7 +3,6 @@ package com.firescar96.nom;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,17 +12,12 @@ import java.util.Locale;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.firescar96.nom.ClosedShareFragment2.CustomDialogFragment;
-import com.google.api.client.util.IOUtils;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -40,17 +34,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TimePicker;
 
 public class MainFragment extends Fragment {
 
@@ -58,7 +52,8 @@ public class MainFragment extends Fragment {
 	static MainFragment thisFrag;
 	static View frame;
 	static View hostPopView;
-	
+	AlarmManager alarmMgr;
+	PendingIntent alarmIntent;
 	 @Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	 {
@@ -68,10 +63,10 @@ public class MainFragment extends Fragment {
 		 {
 			 populateEvents();
 
-			 AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+			 alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			 Intent intent = new Intent(context, MainBroadcastReceiver.class);
 			 intent.setAction("com.firescar96.nom.update.times");
-			 PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+			 alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
 			 alarmMgr.setRepeating (AlarmManager.RTC, ((int)System.currentTimeMillis()/60000)*60000, 60000, alarmIntent);
 		 }
@@ -277,8 +272,6 @@ public class MainFragment extends Fragment {
             	Message msg = new Message();
         	    msg.obj = null;
         	    contextHandler.sendMessage(msg);
-        		
-        	    Boolean done;
         	    
         		new AsyncTask<Object, Object, Object>() {
         			@Override
@@ -293,7 +286,7 @@ public class MainFragment extends Fragment {
         					// 2. make POST request to the given URL
         					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
         					System.out.println(hostname.getText());
-        					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase()+"&regId="+GCMIntentService.getRegistrationId(context));
+        					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
 
         					// 7. Set some headers to inform server about the type of the content   
         					httpGet.setHeader("Accept", "application/json");
@@ -331,7 +324,7 @@ public class MainFragment extends Fragment {
         }).start();
 	}
 	
-	private Handler contextHandler = new Handler() {
+	private static Handler contextHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -379,5 +372,12 @@ public class MainFragment extends Fragment {
 	    }
 	    System.out.println(sb.toString());
 	    return sb.toString();
+	}
+	
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		alarmMgr.cancel(alarmIntent);
 	}
 }

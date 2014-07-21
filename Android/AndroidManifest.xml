@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.firescar96.nom"
     android:versionCode="1"
-    android:versionName="1.0" >
-
-    
+    android:versionName="1.1" >    
     
     <uses-sdk
         android:minSdkVersion="14"
@@ -37,6 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
+                <data android:host="nchinda2.mit.edu" android:scheme="http"/>
 				<data android:scheme="com.firescar96.nom.addUser"/>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT"/>

@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
@@ -109,6 +111,14 @@ public class ClosedShareFragment2 extends Fragment {
 		populateUsers();
 		return frame;
 	}
+	
+	@Override
+	public void onResume()
+	 {
+		 super.onResume();
+		 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		 imm.hideSoftInputFromWindow(frame.getWindowToken(), 0);
+	 }
 
 	public static void populateUsers()
 	{

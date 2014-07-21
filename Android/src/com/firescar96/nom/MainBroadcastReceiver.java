@@ -11,11 +11,13 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) 
     {
-    	if(intent.getAction() == null || MainActivity.context == null)
+    	
+    	if(intent.getAction() == null)
     		return;
-		if(intent.getAction().equals("com.firescar96.nom.update.times") && MainActivity.context != null)
+    	
+		if(intent.getAction().equals("com.firescar96.nom.update.times") && MainActivity.context.mainPagerAdapter.main != null)
 		{
-			MainActivity.context.mainPagerAdapter.main.populateEvents();
+				MainActivity.context.mainPagerAdapter.main.populateEvents();
 		}
 		
 		if(intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE"))

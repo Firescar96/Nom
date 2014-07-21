@@ -6,23 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,28 +18,13 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.Fragment;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TimePicker;
 
 public class MainActivity extends Activity{
 
@@ -108,9 +79,8 @@ public class MainActivity extends Activity{
 		File defFile = new File(getFilesDir().getAbsolutePath()+"/appData.txt");
 		if(!defFile.exists())
 		{
-			PrintWriter out;
 			try {
-				out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
+				new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
 			}catch(IOException e) {}
 
 		}
@@ -145,6 +115,15 @@ public class MainActivity extends Activity{
 				appData.put("host", usr);
 			} catch (JSONException e1) {}
 		}
+		
+    	if(getIntent().getDataString() != null && getIntent().getDataString().contains("nchinda2.mit.edu:666"))
+    	{
+    		String nommate = getIntent().getDataString().substring(28);
+        	try {
+				appData.getJSONArray("mates").put(nommate);
+			} catch (JSONException e) {}
+    	}
+		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
@@ -159,7 +138,7 @@ public class MainActivity extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		//getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -238,7 +217,7 @@ public class MainActivity extends Activity{
 		 {
 			 Intent shareIntent = new Intent(Intent.ACTION_SEND);
 			 shareIntent.setType("text/plain");
-			 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Lets meetup, here's my id" + GCMIntentService.getRegistrationId(context));
+			 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Add me on Nom so we can schedule a meetup: http://nchinda2.mit.edu:666/FIRESCAR96");
 			 startActivity(Intent.createChooser(shareIntent, "Share via"));
 		 }
 	 } 
