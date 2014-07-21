@@ -16,7 +16,7 @@ if (Meteor.isClient) {
 	Meteor.subscribe(function() {
  		rests.find().observe({
    		added: function(item){
-				window.location = "com.firescar96.nom.appUser";
+			window.location = "com.firescar96.nom.appUser";
     		}
  	 	});
 	});
@@ -80,11 +80,23 @@ Router.map(function () {
   });
 });
 
+var GCM = Npm.require('gcm').GCM;
+		
+var apiKey = 'AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk';
+var gcm = new GCM(apiKey);
+			
 var HandleData = function(query)
 {
+	if(query.location != undefined)
+	{
+		Users.update({name: query.host}, {$set: {location: query.location}});	
+		console.log("Updated user: " + query.host + " location");
+		return;
+	}	
+	
 	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.host}) == undefined)
 	{
-	var editUsr = Users.findOne({regId:query.regId});
+		var editUsr = Users.findOne({regId:query.regId});
 		if(editUsr == undefined)
 		{
 			Users.insert({name: query.host, regId: query.regId});	
@@ -94,6 +106,8 @@ var HandleData = function(query)
 			Users.update({regId: query.regId}, {$set: {name: query.host}});	
 			console.log("Updated user: " + query.host + " found using regId");	
 		}
+		
+		return;
 	}
 	
 	/*var nodegcm = Npm.require('node-gcm');
@@ -166,16 +180,17 @@ var HandleData = function(query)
 		console.log(toUsr[i]);
 		if (toUsr[i] == null) 
 			continue;
-		else
-			console.log("here");
+		
+		var hostUsr = Users.findOne({name:query.event.host});
+		toUsr[i].location.latitude;
+		var latPow = Math.pow(parseInt(hostUsr.location.latitude)-parseInt(toUsr[i].location.latitude),2);
+		var longPow = Math.pow(parseInt(hostUsr.location.longitude)-parseInt(toUsr[i].location.longitude),2);
+		var dist = Math.sqrt(latPow+longPow);
+		if(dist > 1)
+			continue;
 			
 		if(toUsr[i].regId && query.event)
 		{
-			var GCM = Npm.require('gcm').GCM;
-		
-			var apiKey = 'AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk';
-			var gcm = new GCM(apiKey);
-		
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
 		    	"data.event": "{\
