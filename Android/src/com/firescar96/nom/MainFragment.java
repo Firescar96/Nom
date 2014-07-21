@@ -37,8 +37,6 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -95,7 +93,7 @@ public class MainFragment extends Fragment {
 				ArrayList<String> cloList = new ArrayList<String>();
 
 				for(int i=0; i< opDat.length(); i++)
-				{System.out.println(opDat.get(i));
+				{
 
 				System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
 				System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);

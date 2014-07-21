@@ -52,6 +52,7 @@ public class MainActivity extends Activity{
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
 	SharedPreferences prefs;
+	LocationServices locServices;
 	String regid;
 
 	JSONObject appData;
@@ -124,6 +125,8 @@ public class MainActivity extends Activity{
 			} catch (JSONException e) {}
     	}
 		
+    	locServices = new LocationServices();
+    	
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
@@ -141,6 +144,13 @@ public class MainActivity extends Activity{
 		//getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	@Override
+    protected void onStart() {
+        super.onStart();
+        // Connect the client.
+        locServices.connect();
+    }
 
 	// Play Services APK check here too.
 	@Override
@@ -226,10 +236,10 @@ public class MainActivity extends Activity{
 	 {
 		 mainPagerAdapter.closed2.addNommate(v);
 	 }
-
+	    
 	 protected void onStop()
 	 {
-		 super.onDestroy();
+		 super.onStop();
 		 File defFile = new File(getFilesDir().getAbsolutePath()+"/appData.txt");
 		 PrintWriter out;
 		 try {
@@ -238,5 +248,7 @@ public class MainActivity extends Activity{
 			 //out.println("");	//uncomment to reset the database
 			 out.close();
 		 }catch(IOException e) {}
+		 
+		 locServices.disconnect();
 	 }
 }
