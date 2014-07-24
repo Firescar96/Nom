@@ -93,7 +93,7 @@ var HandleData = function(query)
 		console.log("Updated user: " + query.host + " location");
 		return;
 	}	
-	
+
 	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.host}) == undefined)
 	{
 		var editUsr = Users.findOne({regId:query.regId});
@@ -160,7 +160,10 @@ var HandleData = function(query)
 	/*sender.send(message, registrationIds, 4, function (err, result) {
 	    console.log(result);
 	});*/
-	if (query.event.privacy == "open") 
+	if (query.event != undefined && query.event.privacy == "open") 
+	{
+		var toUsr = Users.find({}).fetch();
+	} else if(query.chat == "true")
 	{
 		var toUsr = Users.find({}).fetch();
 	} else	
@@ -181,15 +184,43 @@ var HandleData = function(query)
 		if (toUsr[i] == null) 
 			continue;
 		
-		var hostUsr = Users.findOne({name:query.event.host});
-		toUsr[i].location.latitude;
-		var latPow = Math.pow(parseInt(hostUsr.location.latitude)-parseInt(toUsr[i].location.latitude),2);
-		var longPow = Math.pow(parseInt(hostUsr.location.longitude)-parseInt(toUsr[i].location.longitude),2);
-		var dist = Math.sqrt(latPow+longPow);
-		if(dist > 1)
-			continue;
+		if(query.event != undefined)
+			var hostUsr = Users.findOne({name:query.event.host});
+		else 
+			var hostUsr = Users.findOne({name:query.host});
+		if(toUsr[i].location.latitude != undefined)
+		{
+			toUsr[i].location.latitude;
+			var latPow = Math.pow(parseInt(hostUsr.location.latitude)-parseInt(toUsr[i].location.latitude),2);
+			var longPow = Math.pow(parseInt(hostUsr.location.longitude)-parseInt(toUsr[i].location.longitude),2);
+			var dist = Math.sqrt(latPow+longPow);
+			if(dist > 1)
+				continue;
+		}	
+		
 			
-		if(toUsr[i].regId && query.event)
+		if(query.chat == "true")
+		{
+			var mess = {
+		   	registration_id: toUsr[i].regId , // required
+		    	"data.chat": "{\
+		    		message:\""+query.message+"\",\
+		    		date:\""+query.date+"\",\
+		    		host:\""+query.host+"\"\
+		    	}"
+			};
+		
+			gcm.send(mess, function(err, messageId){
+		    	if (err) {
+		    		console.log("Something has gone wrong!");
+		    	} else {
+		        	console.log("Sent with message ID: ", messageId);
+		    	}
+			});
+		}
+	
+		
+		if(toUsr[i].regId && query.event != null)
 		{
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
