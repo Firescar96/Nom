@@ -47,7 +47,7 @@ public class MainActivity extends Activity{
 	public static final String PROPERTY_REG_ID = "registration_id";
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-	protected static MainActivity context;
+	public static MainActivity context;
 
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
@@ -55,7 +55,7 @@ public class MainActivity extends Activity{
 	LocationServices locServices;
 	String regid;
 
-	JSONObject appData;
+	public JSONObject appData;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -189,16 +189,16 @@ public class MainActivity extends Activity{
 		 
 		 v.setSelected(true);
 
-		 if(v.getId() == R.id.open_button)
+		 if(v.getId() == R.id.join_button)
 		 {
 			 System.out.println("open");
-			 findViewById(R.id.closed_button).setSelected(false);
+			 findViewById(R.id.leave_button).setSelected(false);
 			 mainPagerAdapter.setCount(2);
 		 }
 		 else
 		 {
 			 System.out.println("close");
-			 findViewById(R.id.open_button).setSelected(false);
+			 findViewById(R.id.join_button).setSelected(false);
 			 mainPagerAdapter.setCount(3);
 		 }
 
@@ -237,6 +237,16 @@ public class MainActivity extends Activity{
 		 mainPagerAdapter.closed2.addNommate(v);
 	 }
 	    
+	 public void onEventMembershipChanged(View v)
+	 {
+		mainPagerAdapter.main.detailFrag.onEventMembershipChanged(v); 
+	 }
+	 
+	 public void onChatMsg(View v)
+	 {
+		 mainPagerAdapter.main.detailFrag.onChatMsg(v);
+	 }
+	 
 	 protected void onStop()
 	 {
 		 super.onStop();

@@ -35,6 +35,7 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +51,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,6 +125,35 @@ public class GCMIntentService extends IntentService {
 					    msg.obj = data;
 					    contextHandler.sendMessage(msg);
 	                }
+	                
+	                if(extras.get("chat") != null)
+	                {
+	                	JSONObject chatData=new JSONObject("{\"chat\":"+extras.get("chat")+"}").getJSONObject("chat");
+	                	JSONArray opMsgs = context.appData.getJSONObject("events").getJSONArray("open");
+	                	JSONArray cloMsgs = context.appData.getJSONObject("events").getJSONArray("closed");
+	                	for(int i = 0; i < opMsgs.length(); i++)
+	                	{
+	                		System.out.println(chatData.getLong("date"));
+	                		System.out.println(Long.parseLong(opMsgs.getJSONObject(i).getString("date")));
+	                		if(chatData.getString("host").equals(opMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(opMsgs.getJSONObject(i).getString("date")))
+	                		{
+	                			JSONObject msgSon = new JSONObject();
+	                			msgSon.accumulate("host", chatData.getString("host"));
+	                			msgSon.accumulate("message", chatData.getString("message"));
+	                			opMsgs.getJSONObject(i)
+	                				.getJSONArray("chat")
+	                				.put(msgSon);
+	                			
+	                			Message msg = new Message();
+	    						Bundle data = new Bundle();
+	    						data.putString("type", "chat");
+	    					    msg.obj = data;
+	    					    contextHandler.sendMessage(msg);
+	    					    
+	                			return;
+	                		}
+	                	}
+	                }
                 
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
@@ -157,6 +188,7 @@ public class GCMIntentService extends IntentService {
     				
                 	Notify("Food in"+nHour+":"+nMin,"Eat with"+((Bundle)msg.obj).getString("host")); 
                 }
+                
                 if(((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open"))
                 {
                 	try {
@@ -166,6 +198,13 @@ public class GCMIntentService extends IntentService {
 						e.printStackTrace();
 					}
                 	context.mainPagerAdapter.main.populateEvents();
+                }
+                
+                if(((Bundle)msg.obj).getString("type").equals("chat"))
+                {
+        			System.out.println("hello");
+                	if(context.mainPagerAdapter.main.detailFrag != null)
+                		context.mainPagerAdapter.main.detailFrag.updateList();
                 }
             }
         };
@@ -264,7 +303,8 @@ public class GCMIntentService extends IntentService {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    //sendRegistrationIdToBackend(regId);
+                    if(context.appData.getString("host").length() > 0)
+                    	sendRegistrationIdToBackend();
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the
@@ -272,7 +312,7 @@ public class GCMIntentService extends IntentService {
 
                     // Persist the regID - no need to register again.
                     storeRegistrationId(context, regId);
-                } catch (IOException ex) {
+                } catch (IOException | JSONException ex) {
                     msg = "Error :" + ex.getMessage();
                     // If there is an error, don't just keep trying to register.
                     // Require the user to click a button again, or perform

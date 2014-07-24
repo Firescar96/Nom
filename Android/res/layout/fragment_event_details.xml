@@ -1,0 +1,89 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#d0d" >
+
+    <RelativeLayout
+        android:id="@+id/eventmembershipLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/join_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_flat_blue"
+            android:gravity="center"
+            android:lines="2"
+            android:onClick="onEventMembershipChanged"
+            android:text="Join"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/leave_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_flat_red"
+            android:gravity="center"
+            android:lines="2"
+            android:onClick="onEventMembershipChanged"
+            android:text="Leave"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/eventMembershipLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventmembershipLayout"
+        android:gravity="center"
+        android:text="Discuss the specifics"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/eventChatLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/eventChatLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="false" >
+
+        <EditText
+            android:id="@+id/eventChatText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".9"
+            android:gravity="center_vertical|left" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/eventChatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:onClick="onChatMsg"
+            android:text="Send" />
+
+    </LinearLayout>
+    
+    <ListView
+        android:id="@+id/eventMembershipList"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_above="@id/eventChatLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/eventMembershipLabel" >
+
+    </ListView>
+
+</RelativeLayout>

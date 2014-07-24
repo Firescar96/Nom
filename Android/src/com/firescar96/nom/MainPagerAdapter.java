@@ -8,7 +8,10 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
-import com.firescar96.nom.ClosedShareFragment2;
+import com.firescar96.nom.fragment.ClosedShareFragment1;
+import com.firescar96.nom.fragment.ClosedShareFragment2;
+import com.firescar96.nom.fragment.MainFragment;
+import com.firescar96.nom.fragment.OpenShareFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -44,17 +47,17 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         	main = (MainFragment) newFragment;
         	break;
         case 1:
-        	if(context.findViewById(R.id.open_button) == null)
+        	if(context.findViewById(R.id.join_button) == null)
         	{
         		newFragment = new OpenShareFragment();
         		open = (OpenShareFragment) newFragment;
         	}
-        	else if(context.findViewById(R.id.open_button).isSelected())
+        	else if(context.findViewById(R.id.join_button).isSelected())
         	{
         		newFragment = new OpenShareFragment();
         		open = (OpenShareFragment) newFragment;
         	}
-        	else if(context.findViewById(R.id.closed_button).isSelected())
+        	else if(context.findViewById(R.id.leave_button).isSelected())
         	{
         		newFragment = new ClosedShareFragment1();
         		closed1 = (ClosedShareFragment1) newFragment;

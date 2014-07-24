@@ -68,7 +68,7 @@
             android:layout_below="@id/curTimeLayout" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/eventMembershipLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/openTime"
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/textView1"
+            android:layout_below="@+id/eventMembershipLabel"
             android:ems="10" />
 
     </RelativeLayout>
