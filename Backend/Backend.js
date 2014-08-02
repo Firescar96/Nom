@@ -210,6 +210,7 @@ var HandleData = function(query)
 		   	registration_id: toUsr[i].regId , // required
 		    	"data.chat": "{\
 		    		message:\""+query.message+"\",\
+		    		author:\""+query.author+"\",\
 		    		date:\""+query.date+"\",\
 		    		host:\""+query.host+"\"\
 		    	}"
