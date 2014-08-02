@@ -32,12 +32,12 @@ Router.map(function () {
     where: "server",
     action: function(){
       console.log('################################################');
-      console.log(this.request.method);
-      console.log(this.request.headers);
+      //console.log(this.request.method);
+      //console.log(this.request.headers);
 
-      console.log('------------------------------');
-      console.log(this.request.body);
-      console.log('------------------------------');
+      //console.log('------------------------------');
+      //console.log(this.request.body);
+      //console.log('------------------------------');
 
       this.response.statusCode = 200;
       this.response.setHeader("Content-Type", "application/json");
@@ -87,10 +87,13 @@ var gcm = new GCM(apiKey);
 			
 var HandleData = function(query)
 {
+	//Users.remove({});
+	
 	if(query.location != undefined)
 	{
 		Users.update({name: query.host}, {$set: {location: query.location}});	
 		console.log("Updated user: " + query.host + " location");
+		//console.log(Users.find({}).fetch());
 		return;
 	}	
 
@@ -170,10 +173,10 @@ var HandleData = function(query)
 	{
 		var nxtUsr = query.to.split(',');
 		console.log(nxtUsr);
-		console.log(nxtUsr[i]);
 		var toUsr = [];
 		for(var i in nxtUsr)
 		{
+		console.log(nxtUsr[i]);
 			toUsr.push(Users.findOne({name:nxtUsr[i]}));
 		}
 	}
@@ -188,6 +191,9 @@ var HandleData = function(query)
 			var hostUsr = Users.findOne({name:query.event.host});
 		else 
 			var hostUsr = Users.findOne({name:query.host});
+		//console.log(query.event.host);
+		//console.log(toUsr[i].location);
+		//console.log(Users.findOne({name:query.event.host}));
 		if(toUsr[i].location.latitude != undefined)
 		{
 			toUsr[i].location.latitude;
@@ -197,7 +203,6 @@ var HandleData = function(query)
 			if(dist > 1)
 				continue;
 		}	
-		
 			
 		if(query.chat == "true")
 		{
