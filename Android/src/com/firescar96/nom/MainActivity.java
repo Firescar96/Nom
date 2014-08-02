@@ -25,7 +25,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 

@@ -127,6 +127,8 @@ public class GCMIntentService extends IntentService {
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
 	                	eveData.accumulate("member",false);
+	                	System.out.println(eveData.getLong("date"));
+	                	System.out.println(Calendar.getInstance().getTimeInMillis());
 	                	if(eveData.getLong("date") < Calendar.getInstance().getTimeInMillis())
 	                		return;
 	                	
@@ -155,7 +157,7 @@ public class GCMIntentService extends IntentService {
 	                		if(chatData.getString("host").equals(opMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(opMsgs.getJSONObject(i).getString("date")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
-	                			msgSon.accumulate("host", chatData.getString("host"));
+	                			msgSon.accumulate("author", chatData.getString("author"));
 	                			msgSon.accumulate("message", chatData.getString("message"));
 	                			opMsgs.getJSONObject(i)
 	                				.getJSONArray("chat")
@@ -173,11 +175,11 @@ public class GCMIntentService extends IntentService {
 	                	for(int i = 0; i < cloMsgs.length(); i++)
 	                	{
 	                		System.out.println(chatData.getLong("date"));
-	                		System.out.println(Long.parseLong(opMsgs.getJSONObject(i).getString("date")));
+	                		System.out.println(Long.parseLong(cloMsgs.getJSONObject(i).getString("date")));
 	                		if(chatData.getString("host").equals(cloMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(cloMsgs.getJSONObject(i).getString("date")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
-	                			msgSon.accumulate("host", chatData.getString("host"));
+	                			msgSon.accumulate("author", chatData.getString("host"));
 	                			msgSon.accumulate("message", chatData.getString("message"));
 	                			cloMsgs.getJSONObject(i)
 	                				.getJSONArray("chat")
@@ -242,7 +244,6 @@ public class GCMIntentService extends IntentService {
                 
                 if(((Bundle)msg.obj).getString("type").equals("chat"))
                 {
-        			System.out.println("hello");
                 	if(context.mainPagerAdapter.main.detailFrag != null)
                 		context.mainPagerAdapter.main.detailFrag.updateList();
                 }

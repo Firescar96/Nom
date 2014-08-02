@@ -49,25 +49,9 @@ public class EventDetailFragment extends DialogFragment {
 		builder.setView(frame);
 		
 		detailList = new ArrayList<String>();
-		try {
-			detailData = context.appData.getJSONObject("events")
-					.getJSONArray(privacy)
-					.getJSONObject(position)
-					.getJSONArray("chat");
-			
-			for(int i = 0; i < detailData.length(); i++)
-				detailList.add(detailData.getJSONObject(i).getString("host")+": "+detailData.getJSONObject(i).getString("message"));
-			
-			//change the editable parts depending on whether the user is part of the group
-			configureEditable();
-		} catch (JSONException e) {
-			try {
-				context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).put("chat", new JSONArray());
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+		updateList();	
+		//change the editable parts depending on whether the user is part of the group
+		configureEditable(false);
 		
 		//Setup the listview adapter for closed events
 		ListView useView = (ListView) frame.findViewById(R.id.eventMembershipList);
@@ -89,49 +73,61 @@ public class EventDetailFragment extends DialogFragment {
 	public void onEventMembershipChanged(View v)
 	{
 		try {
-			JSONObject curEve = context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position);
+			JSONObject curEve = MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position);
 			curEve.put("member", !curEve.getBoolean("member"));
-			configureEditable();
+			configureEditable(true);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
-	public void configureEditable() throws JSONException
+	}
+	
+	public void configureEditable(boolean post)
 	{
-		if(context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getBoolean("member"))
-		{
-			frame.findViewById(R.id.open_button).setVisibility(View.GONE);
-			frame.findViewById(R.id.closed_button).setVisibility(View.VISIBLE);
-			frame.findViewById(R.id.eventChatText).setEnabled(true);
-			frame.findViewById(R.id.eventChatButton).setEnabled(true);
-			postMsg("has joined!");
-		}
-		else
-		{
-			frame.findViewById(R.id.closed_button).setVisibility(View.GONE);
-			frame.findViewById(R.id.open_button).setVisibility(View.VISIBLE);
-			frame.findViewById(R.id.eventChatText).setEnabled(false);
-			frame.findViewById(R.id.eventChatButton).setEnabled(false);
-			postMsg("has left.");
+		try {
+			if(MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getBoolean("member"))
+			{
+				frame.findViewById(R.id.open_button).setVisibility(View.GONE);
+				frame.findViewById(R.id.closed_button).setVisibility(View.VISIBLE);
+				frame.findViewById(R.id.eventChatText).setEnabled(true);
+				frame.findViewById(R.id.eventChatButton).setEnabled(true);
+				if(post)
+					postMsg("has joined!");
+			}
+			else
+			{
+				frame.findViewById(R.id.closed_button).setVisibility(View.GONE);
+				frame.findViewById(R.id.open_button).setVisibility(View.VISIBLE);
+				frame.findViewById(R.id.eventChatText).setEnabled(false);
+				frame.findViewById(R.id.eventChatButton).setEnabled(false);
+				if(post)
+					postMsg("has left.");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	public void updateList()
 	{
 		try {
-			detailData = context.appData.getJSONObject("events")
+			detailData = MainActivity.appData.getJSONObject("events")
 					.getJSONArray(privacy)
 					.getJSONObject(position)
 					.getJSONArray("chat");
 
 			detailList.clear();
 			for(int i = 0; i < detailData.length(); i++)
-				detailList.add(detailData.getJSONObject(i).getString("host")+": "+detailData.getJSONObject(i).getString("message"));
+				detailList.add(detailData.getJSONObject(i).getString("author")+": "+detailData.getJSONObject(i).getString("message"));
 
 			detailAdapter.notifyDataSetChanged();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			try {
+				MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).put("chat", new JSONArray());
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -162,8 +158,9 @@ public class EventDetailFragment extends DialogFragment {
 					// 3. build jsonObject						
 					JSONObject jsonObject = new JSONObject();
 					jsonObject.accumulate("chat", "true");
-					jsonObject.accumulate("host", context.appData.getString("host"));
-					jsonObject.accumulate("date", context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getString("date"));
+					jsonObject.accumulate("host", MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getString("host"));
+					jsonObject.accumulate("author", MainActivity.appData.getString("host"));
+					jsonObject.accumulate("date", MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getString("date"));
 					jsonObject.accumulate("message", message);
 
 					// 4. convert JSONObject to JSON to String
