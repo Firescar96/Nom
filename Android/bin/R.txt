@@ -104,6 +104,7 @@ int id classic 0x7f060011
 int id closeLocation 0x7f06001c
 int id closeShare 0x7f06001f
 int id closeTime 0x7f06001a
+int id closed_button 0x7f060028
 int id closed_events 0x7f06001d
 int id curTimeLabel 0x7f060018
 int id curTimeLayout 0x7f060023
@@ -124,8 +125,6 @@ int id hostnameGood 0x7f060033
 int id hostnameProgress 0x7f060031
 int id hostnameText 0x7f060030
 int id hybrid 0x7f060004
-int id join_button 0x7f060027
-int id leave_button 0x7f060028
 int id linearLayout1 0x7f060017
 int id main_activity 0x7f060014
 int id match_parent 0x7f06000c
@@ -137,6 +136,7 @@ int id normal 0x7f060001
 int id openLocation 0x7f060025
 int id openShare 0x7f060022
 int id openTime 0x7f060024
+int id open_button 0x7f060027
 int id open_events 0x7f06002e
 int id production 0x7f060007
 int id sandbox 0x7f060008

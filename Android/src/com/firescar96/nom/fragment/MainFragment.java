@@ -23,9 +23,6 @@ import com.firescar96.nom.GCMIntentService;
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.MainBroadcastReceiver;
 import com.firescar96.nom.R;
-import com.firescar96.nom.R.id;
-import com.firescar96.nom.R.layout;
-import com.firescar96.nom.fragment.ClosedShareFragment2.CustomDialogFragment;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -40,6 +37,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -56,8 +54,11 @@ public class MainFragment extends Fragment {
 
 	static MainActivity context = MainActivity.context;
 	static MainFragment thisFrag;
-	static View frame;
+	public View frame;
 	static View hostPopView;
+	
+	public boolean privacy = false;
+	
 	public EventDetailFragment detailFrag;
 	AlarmManager alarmMgr;
 	PendingIntent alarmIntent;
@@ -66,7 +67,7 @@ public class MainFragment extends Fragment {
 	 {
 		thisFrag = this;
 		frame = inflater.inflate(R.layout.fragment_main, container, false);
-		 if(((MainActivity)getActivity()).appData != null)
+		 if(MainActivity.appData != null)
 		 {
 			 populateEvents();
 
@@ -79,7 +80,7 @@ public class MainFragment extends Fragment {
 		 }
 		 
 		 try {
-			if(context.appData.getString("host") == "")
+			if(MainActivity.appData.getString("host") == "")
 				 requestHostname();
 		 } catch (JSONException e) {
 			 requestHostname();
@@ -90,8 +91,10 @@ public class MainFragment extends Fragment {
 	 public void populateEvents()
 		{
 			try {
-				JSONArray opDat = context.appData.getJSONObject("events").getJSONArray("open");
-				JSONArray cloDat = context.appData.getJSONObject("events").getJSONArray("closed");
+				System.out.println(context);
+				System.out.println(MainActivity.appData);
+				JSONArray opDat = MainActivity.appData.getJSONObject("events").getJSONArray("open");
+				JSONArray cloDat = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
 
 
 				//Setup the listview adapter for open events
@@ -123,7 +126,7 @@ public class MainFragment extends Fragment {
 					for(Object item : transArr)
 						opDat.put(item);
 					
-					context.appData.getJSONObject("events").put("open", opDat);
+					MainActivity.appData.getJSONObject("events").put("open", opDat);
 					continue;
 				}
 
@@ -164,7 +167,7 @@ public class MainFragment extends Fragment {
 						for(Object item : transArr)
 							cloDat.put(item);
 						
-						context.appData.getJSONObject("events").put("closed", cloDat);
+						MainActivity.appData.getJSONObject("events").put("closed", cloDat);
 						continue;
 					}
 
@@ -187,7 +190,6 @@ public class MainFragment extends Fragment {
 							singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) cloDat.get(i)).getString("location");
 					cloList.add(info);
 				}
-
 				ArrayAdapter<String> opAdapter = new ArrayAdapter<String>(context,
 						android.R.layout.simple_list_item_1, opList);
 				opView.setAdapter(opAdapter);
@@ -203,11 +205,11 @@ public class MainFragment extends Fragment {
 						view.animate().setDuration(1000).alpha(0);
 						view.animate().setDuration(1000).alpha(1);
 						
-							FragmentManager fragmentManager = getActivity().getFragmentManager();
-							detailFrag = new EventDetailFragment();
-							detailFrag.privacy = "open";
-							detailFrag.position = position;
-							detailFrag.show(fragmentManager, "dialog");
+						FragmentManager fragmentManager = getActivity().getFragmentManager();
+						detailFrag = new EventDetailFragment();
+						detailFrag.privacy = "open";
+						detailFrag.position = position;
+						detailFrag.show(fragmentManager, "dialog");
 					}
 				});
 
@@ -217,6 +219,12 @@ public class MainFragment extends Fragment {
 					{
 						view.animate().setDuration(1000).alpha(0);
 						view.animate().setDuration(1000).alpha(1);
+
+						FragmentManager fragmentManager = getActivity().getFragmentManager();
+						detailFrag = new EventDetailFragment();
+						detailFrag.privacy = "closed";
+						detailFrag.position = position;
+						detailFrag.show(fragmentManager, "dialog");
 					}
 				});
 			} catch (JSONException e) {
@@ -279,10 +287,10 @@ public class MainFragment extends Fragment {
 						return;
 					}
 					try {
-						context.appData.put("host",hostname.getText().toString().toUpperCase(Locale.US));
-						GCMIntentService.sendRegistrationIdToBackend();
+						MainActivity.appData.put("host",hostname.getText().toString().toUpperCase(Locale.US));
+						GCMIntentService.registerInBackground();
 						System.out.println(hostname);
-						System.out.println(context.appData.getString("host"));
+						System.out.println(MainActivity.appData.getString("host"));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -293,63 +301,65 @@ public class MainFragment extends Fragment {
 	}
 	
 	public void checkHostname(View v)
-	{
-		new Thread(new Runnable() {
-            public void run() {
-            	
+	{           
+		new AsyncTask<Object, Object, Object>() {
+			
+			@Override
+			protected Object doInBackground(Object... arg0) {
+				if (Looper.myLooper() == null) {
+			        Looper.prepare();
+			    }
             	Message msg = new Message();
         	    msg.obj = null;
         	    contextHandler.sendMessage(msg);
         	    
-        		new AsyncTask<Object, Object, Object>() {
-        			@Override
-        			protected Object doInBackground(Object... arg0) {
-        				InputStream inputStream = null;
+				InputStream inputStream = null;
 
-        				try {
+				try {
 
-        					// 1. create HttpClient
-        					HttpClient httpclient = new DefaultHttpClient();
+					// 1. create HttpClient
+					HttpClient httpclient = new DefaultHttpClient();
 
-        					// 2. make POST request to the given URL
-        					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
-        					System.out.println(hostname.getText());
-        					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
+					// 2. make POST request to the given URL
+    					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
+    					System.out.println(hostname.getText());
+    					System.out.println(context);
+    					System.out.println(GCMIntentService.PROPERTY_REG_ID);
+   
+    					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
 
-        					// 7. Set some headers to inform server about the type of the content   
-        					httpGet.setHeader("Accept", "application/json");
-        					httpGet.setHeader("Content-type", "application/json");
+					// 7. Set some headers to inform server about the type of the content   
+					httpGet.setHeader("Accept", "application/json");
+					httpGet.setHeader("Content-type", "application/json");
 
-        					HttpParams httpParams = httpclient.getParams();
-        					HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
-        					HttpConnectionParams.setSoTimeout(httpParams, 5000);
-        					httpGet.setParams(httpParams);
+					HttpParams httpParams = httpclient.getParams();
+					HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+					HttpConnectionParams.setSoTimeout(httpParams, 5000);
+					httpGet.setParams(httpParams);
 
-        					// 8. Execute POST request to the given URL
-        					System.out.println("executing");
-        					HttpResponse httpResponse = httpclient.execute(httpGet);
-        					// 9. receive response as inputStream
-        					inputStream = httpResponse.getEntity().getContent();
+					// 8. Execute POST request to the given URL
+					System.out.println("executing");
+					HttpResponse httpResponse = httpclient.execute(httpGet);
+					// 9. receive response as inputStream
+					inputStream = httpResponse.getEntity().getContent();
 
-        					// 10. convert inputstream to string
-        					Message msg = new Message();
-        					if(inputStream != null)
-        						if(convertStreamToString(inputStream).contains("true"))
-        							msg.obj = true;
-        						else
-        							msg.obj = false;
-        					else
-        						msg.obj = false;
-        					contextHandler.sendMessage(msg);
+					// 10. convert inputstream to string
+					msg = new Message();
+					if(inputStream != null)
+						if(convertStreamToString(inputStream).contains("true"))
+							msg.obj = true;
+						else
+							msg.obj = false;
+					else
+						msg.obj = false;
+					contextHandler.sendMessage(msg);
 
-        				} catch (Exception e) {
-        					e.printStackTrace();
-        				}
-        				return false;
-        			}
-        		}.execute(null, null, null);
-            }
-        }).start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
+		}.execute(null, null, null);
 	}
 	
 	private static Handler contextHandler = new Handler() {

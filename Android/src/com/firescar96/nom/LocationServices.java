@@ -79,7 +79,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, LocationListener{
     @Override
     public void onDisconnected() {
         // Display the connection status
-        //Toast.makeText(this, "Disconnected. Please re-connect.",
+        //Toast.makeText(this, "Lost location, using lastKnown coordinates",
                 //Toast.LENGTH_SHORT).show();
     }
 
@@ -139,7 +139,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, LocationListener{
                     lokiSon.accumulate("latitude", loki.getLatitude());
                     lokiSon.accumulate("longitude", loki.getLongitude());
                     jsonObject.put("location", lokiSon);
-                    jsonObject.accumulate("host", context.appData.getString("host"));
+                    jsonObject.accumulate("host", MainActivity.appData.getString("host"));
          
                     // 4. convert JSONObject to JSON to String
                     json = jsonObject.toString();
@@ -160,14 +160,13 @@ GooglePlayServicesClient.OnConnectionFailedListener, LocationListener{
                     httpPost.setParams(httpParams);
                     
                     // 8. Execute POST request to the given URL
-                    System.out.println("executing"+json);
                     HttpResponse httpResponse = httpclient.execute(httpPost);
                     // 9. receive response as inputStream
                     inputStream = httpResponse.getEntity().getContent();
          
                     // 10. convert inputstream to string
                     if(inputStream != null)
-                        msg = "sent location to backend";
+                        msg = "";
                     else
                         msg = "Did not work!";
          

@@ -29,7 +29,7 @@ public class MainViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-    	System.out.print(enabled);
+    	//System.out.print(enabled);
         if (this.enabled) {
             return super.onInterceptTouchEvent(event);
         }

@@ -1,7 +1,6 @@
 package com.firescar96.nom.fragment;
 
 import com.firescar96.nom.R;
-import com.firescar96.nom.R.layout;
 
 import android.app.Fragment;
 import android.os.Bundle;

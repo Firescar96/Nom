@@ -14,9 +14,6 @@ import org.json.JSONObject;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
-import com.firescar96.nom.R.id;
-import com.firescar96.nom.R.layout;
-
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -64,7 +61,7 @@ public class OpenShareFragment extends Fragment {
 					 Calendar curTime = Calendar.getInstance();
 					 curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), opTime.getCurrentHour(), opTime.getCurrentMinute());
 					 eventSon.accumulate("date", curTime.getTimeInMillis());
-					 eventSon.accumulate("host", "FIRESCAR96");
+					 eventSon.accumulate("host", context.appData.getString("host"));
 					 eventSon.accumulate("location", ((EditText)context.findViewById(R.id.openLocation)).getText());
 					 jsonObject.accumulate("event", eventSon);
 

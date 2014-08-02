@@ -3,6 +3,7 @@ package com.firescar96.nom.fragment;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,8 +18,6 @@ import org.json.JSONObject;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
-import com.firescar96.nom.R.id;
-import com.firescar96.nom.R.layout;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -244,9 +243,7 @@ public class ClosedShareFragment2 extends Fragment {
 				public void onClick(DialogInterface dialog, int id) {
 					EditText name = (EditText) popView.findViewById(R.id.hostnameText);
 					try {
-						context.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase());
-						System.out.println(name);
-						System.out.println(context.appData.getJSONArray("mates"));
+						context.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase(Locale.US));
 						populateUsers();
 					} catch (JSONException e) {
 						e.printStackTrace();

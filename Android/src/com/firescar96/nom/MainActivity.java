@@ -18,13 +18,16 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends Activity{
 
@@ -48,42 +51,68 @@ public class MainActivity extends Activity{
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 	public static MainActivity context;
-
+	public static JSONObject appData;
+	
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
 	SharedPreferences prefs;
 	LocationServices locServices;
 	String regid;
 
-	public JSONObject appData;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		context = this;
+		
+		initAppData(getFilesDir().getAbsolutePath());
+		
+		if(getIntent().getDataString() != null)
+    	{	
+			if(getIntent().getDataString() != null && getIntent().getDataString().contains("nchinda2.mit.edu:666"))
+	    	{
+				//Check device for Play Services APK. If check succeeds, proceed with
+				//GCM registration.
+				if (checkPlayServices()) {
+					gcm = GoogleCloudMessaging.getInstance(this);
+					regid = GCMIntentService.getRegistrationId(this);
 
-		//Check device for Play Services APK. If check succeeds, proceed with
-		//GCM registration.
-		if (checkPlayServices()) {
-			gcm = GoogleCloudMessaging.getInstance(this);
-			regid = GCMIntentService.getRegistrationId(this);
+					if (regid.isEmpty()) {
+						GCMIntentService.registerInBackground();
+					}
+				} else {
+					System.out.println("No valid Google Play Services APK found.");
+				}
+				
+	    		String nommate = getIntent().getDataString().substring(28);
+	        	try {
+					appData.getJSONArray("mates").put(nommate);
+				} catch (JSONException e) {}
+	    	}
+    	}
+		
+		locServices = new LocationServices();
+		
+		// Create the adapter that will return a fragment for each of the three
+		// primary sections of the activity.
+		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
 
-			if (regid.isEmpty()) {
-				GCMIntentService.registerInBackground();
-			}
-		} else {
-			System.out.println("No valid Google Play Services APK found.");
-		}
+		// Set up the ViewPager with the sections adapter.
+		mViewPager = (MainViewPager) findViewById(R.id.main_activity);
+		mViewPager.setAdapter(mainPagerAdapter);
+		mViewPager.setOffscreenPageLimit(2);
+	}
 
-		File defFile = new File(getFilesDir().getAbsolutePath()+"/appData.txt");
+	public static void initAppData(String fileDir)
+	{
+		File defFile = new File(fileDir+"/appData.txt");
 		if(!defFile.exists())
 		{
 			try {
 				new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
 			}catch(IOException e) {}
-
 		}
 
 		try {
@@ -116,33 +145,18 @@ public class MainActivity extends Activity{
 				appData.put("host", usr);
 			} catch (JSONException e1) {}
 		}
-		
-    	if(getIntent().getDataString() != null && getIntent().getDataString().contains("nchinda2.mit.edu:666"))
-    	{
-    		String nommate = getIntent().getDataString().substring(28);
-        	try {
-				appData.getJSONArray("mates").put(nommate);
-			} catch (JSONException e) {}
-    	}
-		
-    	locServices = new LocationServices();
-    	
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the activity.
-		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
-
-		// Set up the ViewPager with the sections adapter.
-		mViewPager = (MainViewPager) findViewById(R.id.main_activity);
-		mViewPager.setAdapter(mainPagerAdapter);
-		mViewPager.setOffscreenPageLimit(2);
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	
+	public static void closeAppData(String fileDir)
+	{
+		File defFile = new File(fileDir+"/appData.txt");
+		PrintWriter out;
+		 try {
+			 out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
+			 out.println(appData.toString());
+			 //out.println("");	//uncomment to reset the database
+			 out.close();
+		 }catch(IOException e) {}
 	}
 	
 	@Override
@@ -157,6 +171,10 @@ public class MainActivity extends Activity{
 	protected void onResume() {
 		super.onResume();
 		checkPlayServices();
+
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		if(cm.getActiveNetworkInfo() == null)
+			Toast.makeText(context, "No Internet connection detected, Nom entering offline mode", Toast.LENGTH_SHORT).show();;
 	}   
 
 	 private boolean checkPlayServices() {
@@ -177,8 +195,10 @@ public class MainActivity extends Activity{
 	 public void onPrivacySelect(View v)
 	 {
 		 try {
+			 System.out.println(appData.getString("host"));
 			if(appData.getString("host").length() == 0)
 				 {
+					System.out.println(mainPagerAdapter.main);
 				 	mainPagerAdapter.main.requestHostname();
 				 	return;
 				 }
@@ -189,16 +209,18 @@ public class MainActivity extends Activity{
 		 
 		 v.setSelected(true);
 
-		 if(v.getId() == R.id.join_button)
+		 if(v.getId() == R.id.open_button)
 		 {
 			 System.out.println("open");
-			 findViewById(R.id.leave_button).setSelected(false);
+			 findViewById(R.id.closed_button).setSelected(false);
+			 mainPagerAdapter.main.privacy = false;
 			 mainPagerAdapter.setCount(2);
 		 }
 		 else
 		 {
 			 System.out.println("close");
-			 findViewById(R.id.join_button).setSelected(false);
+			 findViewById(R.id.open_button).setSelected(false);
+			 mainPagerAdapter.main.privacy = true;
 			 mainPagerAdapter.setCount(3);
 		 }
 
@@ -218,10 +240,14 @@ public class MainActivity extends Activity{
 		 if(v.equals(findViewById(R.id.openShare)))
 		 {
 			mainPagerAdapter.open.openShare(v);
+			//mainPagerAdapter.setCount(1);
+			//mainPagerAdapter.notifyDataSetChanged();
 		 }
 		 else if(v.equals(findViewById(R.id.closeShare)))
 		 {
 			 mainPagerAdapter.closed2.closeShare(v);
+			 //mainPagerAdapter.setCount(1);
+			 //mainPagerAdapter.notifyDataSetChanged();
 		 }
 		 else
 		 {
@@ -250,14 +276,7 @@ public class MainActivity extends Activity{
 	 protected void onStop()
 	 {
 		 super.onStop();
-		 File defFile = new File(getFilesDir().getAbsolutePath()+"/appData.txt");
-		 PrintWriter out;
-		 try {
-			 out = new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
-			 out.println(appData.toString());
-			 //out.println("");	//uncomment to reset the database
-			 out.close();
-		 }catch(IOException e) {}
+		closeAppData(getFilesDir().getAbsolutePath());
 		 
 		 locServices.disconnect();
 	 }

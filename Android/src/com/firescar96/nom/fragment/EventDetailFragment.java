@@ -2,7 +2,6 @@ package com.firescar96.nom.fragment;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,18 +17,14 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TimePicker;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
@@ -62,6 +57,9 @@ public class EventDetailFragment extends DialogFragment {
 			
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("host")+": "+detailData.getJSONObject(i).getString("message"));
+			
+			//change the editable parts depending on whether the user is part of the group
+			configureEditable();
 		} catch (JSONException e) {
 			try {
 				context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).put("chat", new JSONArray());
@@ -90,18 +88,29 @@ public class EventDetailFragment extends DialogFragment {
 	
 	public void onEventMembershipChanged(View v)
 	{
-		if(frame.findViewById(R.id.leave_button).getVisibility() == View.GONE)
+		try {
+			JSONObject curEve = context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position);
+			curEve.put("member", !curEve.getBoolean("member"));
+			configureEditable();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	public void configureEditable() throws JSONException
+	{
+		if(context.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getBoolean("member"))
 		{
-			frame.findViewById(R.id.join_button).setVisibility(View.GONE);
-			frame.findViewById(R.id.leave_button).setVisibility(View.VISIBLE);
+			frame.findViewById(R.id.open_button).setVisibility(View.GONE);
+			frame.findViewById(R.id.closed_button).setVisibility(View.VISIBLE);
 			frame.findViewById(R.id.eventChatText).setEnabled(true);
 			frame.findViewById(R.id.eventChatButton).setEnabled(true);
 			postMsg("has joined!");
 		}
 		else
 		{
-			frame.findViewById(R.id.leave_button).setVisibility(View.GONE);
-			frame.findViewById(R.id.join_button).setVisibility(View.VISIBLE);
+			frame.findViewById(R.id.closed_button).setVisibility(View.GONE);
+			frame.findViewById(R.id.open_button).setVisibility(View.VISIBLE);
 			frame.findViewById(R.id.eventChatText).setEnabled(false);
 			frame.findViewById(R.id.eventChatButton).setEnabled(false);
 			postMsg("has left.");
@@ -110,19 +119,16 @@ public class EventDetailFragment extends DialogFragment {
 	
 	public void updateList()
 	{
-		System.out.println("hello2");
 		try {
 			detailData = context.appData.getJSONObject("events")
 					.getJSONArray(privacy)
 					.getJSONObject(position)
 					.getJSONArray("chat");
 
-			System.out.println("hello3");
 			detailList.clear();
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("host")+": "+detailData.getJSONObject(i).getString("message"));
 
-			System.out.println(detailList);
 			detailAdapter.notifyDataSetChanged();
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -132,6 +138,7 @@ public class EventDetailFragment extends DialogFragment {
 	public void onChatMsg(View v)
 	{
 		postMsg(((EditText)frame.findViewById(R.id.eventChatText)).getText().toString());
+		((EditText)frame.findViewById(R.id.eventChatText)).setText("");
 	}	
 	
 	public void postMsg(final String message)

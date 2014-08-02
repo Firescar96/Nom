@@ -65,12 +65,14 @@ public class GCMIntentService extends IntentService {
 		super(name);
 		// TODO Auto-generated constructor stub
 	}
-    private static final String PROPERTY_REG_ID = "registration_id";
+    public static final String PROPERTY_REG_ID = "registration_id";
 
-    private static final String PROPERTY_APP_VERSION = "app_version";
+    public static final String PROPERTY_APP_VERSION = "app_version";
 
     public static final String BROADCAST_ON_MESSAGE = "on-message-event";
 
+    private static GCMIntentService thisService;
+    
     static String SENDER_ID = "81193489522";
     
     static GoogleCloudMessaging gcm;
@@ -101,6 +103,20 @@ public class GCMIntentService extends IntentService {
             	// Post notification of received message.
                 System.out.println("Received: " + extras.toString());
                 
+                if(context == null)
+                {
+                	System.out.println("null conxtext");
+                	/*Intent needIntent = new Intent(this, MainActivity.class);
+                    needIntent.putExtra("purpose", "update");
+                    needIntent.putExtra("mate", (String)extras.get("mate"));
+                    needIntent.putExtra("event", (String)extras.get("event"));
+                    needIntent.putExtra("chat", (String)extras.get("chat"));
+                    needIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(needIntent);*/
+                	System.out.println(getFilesDir().getAbsolutePath());
+                	MainActivity.initAppData(getFilesDir().getAbsolutePath());
+                }
+                
 				try {			
 	                if(extras.get("mate") != null)
 	                {
@@ -110,12 +126,13 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("event") != null)
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
+	                	eveData.accumulate("member",false);
 	                	if(eveData.getLong("date") < Calendar.getInstance().getTimeInMillis())
 	                		return;
 	                	
 	                	String info = "Food in "+eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
 	                	System.out.println(info);
-						context.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
+						MainActivity.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
 						Message msg = new Message();
 						Bundle data = new Bundle();
 						data.putString("type", "event."+eveData.getString("privacy"));
@@ -129,8 +146,8 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("chat") != null)
 	                {
 	                	JSONObject chatData=new JSONObject("{\"chat\":"+extras.get("chat")+"}").getJSONObject("chat");
-	                	JSONArray opMsgs = context.appData.getJSONObject("events").getJSONArray("open");
-	                	JSONArray cloMsgs = context.appData.getJSONObject("events").getJSONArray("closed");
+	                	JSONArray opMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("open");
+	                	JSONArray cloMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
 	                	for(int i = 0; i < opMsgs.length(); i++)
 	                	{
 	                		System.out.println(chatData.getLong("date"));
@@ -153,8 +170,31 @@ public class GCMIntentService extends IntentService {
 	                			return;
 	                		}
 	                	}
+	                	for(int i = 0; i < cloMsgs.length(); i++)
+	                	{
+	                		System.out.println(chatData.getLong("date"));
+	                		System.out.println(Long.parseLong(opMsgs.getJSONObject(i).getString("date")));
+	                		if(chatData.getString("host").equals(cloMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(cloMsgs.getJSONObject(i).getString("date")))
+	                		{
+	                			JSONObject msgSon = new JSONObject();
+	                			msgSon.accumulate("host", chatData.getString("host"));
+	                			msgSon.accumulate("message", chatData.getString("message"));
+	                			cloMsgs.getJSONObject(i)
+	                				.getJSONArray("chat")
+	                				.put(msgSon);
+	                			
+	                			Message msg = new Message();
+	    						Bundle data = new Bundle();
+	    						data.putString("type", "chat");
+	    					    msg.obj = data;
+	    					    contextHandler.sendMessage(msg);
+	    					    
+	                			return;
+	                		}
+	                	}
 	                }
-                
+
+                	MainActivity.closeAppData(getFilesDir().getAbsolutePath());
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -165,7 +205,7 @@ public class GCMIntentService extends IntentService {
         MainBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private Handler contextHandler = new Handler() {
+    private static Handler contextHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -186,13 +226,13 @@ public class GCMIntentService extends IntentService {
     				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
     				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
     				
-                	Notify("Food in"+nHour+":"+nMin,"Eat with"+((Bundle)msg.obj).getString("host")); 
+                	Notify("Food in "+nHour+":"+nMin,"Eat with "+((Bundle)msg.obj).getString("host")); 
                 }
                 
-                if(((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open"))
+                if(context != null && (((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open")))
                 {
                 	try {
-						System.out.println(context.appData.getJSONObject("events"));
+						System.out.println(MainActivity.appData.getJSONObject("events"));
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -210,21 +250,21 @@ public class GCMIntentService extends IntentService {
         };
         
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-		private void Notify(String notificationTitle, String notificationMessage) 
+	private static void Notify(String notificationTitle, String notificationMessage) 
         {
         	NotificationCompat.Builder mBuilder =
-        	        new NotificationCompat.Builder(this)
+        	        new NotificationCompat.Builder(thisService)
         	        .setSmallIcon(R.drawable.ic_launcher)
         	        .setContentTitle(notificationTitle)
         	        .setContentText(notificationMessage);
         	// Creates an explicit intent for an Activity in your app
-        	Intent resultIntent = new Intent(this, MainActivity.class);
+        	Intent resultIntent = new Intent(thisService, MainActivity.class);
 
         	// The stack builder object will contain an artificial back stack for the
         	// started Activity.
         	// This ensures that navigating backward from the Activity leads out of
         	// your application to the Home screen.
-        	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        	TaskStackBuilder stackBuilder = TaskStackBuilder.create(thisService);
         	// Adds the back stack for the Intent (but not the Intent itself)
         	stackBuilder.addParentStack(MainActivity.class);
         	// Adds the Intent that starts the Activity to the top of the stack
@@ -236,7 +276,7 @@ public class GCMIntentService extends IntentService {
         	        );
         	mBuilder.setContentIntent(resultPendingIntent);
         	NotificationManager mNotificationManager =
-        	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        	    (NotificationManager) thisService.getSystemService(Context.NOTIFICATION_SERVICE);
         	// mId allows you to update the notification later on.
         	mNotificationManager.notify((int) System.currentTimeMillis(), mBuilder.build());
         	 }
@@ -303,7 +343,9 @@ public class GCMIntentService extends IntentService {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    if(context.appData.getString("host").length() > 0)
+        			System.out.println(context);
+        			System.out.println("regID: "+regId);
+                    if(MainActivity.appData.getString("host").length() > 0)
                     	sendRegistrationIdToBackend();
 
                     // For this demo: we don't need to send it because the device
@@ -356,7 +398,7 @@ public class GCMIntentService extends IntentService {
                     String id = Integer.toString(msgId.incrementAndGet());
                     jsonObject.accumulate("id", id);
                     jsonObject.accumulate("regId", regId);
-                    jsonObject.accumulate("host", context.appData.getString("host"));
+                    jsonObject.accumulate("host", MainActivity.appData.getString("host"));
          
                     // 4. convert JSONObject to JSON to String
                     json = jsonObject.toString();
@@ -413,6 +455,7 @@ public class GCMIntentService extends IntentService {
     
     public GCMIntentService() {
         super(Consts.PROJECT_NUMBER);
+        thisService = this;
     }
     
     /**

@@ -47,17 +47,12 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         	main = (MainFragment) newFragment;
         	break;
         case 1:
-        	if(context.findViewById(R.id.join_button) == null)
+        	if(!main.privacy)
         	{
         		newFragment = new OpenShareFragment();
         		open = (OpenShareFragment) newFragment;
         	}
-        	else if(context.findViewById(R.id.join_button).isSelected())
-        	{
-        		newFragment = new OpenShareFragment();
-        		open = (OpenShareFragment) newFragment;
-        	}
-        	else if(context.findViewById(R.id.leave_button).isSelected())
+        	else
         	{
         		newFragment = new ClosedShareFragment1();
         		closed1 = (ClosedShareFragment1) newFragment;

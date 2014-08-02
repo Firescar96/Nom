@@ -11,10 +11,10 @@
     tools:context="com.firescar96.nom.MainActivity$PlaceholderFragment" >
 
     <Button
-        android:id="@+id/join_button"
+        android:id="@+id/open_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/leave_button"
+        android:layout_alignLeft="@+id/closed_button"
         android:layout_alignParentTop="true"
         android:background="@drawable/button_flat_blue"
         android:gravity="center"
@@ -26,10 +26,10 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/leave_button"
+        android:id="@+id/closed_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/join_button"
+        android:layout_below="@+id/open_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_flat_green"
@@ -45,9 +45,9 @@
         android:id="@+id/available_events"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_alignLeft="@+id/leave_button"
-        android:layout_alignRight="@+id/leave_button"
-        android:layout_below="@+id/leave_button"
+        android:layout_alignLeft="@+id/closed_button"
+        android:layout_alignRight="@+id/closed_button"
+        android:layout_below="@+id/closed_button"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="36dp"
         android:background="#c0c"
