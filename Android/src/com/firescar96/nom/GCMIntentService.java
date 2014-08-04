@@ -344,7 +344,6 @@ public class GCMIntentService extends IntentService {
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-        			System.out.println(context);
         			System.out.println("regID: "+regId);
                     if(MainActivity.appData.getString("host").length() > 0)
                     	sendRegistrationIdToBackend();

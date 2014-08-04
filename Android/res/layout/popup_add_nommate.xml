@@ -9,7 +9,7 @@
     android:paddingTop="15dp"
     android:visibility="visible" >
 
-    <EditText
+    <com.firescar96.nom.MonoText
         android:id="@+id/hostnameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +17,6 @@
         android:inputType="textCapSentences" >
 
         <requestFocus />
-    </EditText>
+    </com.firescar96.nom.MonoText>
 
 </LinearLayout>

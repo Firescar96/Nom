@@ -25,6 +25,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -68,23 +69,25 @@ public class MainActivity extends Activity{
 		
 		initAppData(getFilesDir().getAbsolutePath());
 		
+		//Check device for Play Services APK. If check succeeds, proceed with
+		//GCM registration.
+		if (checkPlayServices()) {
+			Log.i("MainActivity", "we have the google play");
+			System.out.println("we have the google play");
+			gcm = GoogleCloudMessaging.getInstance(this);
+			regid = GCMIntentService.getRegistrationId(this);
+			System.err.println("need new register");
+			if (regid.isEmpty()) {
+				GCMIntentService.registerInBackground();
+			}
+		} else {
+			System.out.println("No valid Google Play Services APK found.");
+		}
+		
 		if(getIntent().getDataString() != null)
     	{	
 			if(getIntent().getDataString() != null && getIntent().getDataString().contains("nchinda2.mit.edu:666"))
-	    	{
-				//Check device for Play Services APK. If check succeeds, proceed with
-				//GCM registration.
-				if (checkPlayServices()) {
-					gcm = GoogleCloudMessaging.getInstance(this);
-					regid = GCMIntentService.getRegistrationId(this);
-
-					if (regid.isEmpty()) {
-						GCMIntentService.registerInBackground();
-					}
-				} else {
-					System.out.println("No valid Google Play Services APK found.");
-				}
-				
+	    	{				
 	    		String nommate = getIntent().getDataString().substring(28);
 	        	try {
 					appData.getJSONArray("mates").put(nommate);
@@ -93,11 +96,12 @@ public class MainActivity extends Activity{
     	}
 		
 		locServices = new LocationServices();
-		
+
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
 
+		 System.out.println("init main pager"+this.mainPagerAdapter);
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (MainViewPager) findViewById(R.id.main_activity);
 		mViewPager.setAdapter(mainPagerAdapter);
@@ -177,6 +181,7 @@ public class MainActivity extends Activity{
 	}   
 
 	 private boolean checkPlayServices() {
+		 System.out.println("checking play services");
 		 int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 		 if (resultCode != ConnectionResult.SUCCESS) {
 			 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
@@ -210,7 +215,9 @@ public class MainActivity extends Activity{
 
 		 if(v.getId() == R.id.open_button)
 		 {
-			 System.out.println("open");
+			 System.out.println(this.mainPagerAdapter);
+			 System.out.println(this.mainPagerAdapter.main);
+			 
 			 findViewById(R.id.closed_button).setSelected(false);
 			 mainPagerAdapter.main.privacy = false;
 			 mainPagerAdapter.setCount(2);

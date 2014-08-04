@@ -91,8 +91,6 @@ public class MainFragment extends Fragment {
 	 public void populateEvents()
 		{
 			try {
-				System.out.println(context);
-				System.out.println(MainActivity.appData);
 				JSONArray opDat = MainActivity.appData.getJSONObject("events").getJSONArray("open");
 				JSONArray cloDat = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
 
@@ -107,8 +105,8 @@ public class MainFragment extends Fragment {
 				for(int i=0; i< opDat.length(); i++)
 				{
 
-				System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
-				System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
+				//System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
+				//System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
 				/*if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
 				{
 					JSONArrayremove(opDat,i);
@@ -323,8 +321,6 @@ public class MainFragment extends Fragment {
 					// 2. make POST request to the given URL
     					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
     					System.out.println(hostname.getText());
-    					System.out.println(context);
-    					System.out.println(GCMIntentService.PROPERTY_REG_ID);
    
     					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
 
@@ -408,7 +404,6 @@ public class MainFragment extends Fragment {
 	            e.printStackTrace();
 	        }
 	    }
-	    System.out.println(sb.toString());
 	    return sb.toString();
 	}
 	
