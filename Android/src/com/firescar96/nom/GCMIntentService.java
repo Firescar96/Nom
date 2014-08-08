@@ -147,16 +147,13 @@ public class GCMIntentService extends IntentService {
 	                	System.out.println(Calendar.getInstance().getTimeInMillis());
 	                	if(eveData.getLong("date") < Calendar.getInstance().getTimeInMillis())
 	                		return;
-	                	
-	                	String info = "Food in "+eveData.getString("hour")+":"+eveData.getString("minute")+" with "+eveData.getString("host");
-	                	System.out.println(info);
+
 						MainActivity.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
 						Message msg = new Message();
 						Bundle data = new Bundle();
 						data.putString("type", "event."+eveData.getString("privacy"));
 						data.putString("host", eveData.getString("host"));
-						data.putString("hour", eveData.getString("hour"));
-						data.putString("minute", eveData.getString("minute"));
+						data.putString("date", eveData.getString("date"));
 					    msg.obj = data;
 					    contextHandler.sendMessage(msg);
 	                }
@@ -231,22 +228,12 @@ public class GCMIntentService extends IntentService {
                 super.handleMessage(msg);
                 if(((Bundle)msg.obj).getString("type").equals("event.closed"))
                 {
-                	int hour = Integer.parseInt(((Bundle)msg.obj).getString("hour"));
-    				int minute = Integer.parseInt(((Bundle)msg.obj).getString("minute"));
-
-    				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
-    				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-
-    				/*if(curHour==hour && curMin==minute)
-    				{
-    					((JSONObject) opDat.get(i)).put("hour", "Now");
-    					((JSONObject) opDat.get(i)).put("minute", "Now");
-    				}*/
-
-    				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
-    				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+                	int date = (int) Long.parseLong(((Bundle)msg.obj).getString("date"));
+    				date /=60000;
+    				int nHour = date/60;
+    				int nMin = (date%60);
     				
-                	Notify("Food in "+nHour+":"+nMin,"Eat with "+((Bundle)msg.obj).getString("host")); 
+                	Notify("Food at "+nHour+":"+nMin,"Eat with "+((Bundle)msg.obj).getString("host")); 
                 }
                 
                 if(context != null && (((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open")))

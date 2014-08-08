@@ -48,12 +48,11 @@ public class OpenShareFragment extends Fragment {
 			eventSon.accumulate("privacy", "open");
 			TimePicker opTime = (TimePicker) context
 					.findViewById(R.id.openTime);
-			eventSon.accumulate("hour", opTime.getCurrentHour());
-			eventSon.accumulate("minute", opTime.getCurrentMinute());
 			Calendar curTime = Calendar.getInstance();
 			curTime.set(curTime.get(Calendar.YEAR),
 					curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE),
 					opTime.getCurrentHour(), opTime.getCurrentMinute(), 0);
+			System.out.println(curTime.getTimeInMillis());
 			eventSon.accumulate("date", curTime.getTimeInMillis());
 			eventSon.accumulate("host", context.appData.getString("host"));
 			eventSon.accumulate("location", ((EditText) context

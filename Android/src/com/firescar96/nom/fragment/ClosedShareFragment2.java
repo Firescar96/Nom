@@ -181,8 +181,6 @@ public class ClosedShareFragment2 extends Fragment {
 			eventSon.accumulate("privacy", "closed");
 			TimePicker cloTime = (TimePicker) context
 					.findViewById(R.id.closeTime);
-			eventSon.accumulate("hour", cloTime.getCurrentHour());
-			eventSon.accumulate("minute", cloTime.getCurrentMinute());
 			Calendar curTime = Calendar.getInstance();
 			curTime.set(curTime.get(Calendar.YEAR),
 					curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE),
@@ -261,8 +259,6 @@ public class ClosedShareFragment2 extends Fragment {
 			eventSon.accumulate("privacy", "closed");
 			TimePicker cloTime = (TimePicker) context
 					.findViewById(R.id.closeTime);
-			eventSon.accumulate("hour", cloTime.getCurrentHour());
-			eventSon.accumulate("minute", cloTime.getCurrentMinute());
 			Calendar curTime = Calendar.getInstance();
 			curTime.set(curTime.get(Calendar.YEAR),
 					curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE),

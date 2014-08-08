@@ -128,19 +128,12 @@ public class MainFragment extends Fragment {
 					continue;
 				}
 
-				int hour = Integer.parseInt(((JSONObject) opDat.get(i)).getString("hour"));
-				int minute = Integer.parseInt(((JSONObject) opDat.get(i)).getString("minute"));
-
-				int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
-				int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-
-				/*if(curHour==hour && curMin==minute)
-					{
-						((JSONObject) opDat.get(i)).put("hour", "Now");
-						((JSONObject) opDat.get(i)).put("minute", "Now");
-					}*/
-				int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
-				int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+				int date = (int) (Long.parseLong(((JSONObject) opDat.get(i)).getString("date")));
+				int curDate = (int) Calendar.getInstance().getTimeInMillis();
+				int diff = date-curDate;
+				diff /=60000;
+				int nHour = diff/60;
+				int nMin = (diff%60);
 				String info = ((JSONObject) opDat.get(i)).getString("host")+" - "+nHour+" "+
 						singlePlural(nHour,"hour","hours")+" "+nMin+" "+
 						singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) opDat.get(i)).getString("location");
@@ -169,20 +162,12 @@ public class MainFragment extends Fragment {
 						continue;
 					}
 
-					int hour = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("hour"));
-					int minute = Integer.parseInt(((JSONObject) cloDat.get(i)).getString("minute"));
-
-					int curHour = Integer.parseInt(DateFormat.format("HH", new Date()).toString());
-					int curMin = Integer.parseInt(DateFormat.format("mm", new Date()).toString());
-
-					/*if(curHour==hour && curMin==minute)
-					{
-						((JSONObject) cloDat.get(i)).put("hour", "Now");
-						((JSONObject) cloDat.get(i)).put("minute", "Now");
-					}*/
-
-					int nHour = Math.min(Math.abs(curHour-hour), Math.abs(curHour+12-hour));
-					int nMin = Math.min(Math.abs(curMin-minute), Math.abs(curMin+12-minute));
+					int date = (int) (Long.parseLong(((JSONObject) cloDat.get(i)).getString("date")));
+					int curDate = (int) Calendar.getInstance().getTimeInMillis();
+					int diff = date-curDate;
+					diff /=60000;
+					int nHour = diff/60;
+					int nMin = (diff%60);
 					String info = ((JSONObject) cloDat.get(i)).getString("host")+" - "+nHour+" "+
 							singlePlural(nHour,"hour","hours")+" "+nMin+" "+
 							singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) cloDat.get(i)).getString("location");
