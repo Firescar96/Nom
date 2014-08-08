@@ -36,7 +36,7 @@ Router.map(function () {
       //console.log(this.request.headers);
 
       //console.log('------------------------------');
-      //console.log(this.request.body);
+      console.log(this.request.body);
       //console.log('------------------------------');
 
       this.response.statusCode = 200;
@@ -163,23 +163,43 @@ var HandleData = function(query)
 	/*sender.send(message, registrationIds, 4, function (err, result) {
 	    console.log(result);
 	});*/
-	if (query.event != undefined && query.event.privacy == "open") 
+	if(query.event != undefined)
 	{
-		var toUsr = Users.find({}).fetch();
-	} else if(query.chat == "true")
-	{
-		var toUsr = Users.find({}).fetch();
-	} else	
-	{
-		var nxtUsr = query.to.split(',');
-		console.log(nxtUsr);
-		var toUsr = [];
-		for(var i in nxtUsr)
+		if (query.event.privacy == "open") 
 		{
-		console.log(nxtUsr[i]);
-			toUsr.push(Users.findOne({name:nxtUsr[i]}));
+			var toUsr = Users.find({}).fetch();
+		} else if(query.chat == "true")
+		{
+			var toUsr = Users.find({}).fetch();
+		} else	
+		{
+			var nxtUsr = query.to.split(',');
+			console.log(nxtUsr);
+			var toUsr = [];
+			for(var i in nxtUsr)
+			{
+			console.log(nxtUsr[i]);
+				toUsr.push(Users.findOne({name:nxtUsr[i]}));
+			}
+		}
+		
+		if(Events.findOne({hash:query.event.hash}) == undefined)
+		{
+			Events.insert({
+				privacy:query.event.privacy,
+	    		location:query.event.location,
+	    		date:query.event.date,
+	    		hash:query.event.hash,
+	    		host:query.event.host
+		    });
 		}
 	}
+	
+	if(query.hash != undefined)
+	{
+		var toUsr = [];
+		toUsr.push(Users.findOne({name:query.to}));
+	}	
 	
 	for(var i in toUsr)
 	{
@@ -212,6 +232,7 @@ var HandleData = function(query)
 		    		message:\""+query.message+"\",\
 		    		author:\""+query.author+"\",\
 		    		date:\""+query.date+"\",\
+		    		location:\""+query.location+"\",\
 		    		host:\""+query.host+"\"\
 		    	}"
 			};
@@ -225,18 +246,39 @@ var HandleData = function(query)
 			});
 		}
 	
-		
 		if(toUsr[i].regId && query.event != null)
 		{
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
 		    	"data.event": "{\
 		    		privacy:\""+query.event.privacy+"\",\
-		    		hour:\""+query.event.hour+"\",\
-		    		minute:\""+query.event.minute+"\",\
 		    		location:\""+query.event.location+"\",\
 		    		date:\""+query.event.date+"\",\
+		    		hash:\""+query.event.hash+"\",\
 		    		host:\""+query.event.host+"\"\
+		    	}"
+			};
+		
+			gcm.send(mess, function(err, messageId){
+		    	if (err) {
+		    		console.log("Something has gone wrong!");
+		    	} else {
+		        	console.log("Sent with message ID: ", messageId);
+		    	}
+			});
+		}
+		
+		if(toUsr[i].regId && query.hash!= null)
+		{
+			var curEve = Events.findOne({hash:query.hash});
+			var mess = {
+		   	registration_id: toUsr[i].regId , // required
+		    	"data.event": "{\
+		    		privacy:\""+curEve.privacy+"\",\
+		    		location:\""+curEve.location+"\",\
+		    		date:\""+curEve.date+"\",\
+		    		hash:\""+curEve.hash+"\",\
+		    		host:\""+curEve.host+"\"\
 		    	}"
 			};
 		
