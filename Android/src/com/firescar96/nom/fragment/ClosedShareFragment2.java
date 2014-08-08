@@ -1,7 +1,12 @@
 package com.firescar96.nom.fragment;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -27,6 +32,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -54,6 +60,7 @@ public class ClosedShareFragment2 extends Fragment {
 	static JSONArray mateData;
 	static ArrayList<String> mateList;
 	static ArrayAdapter<String> mateAdapter;
+	static ArrayList<Boolean> mateSelected;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -64,6 +71,7 @@ public class ClosedShareFragment2 extends Fragment {
 			mateData = context.appData.getJSONArray("mates");
 		} catch (JSONException e) {}
 		mateList = new ArrayList<String>();
+		mateSelected = new ArrayList<Boolean>();
 		//Setup the listview adapter for closed events
 		ListView useView = (ListView) frame.findViewById(R.id.matesList);
 		mateAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList);
@@ -76,9 +84,17 @@ public class ClosedShareFragment2 extends Fragment {
 				view.animate().setDuration(1000).alpha(0);
 				view.animate().setDuration(1000).alpha(1);
 				if(((ColorDrawable)view.getBackground()) == null)
+				{
 					view.setBackgroundColor(Color.rgb(224, 0, 224));
+					while(mateSelected.size() < position+1) mateSelected.add(false);
+					mateSelected.set(position, true);
+				}
 				else
+				{
 					view.setBackground(null);
+					while(mateSelected.size() < position+1) mateSelected.add(false);
+					mateSelected.set(position, false);
+				}
 			}
 		});
 		useView.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -99,6 +115,7 @@ public class ClosedShareFragment2 extends Fragment {
 						try {
 							context.appData.put("mates", mateData);
 						} catch (JSONException e) {}
+						view.setBackground(null);
    	            		mateAdapter.notifyDataSetChanged();
             	   }
             	});
@@ -110,7 +127,7 @@ public class ClosedShareFragment2 extends Fragment {
             	alertDialog.show();
                 return true;
             }
-        }); 
+        });
 		
 		populateUsers();
 		return frame;
@@ -122,6 +139,9 @@ public class ClosedShareFragment2 extends Fragment {
 		 super.onResume();
 		 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		 imm.hideSoftInputFromWindow(frame.getWindowToken(), 0);
+		 
+		ListView listView = (ListView) frame.findViewById(R.id.matesList);
+		listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList)); 
 	 }
 
 	public static void populateUsers()
@@ -162,12 +182,15 @@ public class ClosedShareFragment2 extends Fragment {
 					//ArrayList<Integer> groupMatesNames = new ArrayList<Integer>();
 					String groupMatesNames = "";
 					JSONArray useDat = context.appData.getJSONArray("mates");
-					for(int i=0; i < groupMates.size(); i++)
+					for(int i=0; i < mateSelected.size(); i++)
 					{
-						if(groupMates.get(i))
+						System.out.println(i);
+						if(mateSelected.get(i))
 							groupMatesNames+=","+useDat.get(i);
 					}
-					System.out.println(groupMatesNames);
+					System.out.println("groupMates "+groupMatesNames);
+					for(int i =0; i < listView.getCheckedItemPositions().size();i++)
+						System.out.println("checked positiions "+listView.getCheckedItemPositions().get(i));
 					
 					JSONObject jsonObject = new JSONObject();
 					jsonObject.accumulate("to", context.appData.getString("host")+groupMatesNames);
@@ -177,12 +200,47 @@ public class ClosedShareFragment2 extends Fragment {
 					eventSon.accumulate("hour", cloTime.getCurrentHour());
 					eventSon.accumulate("minute", cloTime.getCurrentMinute());
 					Calendar curTime = Calendar.getInstance();
-					curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), cloTime.getCurrentHour(), cloTime.getCurrentMinute());
+					curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), cloTime.getCurrentHour(), cloTime.getCurrentMinute(),0);
 					eventSon.accumulate("date", curTime.getTimeInMillis());
 					eventSon.accumulate("host", context.appData.getString("host"));
 					eventSon.accumulate("location", ((EditText)context.findViewById(R.id.closeLocation)).getText());
 					jsonObject.accumulate("event", eventSon);
 
+					byte[] hostBytes = context.appData.getString("host").getBytes("UTF-8");
+					Double longTime = Math.floor(curTime.getTimeInMillis()/1000)*1000;
+					byte[] timeBytes =  longTime.toString().getBytes("UTF-8");
+					byte[] locBytes =  ((EditText)context.findViewById(R.id.closeLocation)).getText().toString().getBytes("UTF-8");
+					Byte[] hostByt=new Byte[hostBytes.length], timeByt=new Byte[timeBytes.length], locByt=new Byte[locBytes.length];
+					int i=0;
+					for(byte b: hostBytes)
+						   hostByt[i++] = b;
+					i=0;
+					for(byte b: timeBytes)
+						   timeByt[i++] = b;
+					i=0;
+					for(byte b: locBytes)
+						   locByt[i++] = b;
+					
+					ArrayList<Byte> both = new ArrayList<Byte>(Arrays.asList(hostByt));
+					both.addAll(Arrays.asList(timeByt));
+					both.addAll(Arrays.asList(locByt));
+					i=0;
+					byte[] hotilocBytes = new byte[both.size()];
+					for(Byte b: both)
+					{
+						hotilocBytes[i++] = b.byteValue();
+					}
+					MessageDigest md = MessageDigest.getInstance("MD5");
+					System.out.println(Arrays.toString(hotilocBytes));
+					byte[] thedigest;
+					md.update(hotilocBytes);
+					thedigest = md.digest();
+					BigInteger bigInt = new BigInteger(1,thedigest);
+					String digHash = bigInt.toString(30);
+					//System.out.println(Arrays.toString(thedigest));
+					System.out.println(digHash);
+					eventSon.accumulate("hash", digHash);
+					
 					// 4. convert JSONObject to JSON to String
 					json = jsonObject.toString();
 
@@ -222,6 +280,56 @@ public class ClosedShareFragment2 extends Fragment {
 		}.execute(null, null, null);
 	}
 
+	public void mediaShare(View v)
+	{
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		 shareIntent.setType("text/plain");
+		 try {
+			 Calendar curTime = Calendar.getInstance();
+			 TimePicker cloTime = (TimePicker)context.findViewById(R.id.closeTime);
+			 curTime.set(curTime.get(Calendar.YEAR), curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE), cloTime.getCurrentHour(), cloTime.getCurrentMinute());
+			 byte[] hostBytes = context.appData.getString("host").getBytes("UTF-8");
+				Double longTime = Math.floor(curTime.getTimeInMillis()/1000)*1000;
+				byte[] timeBytes =  longTime.toString().getBytes("UTF-8");
+				byte[] locBytes =  ((EditText)context.findViewById(R.id.closeLocation)).getText().toString().getBytes("UTF-8");
+				Byte[] hostByt=new Byte[hostBytes.length], timeByt=new Byte[timeBytes.length], locByt=new Byte[locBytes.length];
+				int i=0;
+				for(byte b: hostBytes)
+					   hostByt[i++] = b;
+				i=0;
+				for(byte b: timeBytes)
+					   timeByt[i++] = b;
+				i=0;
+				for(byte b: locBytes)
+					   locByt[i++] = b;
+				
+				ArrayList<Byte> both = new ArrayList<Byte>(Arrays.asList(hostByt));
+				both.addAll(Arrays.asList(timeByt));
+				both.addAll(Arrays.asList(locByt));
+				i=0;
+				byte[] hotilocBytes = new byte[both.size()];
+				for(Byte b: both)
+				{
+					hotilocBytes[i++] = b.byteValue();
+				}
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				System.out.println(Arrays.toString(hotilocBytes));
+				byte[] thedigest;
+				md.update(hotilocBytes);
+				thedigest = md.digest();
+				BigInteger bigInt = new BigInteger(1,thedigest);
+				String digHash = bigInt.toString(30);
+				//System.out.println(Arrays.toString(thedigest));
+				System.out.println(digHash);
+			 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "I'm hosting an event on Nom: http://nchinda2.mit.edu:666/e"+digHash);
+		
+		 startActivity(Intent.createChooser(shareIntent, "Share via"));
+		 } catch (JSONException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
 	public void addNommate(View v)
 	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();

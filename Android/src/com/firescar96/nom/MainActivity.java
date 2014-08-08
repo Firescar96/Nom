@@ -6,9 +6,24 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,10 +38,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class MainActivity extends Activity{
@@ -86,12 +106,74 @@ public class MainActivity extends Activity{
 		
 		if(getIntent().getDataString() != null)
     	{	
-			if(getIntent().getDataString() != null && getIntent().getDataString().contains("nchinda2.mit.edu:666"))
+			if(getIntent().getDataString().contains("nchinda2.mit.edu:666"))
 	    	{				
-	    		String nommate = getIntent().getDataString().substring(28);
-	        	try {
+	    		final String data = getIntent().getDataString().substring(28);
+	    		if(data.startsWith("e"))
+	    		{
+	    			System.out.println("event sent "+data.substring(1));
+	    			new AsyncTask<Object, Object, Object>() {
+	    				@Override
+	    				protected Object doInBackground(Object... arg0) {
+	    					String msg = "";
+	    					InputStream inputStream = null;
+
+	    					try {
+
+	    						// 1. create HttpClient
+	    						HttpClient httpclient = new DefaultHttpClient();
+
+	    						// 2. make POST request to the given URL
+	    						HttpPost httpPost = new HttpPost("http://nchinda2.mit.edu:666");
+
+	    						String json = "";
+
+	    						// 3. build jsonObject
+	    						JSONObject jsonObject = new JSONObject();
+	    						jsonObject.accumulate("host", context.appData.getString("host"));
+	    						jsonObject.accumulate("hash", data.substring(1));
+
+	    						// 4. convert JSONObject to JSON to String
+	    						json = jsonObject.toString();
+
+	    						// 5. set json to StringEntity
+	    						StringEntity se = new StringEntity(json);
+
+	    						// 6. set httpPost Entity
+	    						httpPost.setEntity(se);
+
+	    						// 7. Set some headers to inform server about the type of the content   
+	    						httpPost.setHeader("Accept", "application/json");
+	    						httpPost.setHeader("Content-type", "application/json");
+
+	    						HttpParams httpParams = httpclient.getParams();
+	    						HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+	    						HttpConnectionParams.setSoTimeout(httpParams, 5000);
+	    						httpPost.setParams(httpParams);
+
+	    						// 8. Execute POST request to the given URL
+	    						System.out.println("executing"+json);
+	    						HttpResponse httpResponse = httpclient.execute(httpPost);
+	    						// 9. receive response as inputStream
+	    						inputStream = httpResponse.getEntity().getContent();
+
+	    						// 10. convert inputstream to string
+	    						if(inputStream != null)
+	    							msg = "it worked";
+	    						else
+	    							msg = "Did not work!";
+
+	    					} catch (Exception e) {
+	    						e.printStackTrace();
+	    					}
+	    					System.out.println(msg);
+	    					return msg;
+	    				}
+	    			}.execute(null, null, null);
+	    		}
+	    		/*try {
 					appData.getJSONArray("mates").put(nommate);
-				} catch (JSONException e) {}
+				} catch (JSONException e) {}*/
 	    	}
     	}
 		
@@ -257,10 +339,7 @@ public class MainActivity extends Activity{
 		 }
 		 else
 		 {
-			 Intent shareIntent = new Intent(Intent.ACTION_SEND);
-			 shareIntent.setType("text/plain");
-			 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Add me on Nom so we can schedule a meetup: http://nchinda2.mit.edu:666/FIRESCAR96");
-			 startActivity(Intent.createChooser(shareIntent, "Share via"));
+			 mainPagerAdapter.closed2.mediaShare(v);
 		 }
 	 } 
 

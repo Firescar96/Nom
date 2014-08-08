@@ -126,6 +126,22 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("event") != null)
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
+	                	JSONArray opMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("open");
+	                	JSONArray cloMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
+	                	for(int i = 0; i < opMsgs.length(); i++)
+	                	{
+		                	System.out.println(eveData.getString("hash"));
+		                	System.out.println(opMsgs.getJSONObject(i).getString("hash"));
+	                		if(eveData.getString("hash").equals(opMsgs.getJSONObject(i).getString("hash")))
+	                			return;
+	                	}
+	                	for(int i = 0; i < cloMsgs.length(); i++)
+	                	{
+		                	System.out.println(eveData.getString("hash"));
+		                	System.out.println(cloMsgs.getJSONObject(i).getString("hash"));
+	                		if(eveData.getString("hash").equals(cloMsgs.getJSONObject(i).getString("hash")))
+	                			return;
+	                	}
 	                	eveData.accumulate("member",false);
 	                	System.out.println(eveData.getLong("date"));
 	                	System.out.println(Calendar.getInstance().getTimeInMillis());
@@ -154,7 +170,9 @@ public class GCMIntentService extends IntentService {
 	                	{
 	                		System.out.println(chatData.getLong("date"));
 	                		System.out.println(Long.parseLong(opMsgs.getJSONObject(i).getString("date")));
-	                		if(chatData.getString("host").equals(opMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(opMsgs.getJSONObject(i).getString("date")))
+	                		if(chatData.getString("host").equals(opMsgs.getJSONObject(i).getString("host")) && 
+	                				chatData.getString("location").equals(opMsgs.getJSONObject(i).getString("location")) &&
+	                				chatData.getLong("date") == Long.parseLong(opMsgs.getJSONObject(i).getString("date")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
 	                			msgSon.accumulate("author", chatData.getString("author"));
