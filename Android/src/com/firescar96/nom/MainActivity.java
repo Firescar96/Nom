@@ -130,7 +130,7 @@ public class MainActivity extends Activity{
 
 	    						// 3. build jsonObject
 	    						JSONObject jsonObject = new JSONObject();
-	    						jsonObject.accumulate("host", context.appData.getString("host"));
+	    						jsonObject.accumulate("to", context.appData.getString("host"));
 	    						jsonObject.accumulate("hash", data.substring(1));
 
 	    						// 4. convert JSONObject to JSON to String
@@ -278,6 +278,63 @@ public class MainActivity extends Activity{
 		 return true;
 	 }
 
+	 public void sendJSONToBackend(final JSONObject jsonObject)
+		{
+			new AsyncTask<Object, Object, Object>() {
+				@Override
+				protected Object doInBackground(Object... arg0) {
+					String msg = "";
+					InputStream inputStream = null;
+
+					try {
+
+						// 1. create HttpClient
+						HttpClient httpclient = new DefaultHttpClient();
+
+						// 2. make POST request to the given URL
+						HttpPost httpPost = new HttpPost("http://nchinda2.mit.edu:666");
+
+						String json = "";
+
+						// 4. convert JSONObject to JSON to String
+						json = jsonObject.toString();
+
+						// 5. set json to StringEntity
+						StringEntity se = new StringEntity(json);
+
+						// 6. set httpPost Entity
+						httpPost.setEntity(se);
+
+						// 7. Set some headers to inform server about the type of the content   
+						httpPost.setHeader("Accept", "application/json");
+						httpPost.setHeader("Content-type", "application/json");
+
+						HttpParams httpParams = httpclient.getParams();
+						HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+						HttpConnectionParams.setSoTimeout(httpParams, 5000);
+						httpPost.setParams(httpParams);
+
+						// 8. Execute POST request to the given URL
+						System.out.println("executing"+json);
+						HttpResponse httpResponse = httpclient.execute(httpPost);
+						// 9. receive response as inputStream
+						inputStream = httpResponse.getEntity().getContent();
+
+						// 10. convert inputstream to string
+						if(inputStream != null)
+							msg = "it worked";
+						else
+							msg = "Did not work!";
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					System.out.println(msg);
+					return msg;
+				}
+			}.execute(null, null, null);
+		}
+	 
 	 public void onPrivacySelect(View v)
 	 {
 		 try {
