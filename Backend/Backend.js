@@ -174,11 +174,11 @@ var HandleData = function(query)
 		} else	
 		{
 			var nxtUsr = query.to.split(',');
-			console.log(nxtUsr);
+			//console.log(nxtUsr);
 			var toUsr = [];
 			for(var i in nxtUsr)
 			{
-			console.log(nxtUsr[i]);
+			//console.log(nxtUsr[i]);
 				toUsr.push(Users.findOne({name:nxtUsr[i]}));
 			}
 		}
@@ -194,13 +194,14 @@ var HandleData = function(query)
 		    });
 		}
 	}
-	
-	if(query.hash != undefined)
+	else
 	{
-		var toUsr = [];
+		var toUsr = Users.find({}).fetch();
+
 		toUsr.push(Users.findOne({name:query.to}));
 	}	
-	
+
+	console.log(toUsr)	
 	for(var i in toUsr)
 	{
 		console.log(toUsr[i]);
@@ -212,7 +213,7 @@ var HandleData = function(query)
 		else 
 			var hostUsr = Users.findOne({name:query.host});
 		//console.log(query.event.host);
-		//console.log(toUsr[i].location);
+		console.log(toUsr[i].location);
 		//console.log(Users.findOne({name:query.event.host}));
 		if(toUsr[i].location.latitude != undefined)
 		{
@@ -233,6 +234,7 @@ var HandleData = function(query)
 		    		author:\""+query.author+"\",\
 		    		date:\""+query.date+"\",\
 		    		location:\""+query.location+"\",\
+				hash:\""+query.hash+"\",\
 		    		host:\""+query.host+"\"\
 		    	}"
 			};
@@ -244,6 +246,7 @@ var HandleData = function(query)
 		        	console.log("Sent with message ID: ", messageId);
 		    	}
 			});
+			return;
 		}
 	
 		if(toUsr[i].regId && query.event != null)
