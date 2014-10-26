@@ -1,0 +1,397 @@
+TNom
+v7
+r0
+t430036843.206092
+cCheck dependencies
+cProcessInfoPlistFile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Info.plist Nom-Info.plist
+cCompileXIB /Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib
+cCompileXIB /Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib
+cProcessPCH /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch.gch Nom_Prefix.pch normal i386 objective-c com.apple.compilers.gcc.4_2
+cCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/main.o /Users/nchindafam/Documents/AppTicks/Nom/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
+cCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/NomAppDelegate.o /Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m normal i386 objective-c com.apple.compilers.gcc.4_2
+cCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/MainViewController.o /Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
+cLd /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom normal i386
+cGenerateDSYMFile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app.dSYM /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk
+c000000004D5C9B4E0000000000000110
+t1297914702
+s272
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics
+c000000004D54CFFA00000000002999B0
+t1297403898
+s2726320
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/System/Library/Frameworks/Foundation.framework/Foundation
+c000000004D54CFE5000000000029DA70
+t1297403877
+s2742896
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
+c000000004D54CFB80000000000001466
+t1297403832
+s5222
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIKit.h
+c000000004D5615B40000000000000AA1
+t1297487284
+s2721
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/System/Library/Frameworks/UIKit.framework/UIKit
+c000000004D5616030000000000766870
+t1297487363
+s7759984
+
+N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/include/Availability.h
+c000000004D4F7A2B0000000000001B19
+t1297054251
+s6937
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.h
+c0000000053EE88EE0000000000000133
+t1408141550
+s307
+i<UIKit/UIKit.h>
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m
+c0000000053EE8A0000000000000010B7
+t1408141824
+s4279
+i"MainViewController.h"
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.h
+c0000000053EE8ADD000000000000013E
+t1408142045
+s318
+i<UIKit/UIKit.h>
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m
+c0000000053F199EA0000000000000A04
+t1408342506
+s2564
+i"NomAppDelegate.h"
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.h
+c00000000000000000000000000000000
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m
+c00000000000000000000000000000000
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib
+c0000000053F19A64000000000000051E
+t1408342628
+s1310
+
+N/Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib
+c0000000053F195EF0000000000005379
+t1408341487
+s21369
+
+N/Users/nchindafam/Documents/AppTicks/Nom/Nom_Prefix.pch
+c0000000053EE40DA0000000000000138
+t1408123098
+s312
+i<Availability.h>
+i<Foundation/Foundation.h>
+i<UIKit/UIKit.h>
+
+N/Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib
+c0000000053EE40DA000000000000444E
+t1408123098
+s17486
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app
+t1408344043
+s170
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app.dSYM
+t1408344043
+s102
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Info.plist
+t1408341925
+s575
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/MainWindow.nib
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/MainWindowOLD.nib
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom
+t1408344043
+s17600
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/PkgInfo
+t1408341925
+s8
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/RootViewController.nib
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/MainViewController.o
+t1408341605
+s41684
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/Nom.LinkFileList
+c0000000053F196640000000000000174
+t1408341604
+s372
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/NomAppDelegate.o
+t1408344042
+s47316
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/RootViewController.o
+t2
+s0
+
+N/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/main.o
+t1408341605
+s6316
+
+N/Users/nchindafam/Documents/AppTicks/Nom/main.m
+c0000000053EE40DA0000000000000164
+t1408123098
+s356
+i<UIKit/UIKit.h>
+
+N/var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch.gch
+t1408123236
+s15814064
+
+NNom-Info.plist
+c0000000053F197A3000000000000038D
+t1408341923
+s909
+
+CCheck dependencies
+r0
+lSLF07#2@18"Check dependencies430036837#430036839#0(0"0(0#1#0"17199508480#0"0#
+
+CCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/MainViewController.o /Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
+s430034404.221139
+e430034405.176093
+r1
+xCompileC
+xbuild/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/MainViewController.o
+x/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m:164: warning: property 'window' requires method '-window' to be defined - use @synthesize, @dynamic or provide a method implementation
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m:164: warning: property 'window' requires the method 'setWindow:' to be defined - use @synthesize, @dynamic or provide a method implementation
+lSLF07#2@77"Compile /Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m430034404#430034405#0(417"/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m:164: warning: property 'window' requires method '-window' to be defined - use @synthesize, @dynamic or provide a method implementation/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m:164: warning: property 'window' requires the method 'setWindow:' to be defined - use @synthesize, @dynamic or provide a method implementation2(22@120"Property 'window' requires method '-window' to be defined - use @synthesize, @dynamic or provide a method implementation430034405#0#205#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m429834624#164#0#164#0#0"0(22@127"Property 'window' requires the method 'setWindow:' to be defined - use @synthesize, @dynamic or provide a method implementation430034405#205#212#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m429834624#164#0#164#0#0"0(0#0#69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m4317954048#1888"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-generated-files.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-own-target-headers.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-all-target-headers.hmap -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-project-headers.hmap -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -I/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/include -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources/i386 -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources -include /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch -c /Users/nchindafam/Documents/AppTicks/Nom/Classes/MainViewController.m -o /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/MainViewController.o0#
+
+CCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/NomAppDelegate.o /Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m normal i386 objective-c com.apple.compilers.gcc.4_2
+s430036841.140923
+e430036842.129286
+r1
+xCompileC
+xbuild/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/NomAppDelegate.o
+x/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m: In function '-[NomAppDelegate application:didFinishLaunchingWithOptions:]':
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: 'UIView' may not respond to '-makeKeyAndVisible'
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: (Messages without a matching method signature
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: will be assumed to return 'id' and accept
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: '...' as arguments.)
+lSLF07#2@73"Compile /Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m430036841#430036842#0(617"/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m: In function '-[NomAppDelegate application:didFinishLaunchingWithOptions:]':/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: 'UIView' may not respond to '-makeKeyAndVisible'/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: (Messages without a matching method signature/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: will be assumed to return 'id' and accept/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m:24: warning: '...' as arguments.)2(22@48"'UIView' may not respond to '-makeKeyAndVisible'430036842#143#128#0(6@65"/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m430035306#24#0#24#0#26"'*' may not respond to '*'0(13@108"(Messages without a matching method signature will be assumed to return 'id' and accept '...' as arguments.)430036842#271#125#0(6@65"/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m430035306#24#0#24#0#0"0(0#0#65"/Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m4317954048#1880"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-generated-files.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-own-target-headers.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-all-target-headers.hmap -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-project-headers.hmap -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -I/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/include -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources/i386 -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources -include /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch -c /Users/nchindafam/Documents/AppTicks/Nom/Classes/NomAppDelegate.m -o /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/NomAppDelegate.o0#
+
+CCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/RootViewController.o /Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
+s429822425.595597
+e429822429.415196
+r0
+xCompileC
+xbuild/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/RootViewController.o
+x/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:9:31: error: RootViewController.h: No such file or directory
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:61: warning: cannot find interface declaration for 'RootViewController'
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m: In function '-[RootViewController didReceiveMemoryWarning]':
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:148: error: no super class declared in @interface for 'RootViewController'
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m: In function '-[RootViewController dealloc]':
+o/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:160: error: no super class declared in @interface for 'RootViewController'
+o{standard input}:128:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_3" minus "L00000000001$pb"
+o{standard input}:128:symbol: "L_OBJC_SELECTOR_REFERENCES_3" can't be undefined in a subtraction expression
+o{standard input}:120:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_2" minus "L00000000001$pb"
+o{standard input}:120:symbol: "L_OBJC_SELECTOR_REFERENCES_2" can't be undefined in a subtraction expression
+o{standard input}:112:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_1" minus "L00000000001$pb"
+o{standard input}:112:symbol: "L_OBJC_SELECTOR_REFERENCES_1" can't be undefined in a subtraction expression
+o{standard input}:109:non-relocatable subtraction expression, "L_OBJC_CLASSLIST_REFERENCES_$_0" minus "L00000000001$pb"
+o{standard input}:109:symbol: "L_OBJC_CLASSLIST_REFERENCES_$_0" can't be undefined in a subtraction expression
+o{standard input}:98:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_0" minus "L00000000001$pb"
+o{standard input}:98:symbol: "L_OBJC_SELECTOR_REFERENCES_0" can't be undefined in a subtraction expression
+o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_0
+o{standard input}:unknown:Undefined local symbol L_OBJC_CLASSLIST_REFERENCES_$_0
+o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_1
+o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_2
+o{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_3
+lSLF07#2@77"Compile /Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m429822425#429822429#0(2318"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:9:31: error: RootViewController.h: No such file or directory/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:61: warning: cannot find interface declaration for 'RootViewController'/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m: In function '-[RootViewController didReceiveMemoryWarning]':/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:148: error: no super class declared in @interface for 'RootViewController'/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m: In function '-[RootViewController dealloc]':/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m:160: error: no super class declared in @interface for 'RootViewController'{standard input}:128:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_3" minus "L00000000001$pb"{standard input}:128:symbol: "L_OBJC_SELECTOR_REFERENCES_3" can't be undefined in a subtraction expression{standard input}:120:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_2" minus "L00000000001$pb"{standard input}:120:symbol: "L_OBJC_SELECTOR_REFERENCES_2" can't be undefined in a subtraction expression{standard input}:112:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_1" minus "L00000000001$pb"{standard input}:112:symbol: "L_OBJC_SELECTOR_REFERENCES_1" can't be undefined in a subtraction expression{standard input}:109:non-relocatable subtraction expression, "L_OBJC_CLASSLIST_REFERENCES_$_0" minus "L00000000001$pb"{standard input}:109:symbol: "L_OBJC_CLASSLIST_REFERENCES_$_0" can't be undefined in a subtraction expression{standard input}:98:non-relocatable subtraction expression, "L_OBJC_SELECTOR_REFERENCES_0" minus "L00000000001$pb"{standard input}:98:symbol: "L_OBJC_SELECTOR_REFERENCES_0" can't be undefined in a subtraction expression{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_0{standard input}:unknown:Undefined local symbol L_OBJC_CLASSLIST_REFERENCES_$_0{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_1{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_2{standard input}:unknown:Undefined local symbol L_OBJC_SELECTOR_REFERENCES_34(4@47"RootViewController.h: No such file or directory429822428#0#131#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m429815898#9#0#9#0#28"*: No such file or directory0(22@58"Cannot find interface declaration for 'RootViewController'429822428#131#142#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m429815898#61#0#61#0#0"0(4@62"No super class declared in @interface for 'RootViewController'429822429#405#145#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m429815898#148#0#148#0#0"0(4@62"No super class declared in @interface for 'RootViewController'429822429#666#145#0(6@69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m429815898#160#0#160#0#0"0(0#0#69"/Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m4317954048#1888"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-generated-files.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-own-target-headers.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-all-target-headers.hmap -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-project-headers.hmap -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -I/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/include -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources/i386 -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources -include /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch -c /Users/nchindafam/Documents/AppTicks/Nom/Classes/RootViewController.m -o /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/RootViewController.o1#
+
+CCompileC build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/main.o /Users/nchindafam/Documents/AppTicks/Nom/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
+s430034404.219948
+e430034405.142523
+r1
+xCompileC
+xbuild/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/main.o
+x/Users/nchindafam/Documents/AppTicks/Nom/main.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+lSLF07#2@55"Compile /Users/nchindafam/Documents/AppTicks/Nom/main.m430034404#430034405#0(0"0(0#0#47"/Users/nchindafam/Documents/AppTicks/Nom/main.m4317954048#1852"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-generated-files.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-own-target-headers.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-all-target-headers.hmap -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-project-headers.hmap -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -I/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/include -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources/i386 -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources -include /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch -c /Users/nchindafam/Documents/AppTicks/Nom/main.m -o /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/main.o0#
+
+CCompileXIB /Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib
+s430036839.442043
+e430036841.140393
+r0
+xCompileXIB
+x/Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib
+o/* com.apple.ibtool.errors */
+o/Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib: error: Interface Builder was unable to determine the type of "MainWindow.xib".
+lSLF07#2@25"CompileXIB MainWindow.xib430036839#430036841#0(166"/* com.apple.ibtool.errors *//Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib: error: Interface Builder was unable to determine the type of "MainWindow.xib".1(4@71"Interface Builder was unable to determine the type of "MainWindow.xib".430036841#18446744073709551615#0#0(6@55"/Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib430035428#0#0#0#0#0"0(0#0#55"/Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib4317954048#572"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 4.3    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/MainWindow.nib /Users/nchindafam/Documents/AppTicks/Nom/MainWindow.xib --sdk /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk1#
+
+CCompileXIB /Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib
+s430036839.390685
+e430036841.139815
+r0
+xCompileXIB
+x/Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib
+o/* com.apple.ibtool.errors */
+o/Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib: error: Interface Builder was unable to determine the type of "MainWindowOLD.xib".
+lSLF07#2@28"CompileXIB MainWindowOLD.xib430036839#430036841#0(172"/* com.apple.ibtool.errors *//Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib: error: Interface Builder was unable to determine the type of "MainWindowOLD.xib".1(4@74"Interface Builder was unable to determine the type of "MainWindowOLD.xib".430036841#18446744073709551615#0#0(6@58"/Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib430034287#0#0#0#0#0"0(0#0#58"/Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib17200367616#578"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 4.3    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/MainWindowOLD.nib /Users/nchindafam/Documents/AppTicks/Nom/MainWindowOLD.xib --sdk /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk1#
+
+CCompileXIB /Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib
+s429833882.259688
+e429833884.662393
+r0
+xCompileXIB
+x/Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib
+odyld: lazy symbol binding failed: Symbol not found: _pthread_workqueue_attr_init_np
+o  Referenced from: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/system/libdispatch_sim.dylib
+o  Expected in: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/libSystem.dylib
+o
+odyld: Symbol not found: _pthread_workqueue_attr_init_np
+o  Referenced from: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/system/libdispatch_sim.dylib
+o  Expected in: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/libSystem.dylib
+o
+o2014-08-15 17:18:04.128 ibtool[2805:d07] Assertion Failure: [toolTask isRunning]
+o2014-08-15 17:18:04.130 ibtool[2805:d07] File: /SourceCache/IBCocoaTouchPlugin/IBCocoaTouchPlugin-141/IBPlugin/Utilities/IBObjectMarshalling.m
+o2014-08-15 17:18:04.130 ibtool[2805:d07] Line: 140
+o2014-08-15 17:18:04.655 ibtool[2805:d07] Backtrace:
+o0   IBCocoaTouchPlugin               0x0000000107d54a20 IBAttachToCocoaTouchTool + 1669
+o1   IBCocoaTouchPlugin               0x0000000107d52af3 IBAskClassInTargetRuntimeForValueForKeyPathUsingResultMarshallerWithContext + 147
+o2   IBCocoaTouchPlugin               0x0000000107dca8dc IBIPhoneSDKVersionForSDKIdentifier + 2796
+o3   IBCocoaTouchPlugin               0x0000000107dca49c IBIPhoneSDKVersionForSDKIdentifier + 1708
+o4   IBCocoaTouchPlugin               0x0000000107dca4df IBIPhoneSDKVersionForSDKIdentifier + 1775
+o5   IBCocoaTouchPlugin               0x0000000107d4f64d IBReplaceClassNamePrefixWith + 1588
+o6   IBCocoaTouchPlugin               0x0000000107d53482 IBBuildMarshalledDescriptionOfDocument + 2093
+o7   IBCocoaTouchPlugin               0x0000000107d4d169 IBBestTargetRuntimeForConversionFromTargetRuntime + 18393
+o8   IBCocoaTouchPlugin               0x0000000107d48901 IBUISegmentConfiguration + 2375
+o9   ibtool                           0x00000001000079cf
+o10  ibtool                           0x00000001000064de
+o11  ibtool                           0x0000000100002803
+o12  ibtool                           0x000000010000146c
+o
+o2014-08-15 17:18:04.656 ibtool[2805:d07] Message: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.
+o2014-08-15 17:18:04.656 ibtool[2805:d07] Assertion Failure: NO
+o2014-08-15 17:18:04.657 ibtool[2805:d07] File: /SourceCache/IBCocoaTouchPlugin/IBCocoaTouchPlugin-141/IBPlugin/Utilities/IBObjectMarshalling.m
+o2014-08-15 17:18:04.657 ibtool[2805:d07] Line: 351
+o2014-08-15 17:18:04.658 ibtool[2805:d07] Backtrace:
+o0   IBCocoaTouchPlugin               0x0000000107d52bb6 IBAskClassInTargetRuntimeForValueForKeyPathUsingResultMarshallerWithContext + 342
+o1   IBCocoaTouchPlugin               0x0000000107dca8dc IBIPhoneSDKVersionForSDKIdentifier + 2796
+o2   IBCocoaTouchPlugin               0x0000000107dca49c IBIPhoneSDKVersionForSDKIdentifier + 1708
+o3   IBCocoaTouchPlugin               0x0000000107dca4df IBIPhoneSDKVersionForSDKIdentifier + 1775
+o4   IBCocoaTouchPlugin               0x0000000107d4f64d IBReplaceClassNamePrefixWith + 1588
+o5   IBCocoaTouchPlugin               0x0000000107d53482 IBBuildMarshalledDescriptionOfDocument + 2093
+o6   IBCocoaTouchPlugin               0x0000000107d4d169 IBBestTargetRuntimeForConversionFromTargetRuntime + 18393
+o7   IBCocoaTouchPlugin               0x0000000107d48901 IBUISegmentConfiguration + 2375
+o8   ibtool                           0x00000001000079cf
+o9   ibtool                           0x00000001000064de
+o10  ibtool                           0x0000000100002803
+o11  ibtool                           0x000000010000146c
+o
+o2014-08-15 17:18:04.659 ibtool[2805:d07] Message: Interface Builder encountered an error communicating with the iPhone Simulator. If you choose to file a crash report or radar for this issue, please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" and include their content in your crash report.
+o
+oFailed to determine the value for systemColors of UIColor.
+o
+oException name: IBAssertionFailure
+oException reason: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.
+oException backtrace: 
+o(null)
+oException info:(null)
+o
+o/* com.apple.ibtool.errors */
+o/Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib: error: ibtool failed with exception: Interface Builder encountered an error communicating with the iPhone Simulator. If you choose to file a crash report or radar for this issue, please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" and include their content in your crash report.
+o
+oFailed to determine the value for systemColors of UIColor.
+o
+oException name: IBAssertionFailure
+oException reason: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.
+oException backtrace: 
+o(null)
+oException info:(null)
+o
+o
+lSLF07#2@33"CompileXIB RootViewController.xib429833882#429833884#0(5439"dyld: lazy symbol binding failed: Symbol not found: _pthread_workqueue_attr_init_np  Referenced from: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/system/libdispatch_sim.dylib  Expected in: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/libSystem.dylibdyld: Symbol not found: _pthread_workqueue_attr_init_np  Referenced from: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/system/libdispatch_sim.dylib  Expected in: /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/usr/lib/libSystem.dylib2014-08-15 17:18:04.128 ibtool[2805:d07] Assertion Failure: [toolTask isRunning]2014-08-15 17:18:04.130 ibtool[2805:d07] File: /SourceCache/IBCocoaTouchPlugin/IBCocoaTouchPlugin-141/IBPlugin/Utilities/IBObjectMarshalling.m2014-08-15 17:18:04.130 ibtool[2805:d07] Line: 1402014-08-15 17:18:04.655 ibtool[2805:d07] Backtrace:0   IBCocoaTouchPlugin               0x0000000107d54a20 IBAttachToCocoaTouchTool + 16691   IBCocoaTouchPlugin               0x0000000107d52af3 IBAskClassInTargetRuntimeForValueForKeyPathUsingResultMarshallerWithContext + 1472   IBCocoaTouchPlugin               0x0000000107dca8dc IBIPhoneSDKVersionForSDKIdentifier + 27963   IBCocoaTouchPlugin               0x0000000107dca49c IBIPhoneSDKVersionForSDKIdentifier + 17084   IBCocoaTouchPlugin               0x0000000107dca4df IBIPhoneSDKVersionForSDKIdentifier + 17755   IBCocoaTouchPlugin               0x0000000107d4f64d IBReplaceClassNamePrefixWith + 15886   IBCocoaTouchPlugin               0x0000000107d53482 IBBuildMarshalledDescriptionOfDocument + 20937   IBCocoaTouchPlugin               0x0000000107d4d169 IBBestTargetRuntimeForConversionFromTargetRuntime + 183938   IBCocoaTouchPlugin               0x0000000107d48901 IBUISegmentConfiguration + 23759   ibtool                           0x00000001000079cf10  ibtool                           0x00000001000064de11  ibtool                           0x000000010000280312  ibtool                           0x000000010000146c2014-08-15 17:18:04.656 ibtool[2805:d07] Message: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.2014-08-15 17:18:04.656 ibtool[2805:d07] Assertion Failure: NO2014-08-15 17:18:04.657 ibtool[2805:d07] File: /SourceCache/IBCocoaTouchPlugin/IBCocoaTouchPlugin-141/IBPlugin/Utilities/IBObjectMarshalling.m2014-08-15 17:18:04.657 ibtool[2805:d07] Line: 3512014-08-15 17:18:04.658 ibtool[2805:d07] Backtrace:0   IBCocoaTouchPlugin               0x0000000107d52bb6 IBAskClassInTargetRuntimeForValueForKeyPathUsingResultMarshallerWithContext + 3421   IBCocoaTouchPlugin               0x0000000107dca8dc IBIPhoneSDKVersionForSDKIdentifier + 27962   IBCocoaTouchPlugin               0x0000000107dca49c IBIPhoneSDKVersionForSDKIdentifier + 17083   IBCocoaTouchPlugin               0x0000000107dca4df IBIPhoneSDKVersionForSDKIdentifier + 17754   IBCocoaTouchPlugin               0x0000000107d4f64d IBReplaceClassNamePrefixWith + 15885   IBCocoaTouchPlugin               0x0000000107d53482 IBBuildMarshalledDescriptionOfDocument + 20936   IBCocoaTouchPlugin               0x0000000107d4d169 IBBestTargetRuntimeForConversionFromTargetRuntime + 183937   IBCocoaTouchPlugin               0x0000000107d48901 IBUISegmentConfiguration + 23758   ibtool                           0x00000001000079cf9   ibtool                           0x00000001000064de10  ibtool                           0x000000010000280311  ibtool                           0x000000010000146c2014-08-15 17:18:04.659 ibtool[2805:d07] Message: Interface Builder encountered an error communicating with the iPhone Simulator. If you choose to file a crash report or radar for this issue, please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" and include their content in your crash report.Failed to determine the value for systemColors of UIColor.Exception name: IBAssertionFailureException reason: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.Exception backtrace: (null)Exception info:(null)/* com.apple.ibtool.errors *//Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib: error: ibtool failed with exception: Interface Builder encountered an error communicating with the iPhone Simulator. If you choose to file a crash report or radar for this issue, please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" and include their content in your crash report.Failed to determine the value for systemColors of UIColor.Exception name: IBAssertionFailureException reason: Interface Builder encountered an error communicating with the iPhone Simulator. "Interface Builder Cocoa Touch Tool" (2806) failed to launch and exited with status 5. Please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" for further information.Exception backtrace: (null)Exception info:(null)1(4@303"ibtool failed with exception: Interface Builder encountered an error communicating with the iPhone Simulator. If you choose to file a crash report or radar for this issue, please check Console.app for crash reports for "Interface Builder Cocoa Touch Tool" and include their content in your crash report.429833884#18446744073709551615#0#0(6@63"/Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib429815898#0#0#0#0#0"0(0#0#63"/Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib17198188288#588"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 4.3    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/RootViewController.nib /Users/nchindafam/Documents/AppTicks/Nom/RootViewController.xib --sdk /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk1#
+
+CGenerateDSYMFile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app.dSYM /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom
+s430036843.138537
+e430036843.206016
+r1
+xGenerateDSYMFile
+x/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app.dSYM
+x/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom
+lSLF07#2@97"GenerateDSYMFile build/Debug-iphonesimulator/Nom.app.dSYM build/Debug-iphonesimulator/Nom.app/Nom430036843#430036843#0(0"0(0#0#80"/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom4317954048#377"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/dsymutil /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom -o /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app.dSYM0#
+
+CLd /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom normal i386
+s430036842.129340
+e430036843.138417
+r1
+xLd
+x/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom
+xnormal
+xi386
+lSLF07#2@85"Link /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom430036842#430036843#0(0"0(0#0#0"4317954048#890"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv MACOSX_DEPLOYMENT_TARGET 10.6    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -arch i386 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -L/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -filelist /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Objects-normal/i386/Nom.LinkFileList -mmacosx-version-min=10.6 -Xlinker -objc_abi_version -Xlinker 2 -framework Foundation -framework UIKit -framework CoreGraphics -o /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Nom0#
+
+CProcessInfoPlistFile /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Info.plist Nom-Info.plist
+s430034725.426289
+e430034725.428948
+r1
+xProcessInfoPlistFile
+x/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Info.plist
+xNom-Info.plist
+lSLF07#2@22"Process Nom-Info.plist430034725#430034725#0(0"0(0#0#55"/Users/nchindafam/Documents/AppTicks/Nom/Nom-Info.plist4317954048#473"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    builtin-infoPlistUtility Nom-Info.plist -genpkginfo /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -o /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app/Info.plist0#
+
+CProcessPCH /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch.gch Nom_Prefix.pch normal i386 objective-c com.apple.compilers.gcc.4_2
+s429816035.658354
+e429816036.443779
+r1
+xProcessPCH
+x/var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch.gch
+xNom_Prefix.pch
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+lSLF07#2@25"Precompile Nom_Prefix.pch429816035#429816036#0(0"0(0#0#55"/Users/nchindafam/Documents/AppTicks/Nom/Nom_Prefix.pch17248244224#1746"    cd /Users/nchindafam/Documents/AppTicks/Nom    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c-header -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-generated-files.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-own-target-headers.hmap -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-all-target-headers.hmap -iquote /Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/Nom-project-headers.hmap -F/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator -I/Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/include -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources/i386 -I/Users/nchindafam/Documents/AppTicks/Nom/build/Nom.build/Debug-iphonesimulator/Nom.build/DerivedSources -c /Users/nchindafam/Documents/AppTicks/Nom/Nom_Prefix.pch -o /var/folders/hf/dwbsg6_517q86ytfk22zbwg80000gn/C/com.apple.Xcode.501/SharedPrecompiledHeaders/Nom_Prefix-afttjewsrtiggzfhgqwfyxjurnhx/Nom_Prefix.pch.gch0#
+
+CTouch /Users/nchindafam/Documents/AppTicks/Nom/build/Debug-iphonesimulator/Nom.app
+r0
+
