@@ -1,25 +1,10 @@
 package com.firescar96.nom.fragment;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Locale;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
@@ -28,17 +13,14 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.SparseBooleanArray;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +33,8 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-public class ClosedShareFragment2 extends Fragment {
-	static MainActivity context = MainActivity.context;
+public class ClosedShareFragment2 extends ShareFragment {
+	static MainActivity context;
 
 
 	static ClosedShareFragment2 thisFrag;
@@ -66,9 +48,10 @@ public class ClosedShareFragment2 extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
 		thisFrag = this;
+		context = (MainActivity) getActivity();
 		frame = inflater.inflate(R.layout.fragment_add_closed2, container, false);
 		try {
-			mateData = context.appData.getJSONArray("mates");
+			mateData = MainActivity.appData.getJSONArray("mates");
 		} catch (JSONException e) {}
 		mateList = new ArrayList<String>();
 		mateSelected = new ArrayList<Boolean>();
@@ -113,7 +96,7 @@ public class ClosedShareFragment2 extends Fragment {
 							mateData.put(mateList.get(i));
 						}
 						try {
-							context.appData.put("mates", mateData);
+							MainActivity.appData.put("mates", mateData);
 						} catch (JSONException e) {}
 						view.setBackground(null);
    	            		mateAdapter.notifyDataSetChanged();
@@ -147,7 +130,7 @@ public class ClosedShareFragment2 extends Fragment {
 	public static void populateUsers()
 	{
 		try {
-			mateData = context.appData.getJSONArray("mates");	
+			mateData = MainActivity.appData.getJSONArray("mates");	
 			mateList.clear();
 			for(int i=0; i< mateData.length(); i++)
 			{
@@ -159,161 +142,46 @@ public class ClosedShareFragment2 extends Fragment {
 	}
 
 	public void closeShare(View v) {
+
+		String groupMatesNames = "";
 		try {
-			ListView listView = (ListView) context.findViewById(R.id.matesList);
-			SparseBooleanArray groupMates = listView.getCheckedItemPositions();
-			String groupMatesNames = "";
-			JSONArray useDat = context.appData.getJSONArray("mates");
+			JSONArray useDat;
+			useDat = MainActivity.appData.getJSONArray("mates");
 			for (int i = 0; i < mateSelected.size(); i++) {
 				System.out.println(i);
 				if (mateSelected.get(i))
 					groupMatesNames += "," + useDat.get(i);
 			}
-			System.out.println("groupMates " + groupMatesNames);
-			for (int i = 0; i < listView.getCheckedItemPositions().size(); i++)
-				System.out.println("checked positiions "
-						+ listView.getCheckedItemPositions().get(i));
-
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.accumulate("to", context.appData.getString("host")
-					+ groupMatesNames);
-			JSONObject eventSon = new JSONObject();
-			eventSon.accumulate("privacy", "closed");
-			TimePicker cloTime = (TimePicker) context
-					.findViewById(R.id.closeTime);
-			Calendar curTime = Calendar.getInstance();
-			curTime.set(curTime.get(Calendar.YEAR),
-					curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE),
-					cloTime.getCurrentHour(), cloTime.getCurrentMinute(), 0);
-			eventSon.accumulate("date", curTime.getTimeInMillis());
-			eventSon.accumulate("host", context.appData.getString("host"));
-			eventSon.accumulate("location", ((EditText) context
-					.findViewById(R.id.closeLocation)).getText());
-
-			byte[] hostBytes = context.appData.getString("host").getBytes(
-					"UTF-8");
-			Double longTime = Math.floor(curTime.getTimeInMillis() / 1000) * 1000;
-			byte[] timeBytes = longTime.toString().getBytes("UTF-8");
-			byte[] locBytes = ((EditText) context
-					.findViewById(R.id.closeLocation)).getText().toString()
-					.getBytes("UTF-8");
-			Byte[] hostByt = new Byte[hostBytes.length], timeByt = new Byte[timeBytes.length], locByt = new Byte[locBytes.length];
-			int i = 0;
-			for (byte b : hostBytes)
-				hostByt[i++] = b;
-			i = 0;
-			for (byte b : timeBytes)
-				timeByt[i++] = b;
-			i = 0;
-			for (byte b : locBytes)
-				locByt[i++] = b;
-
-			ArrayList<Byte> both = new ArrayList<Byte>(Arrays.asList(hostByt));
-			both.addAll(Arrays.asList(timeByt));
-			both.addAll(Arrays.asList(locByt));
-			i = 0;
-			byte[] hotilocBytes = new byte[both.size()];
-			for (Byte b : both) {
-				hotilocBytes[i++] = b.byteValue();
-			}
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			System.out.println(Arrays.toString(hotilocBytes));
-			byte[] thedigest;
-			md.update(hotilocBytes);
-			thedigest = md.digest();
-			BigInteger bigInt = new BigInteger(1, thedigest);
-			String digHash = bigInt.toString(30);
-			// System.out.println(Arrays.toString(thedigest));
-			System.out.println(digHash);
-			eventSon.accumulate("hash", digHash);
-			jsonObject.accumulate("event", eventSon);
-
-			context.sendJSONToBackend(jsonObject);
-		} catch (Exception e) {
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		TimePicker cloTime = (TimePicker) context.findViewById(R.id.closeTime);
+		Editable loc = ((EditText) context.findViewById(R.id.closeLocation)).getText();
+		
+		super.share(groupMatesNames,"closed",cloTime,loc,false);
 	}
 
 	public void mediaShare(View v) {
-		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		 shareIntent.setType("text/plain");
-		 try {
-			 ListView listView = (ListView) context.findViewById(R.id.matesList);
-			SparseBooleanArray groupMates = listView.getCheckedItemPositions();
-			String groupMatesNames = "";
-			JSONArray useDat = context.appData.getJSONArray("mates");
+		String groupMatesNames = "";
+		try {
+			JSONArray useDat;
+			useDat = MainActivity.appData.getJSONArray("mates");
 			for (int i = 0; i < mateSelected.size(); i++) {
 				System.out.println(i);
 				if (mateSelected.get(i))
 					groupMatesNames += "," + useDat.get(i);
 			}
-			System.out.println("groupMates " + groupMatesNames);
-			for (int i = 0; i < listView.getCheckedItemPositions().size(); i++)
-				System.out.println("checked positiions "
-						+ listView.getCheckedItemPositions().get(i));
-
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.accumulate("to", context.appData.getString("host")
-					+ groupMatesNames);
-			JSONObject eventSon = new JSONObject();
-			eventSon.accumulate("privacy", "closed");
-			TimePicker cloTime = (TimePicker) context
-					.findViewById(R.id.closeTime);
-			Calendar curTime = Calendar.getInstance();
-			curTime.set(curTime.get(Calendar.YEAR),
-					curTime.get(Calendar.MONTH), curTime.get(Calendar.DATE),
-					cloTime.getCurrentHour(), cloTime.getCurrentMinute(), 0);
-			eventSon.accumulate("date", curTime.getTimeInMillis());
-			eventSon.accumulate("host", context.appData.getString("host"));
-			eventSon.accumulate("location", ((EditText) context
-					.findViewById(R.id.closeLocation)).getText());
-
-			byte[] hostBytes = context.appData.getString("host").getBytes(
-					"UTF-8");
-			Double longTime = Math.floor(curTime.getTimeInMillis() / 1000) * 1000;
-			byte[] timeBytes = longTime.toString().getBytes("UTF-8");
-			byte[] locBytes = ((EditText) context
-					.findViewById(R.id.closeLocation)).getText().toString()
-					.getBytes("UTF-8");
-			Byte[] hostByt = new Byte[hostBytes.length], timeByt = new Byte[timeBytes.length], locByt = new Byte[locBytes.length];
-			int i = 0;
-			for (byte b : hostBytes)
-				hostByt[i++] = b;
-			i = 0;
-			for (byte b : timeBytes)
-				timeByt[i++] = b;
-			i = 0;
-			for (byte b : locBytes)
-				locByt[i++] = b;
-
-			ArrayList<Byte> both = new ArrayList<Byte>(Arrays.asList(hostByt));
-			both.addAll(Arrays.asList(timeByt));
-			both.addAll(Arrays.asList(locByt));
-			i = 0;
-			byte[] hotilocBytes = new byte[both.size()];
-			for (Byte b : both) {
-				hotilocBytes[i++] = b.byteValue();
-			}
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			System.out.println(Arrays.toString(hotilocBytes));
-			byte[] thedigest;
-			md.update(hotilocBytes);
-			thedigest = md.digest();
-			BigInteger bigInt = new BigInteger(1, thedigest);
-			String digHash = bigInt.toString(30);
-			// System.out.println(Arrays.toString(thedigest));
-			System.out.println(digHash);
-			eventSon.accumulate("hash", digHash);
-			jsonObject.accumulate("event", eventSon);
-			context.sendJSONToBackend(jsonObject);
-				
-			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "I'm hosting an event on Nom: http://nchinda2.mit.edu:666/e"+digHash);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		 startActivity(Intent.createChooser(shareIntent, "Share via"));
-		 } catch (JSONException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		TimePicker cloTime = (TimePicker) context.findViewById(R.id.closeTime);
+		Editable loc = ((EditText) context.findViewById(R.id.closeLocation)).getText();
+		
+		super.share(groupMatesNames,"closed",cloTime,loc,true);
 	}
 	
 	public void addNommate(View v)
@@ -337,7 +205,7 @@ public class ClosedShareFragment2 extends Fragment {
 				public void onClick(DialogInterface dialog, int id) {
 					EditText name = (EditText) popView.findViewById(R.id.hostnameText);
 					try {
-						context.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase(Locale.US));
+						MainActivity.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase(Locale.US));
 						populateUsers();
 					} catch (JSONException e) {
 						e.printStackTrace();

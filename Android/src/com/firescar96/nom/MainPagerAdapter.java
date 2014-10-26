@@ -1,12 +1,16 @@
 package com.firescar96.nom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 
 import com.firescar96.nom.fragment.ClosedShareFragment1;
 import com.firescar96.nom.fragment.ClosedShareFragment2;
@@ -21,25 +25,22 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
 	MainActivity context = MainActivity.context;
 	
-	public MainFragment main;
-	public OpenShareFragment open;
-	public ClosedShareFragment1 closed1;
-	public ClosedShareFragment2 closed2;
+	private MainFragment main;
+	private OpenShareFragment open;
+	private ClosedShareFragment1 closed1;
+	private ClosedShareFragment2 closed2;
 	
-	public ArrayList<Integer> oldFragments = new ArrayList<Integer>();
-	private ArrayList<Fragment> views = new ArrayList<Fragment>();
+	private SparseArray<Fragment> views = new SparseArray<Fragment>();
 	
 	private int pageCount = 1;
 	
     public MainPagerAdapter(FragmentManager fm) {
         super(fm);
     }
-
+    
     @Override
     public Fragment getItem(int position) {
-    	
     	Fragment newFragment = null;
-    	
         switch (position)
         {
         case 0:
@@ -68,7 +69,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
         	break;
         }
         
-        views.add(newFragment);
+        views.put(position,newFragment);
         return newFragment;
     }
 
@@ -100,15 +101,40 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getItemPosition(Object object)
     {
-    	int index = views.indexOf (object);
-    	for(int i = 0; i < oldFragments.size(); i++)
-    		if(oldFragments.get(i) == index)
-    		{
-    			views.remove(index);
-    			oldFragments.remove(i);
-    			return POSITION_NONE;
-    		}
-    	
-          return POSITION_UNCHANGED;
+    	for(int i=0; i < views.size(); i++)
+    		if(views.indexOfValue((Fragment) object) != -1)
+    	          return POSITION_UNCHANGED;
+    	return POSITION_NONE;
     }
+
+	public MainFragment getMain() {
+		if(main == null)
+			updateView(0);
+		return main;
+	}
+
+	public OpenShareFragment getOpen() {
+		if(open == null)
+			updateView(1);
+		return open;
+	}
+	
+	public ClosedShareFragment1 getClosed1() {
+		if(closed1 == null)
+			updateView(1);
+		return closed1;
+	}
+
+	public ClosedShareFragment2 getClosed2() {
+		if(closed2 == null)
+			updateView(2);
+		return closed2;
+	}
+	
+	public void updateView(int pos)
+	{
+		views.put(pos, null);
+		notifyDataSetChanged();
+	}
+    
 }

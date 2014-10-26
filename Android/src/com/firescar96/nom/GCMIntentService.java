@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
@@ -126,20 +124,12 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("event") != null)
 	                {
 	                	JSONObject eveData=new JSONObject("{\"event\":"+extras.get("event")+"}").getJSONObject("event");
-	                	JSONArray opMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("open");
-	                	JSONArray cloMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
-	                	for(int i = 0; i < opMsgs.length(); i++)
+	                	JSONArray eve = MainActivity.appData.getJSONArray("events");
+	                	for(int i = 0; i < eve.length(); i++)
 	                	{
 		                	System.out.println(eveData.getString("hash"));
-		                	System.out.println(opMsgs.getJSONObject(i).getString("hash"));
-	                		if(eveData.getString("hash").equals(opMsgs.getJSONObject(i).getString("hash")))
-	                			return;
-	                	}
-	                	for(int i = 0; i < cloMsgs.length(); i++)
-	                	{
-		                	System.out.println(eveData.getString("hash"));
-		                	System.out.println(cloMsgs.getJSONObject(i).getString("hash"));
-	                		if(eveData.getString("hash").equals(cloMsgs.getJSONObject(i).getString("hash")))
+		                	System.out.println(eve.getJSONObject(i).getString("hash"));
+	                		if(eveData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
 	                			return;
 	                	}
 	                	eveData.accumulate("member",false);
@@ -148,7 +138,7 @@ public class GCMIntentService extends IntentService {
 	                	if(eveData.getLong("date") < Calendar.getInstance().getTimeInMillis())
 	                		return;
 
-						MainActivity.appData.getJSONObject("events").getJSONArray(eveData.getString("privacy")).put(eveData);
+	                	eve.put(eveData);
 						Message msg = new Message();
 						Bundle data = new Bundle();
 						data.putString("type", "event."+eveData.getString("privacy"));
@@ -161,42 +151,15 @@ public class GCMIntentService extends IntentService {
 	                if(extras.get("chat") != null)
 	                {
 	                	JSONObject chatData=new JSONObject("{\"chat\":"+extras.get("chat")+"}").getJSONObject("chat");
-	                	JSONArray opMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("open");
-	                	JSONArray cloMsgs = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
-	                	for(int i = 0; i < opMsgs.length(); i++)
+	                	JSONArray eve = MainActivity.appData.getJSONArray("events");
+	                	for(int i = 0; i < eve.length(); i++)
 	                	{
-	                		System.out.println(chatData.getLong("date"));
-	                		System.out.println(Long.parseLong(opMsgs.getJSONObject(i).getString("date")));
-	                		if(chatData.getString("host").equals(opMsgs.getJSONObject(i).getString("host")) && 
-	                				chatData.getString("location").equals(opMsgs.getJSONObject(i).getString("location")) &&
-	                				chatData.getLong("date") == Long.parseLong(opMsgs.getJSONObject(i).getString("date")))
+	                		if(chatData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
 	                			msgSon.accumulate("author", chatData.getString("author"));
 	                			msgSon.accumulate("message", chatData.getString("message"));
-	                			opMsgs.getJSONObject(i)
-	                				.getJSONArray("chat")
-	                				.put(msgSon);
-	                			
-	                			Message msg = new Message();
-	    						Bundle data = new Bundle();
-	    						data.putString("type", "chat");
-	    					    msg.obj = data;
-	    					    contextHandler.sendMessage(msg);
-	    					    
-	                			return;
-	                		}
-	                	}
-	                	for(int i = 0; i < cloMsgs.length(); i++)
-	                	{
-	                		System.out.println(chatData.getLong("date"));
-	                		System.out.println(Long.parseLong(cloMsgs.getJSONObject(i).getString("date")));
-	                		if(chatData.getString("host").equals(cloMsgs.getJSONObject(i).getString("host")) && chatData.getLong("date") == Long.parseLong(cloMsgs.getJSONObject(i).getString("date")))
-	                		{
-	                			JSONObject msgSon = new JSONObject();
-	                			msgSon.accumulate("author", chatData.getString("host"));
-	                			msgSon.accumulate("message", chatData.getString("message"));
-	                			cloMsgs.getJSONObject(i)
+	                			eve.getJSONObject(i)
 	                				.getJSONArray("chat")
 	                				.put(msgSon);
 	                			
@@ -226,36 +189,37 @@ public class GCMIntentService extends IntentService {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(((Bundle)msg.obj).getString("type").equals("event.closed"))
+                if(((Bundle)msg.obj).getString("type").contains("event"))
                 {
-                	int date = (int) Long.parseLong(((Bundle)msg.obj).getString("date"));
-    				date /=60000;
-    				int nHour = date/60;
-    				int nMin = (date%60);
+                	Calendar date = Calendar.getInstance();
+                	date.setTimeInMillis(Long.parseLong(((Bundle)msg.obj).getString("date")));
+    				long nMin = date.get(Calendar.MINUTE);
+    				long nHour = date.get(Calendar.HOUR_OF_DAY);
+    				String day = Calendar.getInstance().getTimeInMillis() > date.getTimeInMillis()? " (tomorrow)" : "";
     				
-                	Notify("Food at "+nHour+":"+nMin,"Eat with "+((Bundle)msg.obj).getString("host")); 
+                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+((Bundle)msg.obj).getString("host")); 
                 }
                 
-                if(context != null && (((Bundle)msg.obj).getString("type").equals("event.closed") || ((Bundle)msg.obj).getString("type").equals("event.open")))
+                if(context != null && (((Bundle)msg.obj).getString("type").contains("event")))
                 {
                 	try {
-						System.out.println(MainActivity.appData.getJSONObject("events"));
+						System.out.println(MainActivity.appData.getJSONArray("events"));
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-                	context.mainPagerAdapter.main.populateEvents();
+                	context.mainPagerAdapter.getMain().populateEvents();
                 }
                 
                 if(((Bundle)msg.obj).getString("type").equals("chat"))
                 {
-                	if(context.mainPagerAdapter.main.detailFrag != null)
-                		context.mainPagerAdapter.main.detailFrag.updateList();
+                	if(context.mainPagerAdapter.getMain().getDetailFrag() != null)
+                		context.mainPagerAdapter.getMain().getDetailFrag().updateList();
                 }
             }
         };
         
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private static void Notify(String notificationTitle, String notificationMessage) 
         {
         	NotificationCompat.Builder mBuilder =
