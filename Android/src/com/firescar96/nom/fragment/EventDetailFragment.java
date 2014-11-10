@@ -32,8 +32,7 @@ import com.firescar96.nom.R;
 public class EventDetailFragment extends DialogFragment {
 	static MainActivity context = MainActivity.context;
 	public View frame;
-	public String privacy;
-	public int position;
+	public String hash;
 
 	static JSONArray detailData;
 	static ArrayList<String> detailList;
@@ -66,6 +65,17 @@ public class EventDetailFragment extends DialogFragment {
 				view.animate().setDuration(1000).alpha(1);
 			}
 		});
+
+		try {
+			JSONArray eve = MainActivity.appData.getJSONArray("events");
+			for(int i =0; i < eve.length(); i++) {
+				JSONObject curEve = eve.getJSONObject(i);
+				if(curEve.getString("hash").equals(hash)) {
+					eve.getJSONObject(i).put("selected", true);
+					break;
+				}
+			}
+		} catch (JSONException e) {e.printStackTrace();}
 		
 		return builder.create();
 	}
@@ -73,8 +83,14 @@ public class EventDetailFragment extends DialogFragment {
 	public void onEventMembershipChanged(View v)
 	{
 		try {
-			JSONObject curEve = MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position);
-			curEve.put("member", !curEve.getBoolean("member"));
+			JSONArray eve = MainActivity.appData.getJSONArray("events");
+			for(int i =0; i < eve.length(); i++) {
+				JSONObject curEve = eve.getJSONObject(i);
+				if(curEve.getString("hash").equals(hash)) {
+					curEve.put("member", !curEve.getBoolean("member"));
+					break;
+				}
+			}
 			configureEditable(true);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -85,24 +101,32 @@ public class EventDetailFragment extends DialogFragment {
 	public void configureEditable(boolean post)
 	{
 		try {
-			if(MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getBoolean("member"))
-			{
-				frame.findViewById(R.id.open_button).setVisibility(View.GONE);
-				frame.findViewById(R.id.closed_button).setVisibility(View.VISIBLE);
-				frame.findViewById(R.id.eventChatText).setEnabled(true);
-				frame.findViewById(R.id.eventChatButton).setEnabled(true);
-				if(post)
-					postMsg("has joined!");
+			JSONArray eve = MainActivity.appData.getJSONArray("events");
+			for(int i =0; i < eve.length(); i++) {
+				JSONObject curEve = eve.getJSONObject(i);
+				if(curEve.getString("hash").equals(hash)) {
+					if(curEve.getBoolean("member"))
+					{
+						frame.findViewById(R.id.open_button).setVisibility(View.GONE);
+						frame.findViewById(R.id.closed_button).setVisibility(View.VISIBLE);
+						frame.findViewById(R.id.eventChatText).setEnabled(true);
+						frame.findViewById(R.id.eventChatButton).setEnabled(true);
+						if(post)
+							postMsg("has joined!");
+					}
+					else
+					{
+						frame.findViewById(R.id.closed_button).setVisibility(View.GONE);
+						frame.findViewById(R.id.open_button).setVisibility(View.VISIBLE);
+						frame.findViewById(R.id.eventChatText).setEnabled(false);
+						frame.findViewById(R.id.eventChatButton).setEnabled(false);
+						if(post)
+							postMsg("has left.");
+					}
+					break;
+				}
 			}
-			else
-			{
-				frame.findViewById(R.id.closed_button).setVisibility(View.GONE);
-				frame.findViewById(R.id.open_button).setVisibility(View.VISIBLE);
-				frame.findViewById(R.id.eventChatText).setEnabled(false);
-				frame.findViewById(R.id.eventChatButton).setEnabled(false);
-				if(post)
-					postMsg("has left.");
-			}
+			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -111,19 +135,32 @@ public class EventDetailFragment extends DialogFragment {
 	public void updateList()
 	{
 		try {
-			detailData = MainActivity.appData.getJSONObject("events")
-					.getJSONArray(privacy)
-					.getJSONObject(position)
-					.getJSONArray("chat");
+			JSONArray eve = MainActivity.appData.getJSONArray("events");
+			for(int i =0; i < eve.length(); i++) {
+				JSONObject curEve = eve.getJSONObject(i);
+				if(curEve.getString("hash").equals(hash)) {
+					detailData = curEve.getJSONArray("chat");
+					break;
+				}
+			}
+			
 
 			detailList.clear();
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("author")+": "+detailData.getJSONObject(i).getString("message"));
 
-			detailAdapter.notifyDataSetChanged();
+			if(detailAdapter != null)
+				detailAdapter.notifyDataSetChanged();
 		} catch (JSONException e) {
 			try {
-				MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).put("chat", new JSONArray());
+				JSONArray eve = MainActivity.appData.getJSONArray("events");
+				for(int i =0; i < eve.length(); i++) {
+					JSONObject curEve = eve.getJSONObject(i);
+					if(curEve.getString("hash").equals(hash)) {
+						curEve.put("chat", new JSONArray());
+						break;
+					}
+				}
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -157,11 +194,19 @@ public class EventDetailFragment extends DialogFragment {
 
 					// 3. build jsonObject						
 					JSONObject jsonObject = new JSONObject();
+					JSONArray eve = MainActivity.appData.getJSONArray("events");
+					for(int i =0; i < eve.length(); i++) {
+						JSONObject curEve = eve.getJSONObject(i);
+						if(curEve.getString("hash").equals(hash)) {
+							jsonObject.accumulate("host", curEve.getString("host"));
+							jsonObject.accumulate("date", curEve.getString("date"));
+							break;
+						}
+					}
 					jsonObject.accumulate("chat", "true");
-					jsonObject.accumulate("host", MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getString("host"));
 					jsonObject.accumulate("author", MainActivity.appData.getString("host"));
-					jsonObject.accumulate("date", MainActivity.appData.getJSONObject("events").getJSONArray(privacy).getJSONObject(position).getString("date"));
 					jsonObject.accumulate("message", message);
+					jsonObject.accumulate("hash", hash);
 
 					// 4. convert JSONObject to JSON to String
 					json = jsonObject.toString();

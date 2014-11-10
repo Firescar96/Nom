@@ -185,7 +185,7 @@ var HandleData = function(query)
 			}
 		}
 		
-		if(Events.findOne({hash:query.event.hash}) == undefined)
+		/*if(Events.findOne({hash:query.event.hash}) == undefined) //TODO: save events to be sent when a user reconnets
 		{
 			Events.insert({
 				privacy:query.event.privacy,
@@ -194,7 +194,7 @@ var HandleData = function(query)
 	    		hash:query.event.hash,
 	    		host:query.event.host
 		    });
-		}
+		}*/
 	}
 	else
 	{

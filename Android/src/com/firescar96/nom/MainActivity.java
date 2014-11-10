@@ -8,13 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
@@ -34,7 +27,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
@@ -42,11 +34,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class MainActivity extends Activity{
@@ -130,7 +118,7 @@ public class MainActivity extends Activity{
 
 	    						// 3. build jsonObject
 	    						JSONObject jsonObject = new JSONObject();
-	    						jsonObject.accumulate("to", context.appData.getString("host"));
+	    						jsonObject.accumulate("to", MainActivity.appData.getString("host"));
 	    						jsonObject.accumulate("hash", data.substring(1));
 
 	    						// 4. convert JSONObject to JSON to String
@@ -182,12 +170,13 @@ public class MainActivity extends Activity{
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
-
-		 System.out.println("init main pager"+this.mainPagerAdapter);
+	
+		 System.out.println("init main pager"+mainPagerAdapter);
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (MainViewPager) findViewById(R.id.main_activity);
 		mViewPager.setAdapter(mainPagerAdapter);
 		mViewPager.setOffscreenPageLimit(2);
+		
 	}
 
 	public static void initAppData(String fileDir)
@@ -216,15 +205,13 @@ public class MainActivity extends Activity{
 			e.printStackTrace();
 		} catch (JSONException e) {
 			System.out.println("recreating appdata");
-			JSONObject eve = new JSONObject();
+			JSONArray eve = new JSONArray();
 			JSONArray mate = new JSONArray();
 			String usr = new String();
 			JSONArray open = new JSONArray();
 			JSONArray cloe = new JSONArray();
 			appData = new JSONObject();
 			try {
-				eve.put("open", open);
-				eve.put("closed", cloe);
 				appData.put("events", eve);
 				appData.put("mates", mate);
 				appData.put("host", usr);
@@ -261,7 +248,11 @@ public class MainActivity extends Activity{
 		if(cm.getActiveNetworkInfo() == null)
 			Toast.makeText(context, "No Internet connection detected, Nom entering offline mode", Toast.LENGTH_SHORT).show();;
 	}   
-
+/*
+	public void onConfigurationChanged() {
+		mainPagerAdapter.getMain()
+	}*/
+	
 	 private boolean checkPlayServices() {
 		 System.out.println("checking play services");
 		 int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -341,8 +332,8 @@ public class MainActivity extends Activity{
 			 System.out.println(appData.getString("host"));
 			if(appData.getString("host").length() == 0)
 				 {
-					System.out.println(mainPagerAdapter.main);
-				 	mainPagerAdapter.main.requestHostname();
+					System.out.println(mainPagerAdapter.getMain());
+				 	mainPagerAdapter.getMain().requestHostname();
 				 	return;
 				 }
 		} catch (JSONException e) {
@@ -354,29 +345,28 @@ public class MainActivity extends Activity{
 
 		 if(v.getId() == R.id.open_button)
 		 {
-			 System.out.println(this.mainPagerAdapter);
-			 System.out.println(this.mainPagerAdapter.main);
+			 System.out.println(mainPagerAdapter);
+			 System.out.println(mainPagerAdapter.getMain());
 			 
 			 findViewById(R.id.closed_button).setSelected(false);
-			 mainPagerAdapter.main.privacy = false;
+			 mainPagerAdapter.getMain().privacy = false;
 			 mainPagerAdapter.setCount(2);
 		 }
 		 else
 		 {
 			 System.out.println("close");
 			 findViewById(R.id.open_button).setSelected(false);
-			 mainPagerAdapter.main.privacy = true;
+			 mainPagerAdapter.getMain().privacy = true;
 			 mainPagerAdapter.setCount(3);
 		 }
 
-		 mainPagerAdapter.oldFragments.add(1);
-		 mainPagerAdapter.oldFragments.add(2);
-		 mainPagerAdapter.notifyDataSetChanged();
+		 mainPagerAdapter.updateView(1);
+		 mainPagerAdapter.updateView(2);
 	 }
 
 	 public void checkHostname(View v)
 	 {
-		 mainPagerAdapter.main.checkHostname(v);
+		 mainPagerAdapter.getMain().checkHostname(v);
 	 }
 	 
 	 public void onShareClick(View v) 
@@ -384,35 +374,35 @@ public class MainActivity extends Activity{
 		 mViewPager.setPagingEnabled(true);
 		 if(v.equals(findViewById(R.id.openShare)))
 		 {
-			mainPagerAdapter.open.openShare(v);
+			mainPagerAdapter.getOpen().openShare(v);
 			//mainPagerAdapter.setCount(1);
 			//mainPagerAdapter.notifyDataSetChanged();
 		 }
 		 else if(v.equals(findViewById(R.id.closeShare)))
 		 {
-			 mainPagerAdapter.closed2.closeShare(v);
+			 mainPagerAdapter.getClosed2().closeShare(v);
 			 //mainPagerAdapter.setCount(1);
 			 //mainPagerAdapter.notifyDataSetChanged();
 		 }
 		 else
 		 {
-			 mainPagerAdapter.closed2.mediaShare(v);
+			 mainPagerAdapter.getClosed2().mediaShare(v);
 		 }
 	 } 
 
 	 public void addNommate(View v)
 	 {
-		 mainPagerAdapter.closed2.addNommate(v);
+		 mainPagerAdapter.getClosed2().addNommate(v);
 	 }
 	    
 	 public void onEventMembershipChanged(View v)
 	 {
-		mainPagerAdapter.main.detailFrag.onEventMembershipChanged(v); 
+		mainPagerAdapter.getMain().getDetailFrag().onEventMembershipChanged(v); 
 	 }
 	 
 	 public void onChatMsg(View v)
 	 {
-		 mainPagerAdapter.main.detailFrag.onChatMsg(v);
+		 mainPagerAdapter.getMain().getDetailFrag().onChatMsg(v);
 	 }
 	 
 	 protected void onStop()

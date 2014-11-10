@@ -18,7 +18,7 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
 		if(intent.getAction().equals("com.firescar96.nom.update.times"))
 		{
 			try {
-				MainActivity.context.mainPagerAdapter.main.populateEvents();
+				MainActivity.context.mainPagerAdapter.getMain().populateEvents();
 			} catch (NullPointerException e)
 			{
 				return;

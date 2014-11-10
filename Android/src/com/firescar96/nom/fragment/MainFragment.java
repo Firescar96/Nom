@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.format.DateFormat;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,13 +52,13 @@ import android.widget.RelativeLayout;
 public class MainFragment extends Fragment {
 
 	static MainActivity context = MainActivity.context;
-	static MainFragment thisFrag;
+	static private MainFragment thisFrag;
 	public View frame;
 	static View hostPopView;
 	
 	public boolean privacy = false;
 	
-	public EventDetailFragment detailFrag;
+	private EventDetailFragment detailFrag;
 	AlarmManager alarmMgr;
 	PendingIntent alarmIntent;
 	 @Override
@@ -91,10 +90,6 @@ public class MainFragment extends Fragment {
 	 public void populateEvents()
 		{
 			try {
-				JSONArray opDat = MainActivity.appData.getJSONObject("events").getJSONArray("open");
-				JSONArray cloDat = MainActivity.appData.getJSONObject("events").getJSONArray("closed");
-
-
 				//Setup the listview adapter for open events
 				ListView opView = (ListView) frame.findViewById(R.id.open_events);
 				ArrayList<String> opList = new ArrayList<String>();
@@ -102,77 +97,45 @@ public class MainFragment extends Fragment {
 				ListView cloView = (ListView) frame.findViewById(R.id.closed_events);
 				ArrayList<String> cloList = new ArrayList<String>();
 
-				for(int i=0; i< opDat.length(); i++)
-				{
 
-				//System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
-				//System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
-				/*if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+				final JSONArray prEve = MainActivity.appData.getJSONArray("events");
+				ArrayList<Object> transArr = new ArrayList<Object>();
+				for(int i=0; i< prEve.length(); i++)
 				{
-					JSONArrayremove(opDat,i);
-					continue;
-				}
-				else*/ if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000)
-				{
-
-					System.out.println("removes");
-					ArrayList<Object> transArr = new ArrayList<Object>();
-					for(int j =0; j < opDat.length();j++)
-						transArr.add(opDat.get(i));
-					transArr.remove(i);
-					opDat = new JSONArray();
-					for(Object item : transArr)
-						opDat.put(item);
+					//System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
+					//System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
+					/*if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
+					{
+						JSONArrayremove(opDat,i);
+						continue;
+					}
 					
-					MainActivity.appData.getJSONObject("events").put("open", opDat);
-					continue;
-				}
-
-				int date = (int) (Long.parseLong(((JSONObject) opDat.get(i)).getString("date")));
-				int curDate = (int) Calendar.getInstance().getTimeInMillis();
-				int diff = date-curDate;
-				diff /=60000;
-				int nHour = diff/60;
-				int nMin = (diff%60);
-				String info = ((JSONObject) opDat.get(i)).getString("host")+" - "+nHour+" "+
-						singlePlural(nHour,"hour","hours")+" "+nMin+" "+
-						singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) opDat.get(i)).getString("location");
-				opList.add(info);
-				}
-
-				for(int i=0; i< cloDat.length(); i++)
-				{
-					/*if(((JSONObject) cloDat.get(i)).getString("hour").equals("Now"))
+					else*/ 
+					if(Calendar.getInstance().getTimeInMillis()/1000 < Long.parseLong(((JSONObject) prEve.get(i)).getString("date"))/1000)
 					{
-						JSONArrayremove(cloDat,i);
-						continue;
-					}
-					else*/ if(Calendar.getInstance().getTimeInMillis()/1000 > Long.parseLong(((JSONObject) cloDat.get(i)).getString("date"))/1000)
-					{
-						System.out.println("removes");
-						ArrayList<Object> transArr = new ArrayList<Object>();
-						for(int j =0; j < cloDat.length();j++)
-							transArr.add(cloDat.get(i));
-						transArr.remove(i);
-						cloDat = new JSONArray();
-						for(Object item : transArr)
-							cloDat.put(item);
 						
-						MainActivity.appData.getJSONObject("events").put("closed", cloDat);
-						continue;
+						transArr.add(prEve.get(i));
+	
+						int date = (int) (Long.parseLong(((JSONObject) prEve.get(i)).getString("date")));
+						int curDate = (int) Calendar.getInstance().getTimeInMillis();
+						int diff = date-curDate;
+						diff /=60000;
+						int nHour = diff/60;
+						int nMin = (diff%60);
+						String info = ((JSONObject) prEve.get(i)).getString("host")+" - "+nHour+" "+
+								singlePlural(nHour,"hour","hours")+" "+nMin+" "+
+								singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) prEve.get(i)).getString("location");
+						if(prEve.getJSONObject(i).getString("privacy").equals("open"))
+							opList.add(info);
+						else
+							cloList.add(info);
 					}
-
-					int date = (int) (Long.parseLong(((JSONObject) cloDat.get(i)).getString("date")));
-					int curDate = (int) Calendar.getInstance().getTimeInMillis();
-					int diff = date-curDate;
-					diff /=60000;
-					int nHour = diff/60;
-					int nMin = (diff%60);
-					String info = ((JSONObject) cloDat.get(i)).getString("host")+" - "+nHour+" "+
-							singlePlural(nHour,"hour","hours")+" "+nMin+" "+
-							singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) cloDat.get(i)).getString("location");
-					cloList.add(info);
 				}
+				final JSONArray eve = new JSONArray();
+				for(Object item : transArr)
+					eve.put(item);
+				MainActivity.appData.put("events", eve);
+				
 				ArrayAdapter<String> opAdapter = new ArrayAdapter<String>(context,
 						android.R.layout.simple_list_item_1, opList);
 				opView.setAdapter(opAdapter);
@@ -181,6 +144,16 @@ public class MainFragment extends Fragment {
 						android.R.layout.simple_list_item_1, cloList);
 				cloView.setAdapter(cloAdapter);
 
+				final SparseArray<JSONObject> opEve = new SparseArray<JSONObject>();
+				final SparseArray<JSONObject> cloEve = new SparseArray<JSONObject>();
+				for(int i =0; i < eve.length(); i++) {
+					JSONObject curEve = eve.getJSONObject(i);
+					if(curEve.getString("privacy").equals("open")) 
+						opEve.append(i, curEve);
+					else
+						cloEve.append(i, curEve);
+				}
+				
 				opView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
@@ -190,9 +163,24 @@ public class MainFragment extends Fragment {
 						
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
 						detailFrag = new EventDetailFragment();
-						detailFrag.privacy = "open";
-						detailFrag.position = position;
+						try {
+							detailFrag.hash = opEve.valueAt(position).getString("hash");
+						} catch (JSONException e1) {e1.printStackTrace();}
 						detailFrag.show(fragmentManager, "dialog");
+
+						try {
+							int numOpen=0;
+							for(int i =0; i < eve.length(); i++) {
+								JSONObject curEve = eve.getJSONObject(i);
+								if(curEve.getString("privacy").equals("open") && numOpen == position)
+									curEve.put("selected", true);
+								else
+									curEve.put("selected", false);
+								if(curEve.getString("privacy").equals("open"))
+									numOpen++;
+							}
+						} catch (JSONException e) {e.printStackTrace();}
+			        	
 					}
 				});
 
@@ -205,9 +193,23 @@ public class MainFragment extends Fragment {
 
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
 						detailFrag = new EventDetailFragment();
-						detailFrag.privacy = "closed";
-						detailFrag.position = position;
+						try {
+							detailFrag.hash = cloEve.valueAt(position).getString("hash");
+						} catch (JSONException e1) {e1.printStackTrace();}
 						detailFrag.show(fragmentManager, "dialog");
+						
+						try {
+							int numClosed=0;
+							for(int i =0; i < eve.length(); i++) {
+								JSONObject curEve = eve.getJSONObject(i);
+								if(curEve.getString("privacy").equals("closed") && numClosed == position)
+									curEve.put("selected", true);
+								else
+									curEve.put("selected", false);
+								if(curEve.getString("privacy").equals("closed"))
+									numClosed++;
+							}
+						} catch (JSONException e) {e.printStackTrace();}
 					}
 				});
 			} catch (JSONException e) {
@@ -392,10 +394,34 @@ public class MainFragment extends Fragment {
 	    return sb.toString();
 	}
 	
+	public EventDetailFragment getDetailFrag()
+	{
+		/*
+		if(detailFrag == null)
+		{
+			try {
+				JSONArray opMsgs = MainActivity.appData.getJSONArray("events").getJSONArray("open");
+	        	JSONArray cloMsgs = MainActivity.appData.getJSONArray("events").getJSONArray("closed");
+	        	for(int i = 0; i < opMsgs.length(); i++)
+	            	if(opMsgs.getJSONObject(i).getBoolean("selected") == true)
+	            	{
+	            		FragmentManager fragmentManager = getActivity().getFragmentManager();
+	            		detailFrag = new EventDetailFragment();
+						detailFrag.hash = "hash";
+						detailFrag.show(fragmentManager, "dialog");
+	            	}
+			} catch (JSONException e) {e.printStackTrace();}
+		}*/
+		
+		return detailFrag;
+	}
+	
 	@Override
 	public void onPause()
 	{
 		super.onPause();
 		alarmMgr.cancel(alarmIntent);
+		if(detailFrag != null)
+			detailFrag.dismiss();
 	}
 }
