@@ -45,7 +45,9 @@ Router.map(function () {
       this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
       if (this.request.method == 'POST') {
-				HandleData(this.request.body);
+	HandleData(this.request.body);
+	this.response.writeHead(200, {'Content-Type': 'text/plain'});
+	this.response.end("");
       }
 
       if (this.request.method == 'GET') {
