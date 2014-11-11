@@ -67,9 +67,12 @@ Router.map(function () {
       		var exists = resUsr != undefined;
       		console.log(exists);
       		this.response.writeHead(200, {'Content-Type': 'text/plain'});
-      		if(exists)
-      		{
-      			if(resUsr.regId == this.request.query.regId)
+      		//return true if no matching user found, or if the requesting user is in the database
+		if(exists)
+  		{
+			if(this.request.query.regId == null)
+				this.response.end("false")
+			else if(resUsr.regId == this.request.query.regId)
       				this.response.end("true");
       			else
       				this.response.end("false");
