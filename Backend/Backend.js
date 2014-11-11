@@ -45,7 +45,9 @@ Router.map(function () {
       this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
       if (this.request.method == 'POST') {
-				HandleData(this.request.body);
+	HandleData(this.request.body);
+	this.response.writeHead(200, {'Content-Type': 'text/plain'});
+	this.response.end("");
       }
 
       if (this.request.method == 'GET') {
@@ -65,9 +67,12 @@ Router.map(function () {
       		var exists = resUsr != undefined;
       		console.log(exists);
       		this.response.writeHead(200, {'Content-Type': 'text/plain'});
-      		if(exists)
-      		{
-      			if(resUsr.regId == this.request.query.regId)
+      		//return true if no matching user found, or if the requesting user is in the database
+		if(exists)
+  		{
+			if(this.request.query.regId == null)
+				this.response.end("false")
+			else if(resUsr.regId == this.request.query.regId)
       				this.response.end("true");
       			else
       				this.response.end("false");
@@ -183,7 +188,7 @@ var HandleData = function(query)
 			}
 		}
 		
-		if(Events.findOne({hash:query.event.hash}) == undefined)
+		/*if(Events.findOne({hash:query.event.hash}) == undefined) //TODO: save events to be sent when a user reconnets
 		{
 			Events.insert({
 				privacy:query.event.privacy,
@@ -192,7 +197,7 @@ var HandleData = function(query)
 	    		hash:query.event.hash,
 	    		host:query.event.host
 		    });
-		}
+		}*/
 	}
 	else
 	{
