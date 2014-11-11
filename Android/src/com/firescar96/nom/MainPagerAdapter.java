@@ -1,16 +1,12 @@
 package com.firescar96.nom;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.ViewGroup;
 
 import com.firescar96.nom.fragment.ClosedShareFragment1;
 import com.firescar96.nom.fragment.ClosedShareFragment2;

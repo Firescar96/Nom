@@ -32,6 +32,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -60,6 +61,7 @@ public class MainActivity extends Activity{
 
 	public static MainActivity context;
 	public static JSONObject appData;
+	public boolean isForeground;
 	
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
@@ -208,8 +210,6 @@ public class MainActivity extends Activity{
 			JSONArray eve = new JSONArray();
 			JSONArray mate = new JSONArray();
 			String usr = new String();
-			JSONArray open = new JSONArray();
-			JSONArray cloe = new JSONArray();
 			appData = new JSONObject();
 			try {
 				appData.put("events", eve);
@@ -246,7 +246,9 @@ public class MainActivity extends Activity{
 
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		if(cm.getActiveNetworkInfo() == null)
-			Toast.makeText(context, "No Internet connection detected, Nom entering offline mode", Toast.LENGTH_SHORT).show();;
+			Toast.makeText(context, "No Internet connection detected, Nom entering offline mode", Toast.LENGTH_SHORT).show();
+		
+		isForeground = true;
 	}   
 /*
 	public void onConfigurationChanged() {
@@ -269,11 +271,14 @@ public class MainActivity extends Activity{
 		 return true;
 	 }
 
-	 public void sendJSONToBackend(final JSONObject jsonObject)
+	 public static void sendJSONToBackend(final JSONObject jsonObject)
 		{
 			new AsyncTask<Object, Object, Object>() {
 				@Override
 				protected Object doInBackground(Object... arg0) {
+					if (Looper.myLooper() == null) {
+				        Looper.prepare();
+				    }
 					String msg = "";
 					InputStream inputStream = null;
 
@@ -337,7 +342,6 @@ public class MainActivity extends Activity{
 				 	return;
 				 }
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		 
@@ -362,32 +366,28 @@ public class MainActivity extends Activity{
 
 		 mainPagerAdapter.updateView(1);
 		 mainPagerAdapter.updateView(2);
+		 mViewPager.setCurrentItem(1);
 	 }
 
 	 public void checkHostname(View v)
 	 {
-		 mainPagerAdapter.getMain().checkHostname(v);
+		 if(mViewPager.getCurrentItem() == 0)
+			 mainPagerAdapter.getMain().checkHostname();
+		 if(mViewPager.getCurrentItem() == 2)
+			 mainPagerAdapter.getClosed2().checkHostname();
 	 }
 	 
 	 public void onShareClick(View v) 
 	 {
 		 mViewPager.setPagingEnabled(true);
 		 if(v.equals(findViewById(R.id.openShare)))
-		 {
 			mainPagerAdapter.getOpen().openShare(v);
-			//mainPagerAdapter.setCount(1);
-			//mainPagerAdapter.notifyDataSetChanged();
-		 }
 		 else if(v.equals(findViewById(R.id.closeShare)))
-		 {
 			 mainPagerAdapter.getClosed2().closeShare(v);
-			 //mainPagerAdapter.setCount(1);
-			 //mainPagerAdapter.notifyDataSetChanged();
-		 }
 		 else
-		 {
 			 mainPagerAdapter.getClosed2().mediaShare(v);
-		 }
+		 
+		 mViewPager.setCurrentItem(0);
 	 } 
 
 	 public void addNommate(View v)
@@ -403,6 +403,17 @@ public class MainActivity extends Activity{
 	 public void onChatMsg(View v)
 	 {
 		 mainPagerAdapter.getMain().getDetailFrag().onChatMsg(v);
+	 }
+	 
+	 public boolean getForeground() {
+		return isForeground;
+	 }
+	 
+	 protected void onPause()
+	 {
+		 super.onStop();
+		
+		 isForeground = false;
 	 }
 	 
 	 protected void onStop()

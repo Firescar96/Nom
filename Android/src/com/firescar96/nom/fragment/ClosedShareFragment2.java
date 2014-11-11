@@ -1,8 +1,17 @@
 package com.firescar96.nom.fragment;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -18,8 +27,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +43,9 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -43,7 +59,8 @@ public class ClosedShareFragment2 extends ShareFragment {
 	static ArrayList<String> mateList;
 	static ArrayAdapter<String> mateAdapter;
 	static ArrayList<Boolean> mateSelected;
-
+	static View matePopView;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
@@ -89,17 +106,14 @@ public class ClosedShareFragment2 extends ShareFragment {
             	alertDialog.setMessage("Remove this Nommate");
             	alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,"Yes", new DialogInterface.OnClickListener() {
             	   public void onClick(DialogInterface dialog, int which) {
-            		   	mateList.remove(position);
-            		   	mateData = new JSONArray();
-						for(int i=0; i< mateList.size(); i++)
-						{
-							mateData.put(mateList.get(i));
-						}
-						try {
-							MainActivity.appData.put("mates", mateData);
-						} catch (JSONException e) {}
-						view.setBackground(null);
-   	            		mateAdapter.notifyDataSetChanged();
+
+       					view.setBackground(null);
+   	            		Bundle data = new Bundle();
+   	            		data.putString("command", "removeNommate");
+   	            		data.putInt("position", position);
+   	            		Message msg = new Message();
+   	            		msg.setData(data);
+   	            		contextHandler.sendMessage(msg);
             	   }
             	});
             	alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"No", new DialogInterface.OnClickListener() {
@@ -113,6 +127,7 @@ public class ClosedShareFragment2 extends ShareFragment {
         });
 		
 		populateUsers();
+
 		return frame;
 	}
 	
@@ -153,7 +168,6 @@ public class ClosedShareFragment2 extends ShareFragment {
 					groupMatesNames += "," + useDat.get(i);
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -174,7 +188,6 @@ public class ClosedShareFragment2 extends ShareFragment {
 					groupMatesNames += "," + useDat.get(i);
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -187,25 +200,33 @@ public class ClosedShareFragment2 extends ShareFragment {
 	public void addNommate(View v)
 	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();
-		CustomDialogFragment newFragment = new CustomDialogFragment();
+		MateDialogFragment newFragment = new MateDialogFragment();
 		newFragment.show(fragmentManager, "dialog");
 	}
-
-	public static class CustomDialogFragment extends DialogFragment {
+	
+	public static class MateDialogFragment extends DialogFragment {
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			// Build the dialog and set up the button click handlers
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			// Get the layout inflater
 			LayoutInflater inflater = getActivity().getLayoutInflater();
-			final View popView = inflater.inflate(R.layout.popup_add_nommate,null);
+			matePopView = inflater.inflate(R.layout.popup_checkmate,null);
 			builder.setMessage("Enter Username")
-			.setView(popView)
+			.setView(matePopView)
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+	    		RelativeLayout good = (RelativeLayout) matePopView.findViewById(R.id.nameGood);
+				EditText matename = (EditText) matePopView.findViewById(R.id.nameText);
 				public void onClick(DialogInterface dialog, int id) {
-					EditText name = (EditText) popView.findViewById(R.id.hostnameText);
+					EditText name = (EditText) matePopView.findViewById(R.id.nameText);
+					if(good.getVisibility() != View.VISIBLE || matename.getText().length() == 0)
+					{
+						thisFrag.addNommate(null);
+						return;
+					}
 					try {
 						MainActivity.appData.getJSONArray("mates").put(name.getText().toString().toUpperCase(Locale.US));
+						mateList.add(name.getText().toString().toUpperCase(Locale.US));
 						populateUsers();
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -214,11 +235,144 @@ public class ClosedShareFragment2 extends ShareFragment {
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					// Send the negative button event back to the host activity
-					//mListener.onDialogNegativeClick(NoticeDialogFragment.this);
 				}
 			});
 			return builder.create();
 		}
+	}
+	
+	public void checkHostname()
+	{           
+        System.out.println("working the check");
+		new AsyncTask<Object, Object, Object>() {
+			
+			@Override
+			protected Object doInBackground(Object... arg0) {
+				if (Looper.myLooper() == null) {
+			        Looper.prepare();
+			    }
+            	Message msg = new Message();
+            	Bundle data = new Bundle();
+            	data.putString("command", "checkName");
+            	data.putString("value", "progress");
+				msg.setData(data);
+        	    contextHandler.sendMessage(msg);
+        	    
+				InputStream inputStream = null;
+
+				try {
+
+					// 1. create HttpClient
+					HttpClient httpclient = new DefaultHttpClient();
+
+					// 2. make POST request to the given URL
+    					EditText matename = (EditText) matePopView.findViewById(R.id.nameText);
+    					System.out.println(matename.getText());
+   
+    					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+matename.getText().toString().toUpperCase(Locale.US));
+
+					// 7. Set some headers to inform server about the type of the content   
+					httpGet.setHeader("Accept", "application/json");
+					httpGet.setHeader("Content-type", "application/json");
+
+					HttpParams httpParams = httpclient.getParams();
+					HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+					HttpConnectionParams.setSoTimeout(httpParams, 5000);
+					httpGet.setParams(httpParams);
+
+					// 8. Execute POST request to the given URL
+					System.out.println("executing");
+					HttpResponse httpResponse = httpclient.execute(httpGet);
+					// 9. receive response as inputStream
+					inputStream = httpResponse.getEntity().getContent();
+
+					// 10. convert inputstream to string
+					msg = new Message();
+	            	data = new Bundle();
+	            	data.putString("command", "checkName");
+					if(inputStream != null)
+						if(convertStreamToString(inputStream).contains("true"))
+			            	data.putString("value", "true");
+						else
+			            	data.putString("value", "false");
+					else
+		            	data.putString("value", "progress");
+					msg.setData(data);
+					contextHandler.sendMessage(msg);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		}.execute(null, null, null);
+	}
+	
+	private static Handler contextHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+        	super.handleMessage(msg);
+           System.out.println(msg.getData());
+           if(msg.getData().getString("command").equals("removeNommate"))
+           {
+	        	mateList.remove(msg.getData().getInt("position"));
+	            System.out.println(mateList);
+			   	mateData = new JSONArray();
+				for(int i=0; i< mateList.size(); i++)
+				{
+					mateData.put(mateList.get(i));
+				}
+				try {
+					MainActivity.appData.put("mates", mateData);
+				} catch (JSONException e) {}
+	      		mateAdapter.notifyDataSetChanged();
+           }
+           if(msg.getData().getString("command").equals("checkName"))
+           {
+        	   ProgressBar mateProg = (ProgressBar) matePopView.findViewById(R.id.nameProgress);
+	    		RelativeLayout good = (RelativeLayout) matePopView.findViewById(R.id.nameGood);
+	    		RelativeLayout bad = (RelativeLayout) matePopView.findViewById(R.id.nameBad);
+	    		if(msg.getData().getString("value").equals("progress"))
+	    		{
+	    			mateProg.setVisibility(View.VISIBLE);
+	    			good.setVisibility(View.GONE);
+	    			bad.setVisibility(View.GONE);
+	    		}
+		    	if(msg.getData().getString("value").equals("true"))
+	        	{
+	        		bad.setVisibility(View.VISIBLE);
+	        		mateProg.setVisibility(View.GONE);
+	        		good.setVisibility(View.GONE);
+	        	}
+		    	if(msg.getData().getString("value").equals("false"))
+	        	{
+	        		good.setVisibility(View.VISIBLE);
+	        		mateProg.setVisibility(View.GONE);
+	        		bad.setVisibility(View.GONE);
+	        	}
+           }
+           System.out.println("done");
+        }
+    };
+    
+    private String convertStreamToString(InputStream is) {
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	    StringBuilder sb = new StringBuilder();
+
+	    String line = null;
+	    try {
+	        while ((line = reader.readLine()) != null) {
+	            sb.append(line + "\n");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            is.close();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return sb.toString();
 	}
 }

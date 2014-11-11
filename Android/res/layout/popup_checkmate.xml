@@ -14,7 +14,7 @@
         android:layout_height="match_parent" />
 
     <com.firescar96.nom.MonoText
-        android:id="@+id/hostnameText"
+        android:id="@+id/nameText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight=".6"
@@ -26,7 +26,7 @@
     </com.firescar96.nom.MonoText>
 
     <ProgressBar
-        android:id="@+id/hostnameProgress"
+        android:id="@+id/nameProgress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -38,7 +38,7 @@
         android:layout_height="match_parent" />
 
     <RelativeLayout
-        android:id="@+id/hostnameBad"
+        android:id="@+id/nameBad"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight=".1"
@@ -48,7 +48,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/hostnameGood"
+        android:id="@+id/nameGood"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight=".1"
@@ -58,7 +58,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/hostnameButton"
+        android:id="@+id/nameButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight=".25"

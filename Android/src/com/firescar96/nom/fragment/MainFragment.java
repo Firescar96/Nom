@@ -163,8 +163,10 @@ public class MainFragment extends Fragment {
 						
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
 						detailFrag = new EventDetailFragment();
+						Bundle data = new Bundle();
 						try {
-							detailFrag.hash = opEve.valueAt(position).getString("hash");
+							data.putString("hash", opEve.valueAt(position).getString("hash"));
+							detailFrag.setArguments(data);
 						} catch (JSONException e1) {e1.printStackTrace();}
 						detailFrag.show(fragmentManager, "dialog");
 
@@ -193,8 +195,10 @@ public class MainFragment extends Fragment {
 
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
 						detailFrag = new EventDetailFragment();
+						Bundle data = new Bundle();
 						try {
-							detailFrag.hash = cloEve.valueAt(position).getString("hash");
+							data.putString("hash", cloEve.valueAt(position).getString("hash"));
+							detailFrag.setArguments(data);
 						} catch (JSONException e1) {e1.printStackTrace();}
 						detailFrag.show(fragmentManager, "dialog");
 						
@@ -259,13 +263,13 @@ public class MainFragment extends Fragment {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			// Get the layout inflater
 			LayoutInflater inflater = getActivity().getLayoutInflater();
-			hostPopView = inflater.inflate(R.layout.popup_set_hostname,null);
+			hostPopView = inflater.inflate(R.layout.popup_checkmate,null);
 			builder.setMessage("Choose a Username")
 			.setView(hostPopView)
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-		    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.hostnameGood);
-					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
+		    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.nameGood);
+					EditText hostname = (EditText) hostPopView.findViewById(R.id.nameText);
 					if(good.getVisibility() != View.VISIBLE || hostname.getText().length() == 0)
 					{
 						thisFrag.requestHostname();
@@ -285,7 +289,7 @@ public class MainFragment extends Fragment {
 		}
 	}
 	
-	public void checkHostname(View v)
+	public void checkHostname()
 	{           
 		new AsyncTask<Object, Object, Object>() {
 			
@@ -306,10 +310,10 @@ public class MainFragment extends Fragment {
 					HttpClient httpclient = new DefaultHttpClient();
 
 					// 2. make POST request to the given URL
-    					EditText hostname = (EditText) hostPopView.findViewById(R.id.hostnameText);
+    					EditText hostname = (EditText) hostPopView.findViewById(R.id.nameText);
     					System.out.println(hostname.getText());
    
-    					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
+    					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US));
 
 					// 7. Set some headers to inform server about the type of the content   
 					httpGet.setHeader("Accept", "application/json");
@@ -350,9 +354,9 @@ public class MainFragment extends Fragment {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
            System.out.println(msg.obj);
-    		ProgressBar hostProg = (ProgressBar) hostPopView.findViewById(R.id.hostnameProgress);
-    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.hostnameGood);
-    		RelativeLayout bad = (RelativeLayout) hostPopView.findViewById(R.id.hostnameBad);
+    		ProgressBar hostProg = (ProgressBar) hostPopView.findViewById(R.id.nameProgress);
+    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.nameGood);
+    		RelativeLayout bad = (RelativeLayout) hostPopView.findViewById(R.id.nameBad);
     		if(msg.obj == null)
     		{
     			hostProg.setVisibility(View.VISIBLE);
@@ -360,15 +364,15 @@ public class MainFragment extends Fragment {
     			bad.setVisibility(View.GONE);
     		}else if((Boolean) msg.obj)
         	{
-        		good.setVisibility(View.VISIBLE);
-        		hostProg.setVisibility(View.GONE);
-        		bad.setVisibility(View.GONE);
-        	}
-        	else
-        	{
         		bad.setVisibility(View.VISIBLE);
         		hostProg.setVisibility(View.GONE);
         		good.setVisibility(View.GONE);
+        	}
+        	else
+        	{
+        		good.setVisibility(View.VISIBLE);
+        		hostProg.setVisibility(View.GONE);
+        		bad.setVisibility(View.GONE);
         	}
         }
     };

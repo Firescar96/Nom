@@ -37,7 +37,7 @@
             android:layout_marginLeft="72dp" >
 
             <TextView
-                android:id="@+id/curTimeLabel"
+                android:id="@+id/curTImeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Current Time: "
@@ -76,6 +76,30 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/eventMembershipLabel"
             android:ems="10" />
+
+        <LinearLayout
+            android:id="@+id/LinearLayout01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/closeTime"
+            android:layout_centerHorizontal="true"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/distTimeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hours and Minutes from now: "
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/distTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </LinearLayout>
+
     </RelativeLayout>
 
 </ScrollView>

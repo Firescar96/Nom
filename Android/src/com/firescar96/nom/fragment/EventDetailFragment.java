@@ -19,6 +19,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,14 +33,17 @@ import com.firescar96.nom.R;
 public class EventDetailFragment extends DialogFragment {
 	static MainActivity context = MainActivity.context;
 	public View frame;
-	public String hash;
+	private String hash;
 
 	static JSONArray detailData;
 	static ArrayList<String> detailList;
+	static ListView detailListView;
 	static ArrayAdapter<String> detailAdapter;
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		hash = getArguments().getString("hash");
+		
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		// Get the layout inflater
@@ -48,16 +52,16 @@ public class EventDetailFragment extends DialogFragment {
 		builder.setView(frame);
 		
 		detailList = new ArrayList<String>();
-		updateList();	
 		//change the editable parts depending on whether the user is part of the group
 		configureEditable(false);
 		
 		//Setup the listview adapter for closed events
-		ListView useView = (ListView) frame.findViewById(R.id.eventMembershipList);
+		detailListView = (ListView) frame.findViewById(R.id.eventMembershipList);
 		detailAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, detailList);
-		useView.setAdapter(detailAdapter);
-		
-		useView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		detailListView.setAdapter(detailAdapter);
+
+		updateList();	
+		detailListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
 			{
@@ -149,8 +153,9 @@ public class EventDetailFragment extends DialogFragment {
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("author")+": "+detailData.getJSONObject(i).getString("message"));
 
-			if(detailAdapter != null)
-				detailAdapter.notifyDataSetChanged();
+			detailAdapter.notifyDataSetChanged();
+			detailListView.setSelection(detailAdapter.getCount()-1);
+			Log.i("detailAdapter", detailList.toString());
 		} catch (JSONException e) {
 			try {
 				JSONArray eve = MainActivity.appData.getJSONArray("events");

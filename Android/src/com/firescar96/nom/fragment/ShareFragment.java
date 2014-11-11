@@ -82,7 +82,7 @@ public abstract class ShareFragment extends Fragment{
 			eventSon.accumulate("hash", digHash);
 			jsonObject.accumulate("event", eventSon);
 
-			context.sendJSONToBackend(jsonObject);
+			MainActivity.sendJSONToBackend(jsonObject);
 			
 			if(makeIntent) {
 				Intent shareIntent = new Intent(Intent.ACTION_SEND);

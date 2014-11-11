@@ -144,7 +144,7 @@ public class GCMIntentService extends IntentService {
 						data.putString("type", "event."+eveData.getString("privacy"));
 						data.putString("host", eveData.getString("host"));
 						data.putString("date", eveData.getString("date"));
-					    msg.obj = data;
+					    msg.setData(data);
 					    contextHandler.sendMessage(msg);
 	                }
 	                
@@ -166,7 +166,10 @@ public class GCMIntentService extends IntentService {
 	                			Message msg = new Message();
 	    						Bundle data = new Bundle();
 	    						data.putString("type", "chat");
-	    					    msg.obj = data;
+	    						data.putString("author", chatData.getString("author"));
+	    						data.putString("message", chatData.getString("message"));
+	    						data.putBoolean("member", eve.getJSONObject(i).getBoolean("member"));
+	    					    msg.setData(data);
 	    					    contextHandler.sendMessage(msg);
 	    					    
 	                			return;
@@ -189,32 +192,34 @@ public class GCMIntentService extends IntentService {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(((Bundle)msg.obj).getString("type").contains("event"))
+                if(msg.getData().getString("type").contains("event"))
                 {
                 	Calendar date = Calendar.getInstance();
-                	date.setTimeInMillis(Long.parseLong(((Bundle)msg.obj).getString("date")));
+                	date.setTimeInMillis(Long.parseLong(msg.getData().getString("date")));
     				long nMin = date.get(Calendar.MINUTE);
     				long nHour = date.get(Calendar.HOUR_OF_DAY);
     				String day = Calendar.getInstance().getTimeInMillis() > date.getTimeInMillis()? " (tomorrow)" : "";
     				
-                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+((Bundle)msg.obj).getString("host")); 
+                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host")); 
                 }
                 
-                if(context != null && (((Bundle)msg.obj).getString("type").contains("event")))
+                if(context != null && (msg.getData().getString("type").contains("event")))
                 {
                 	try {
 						System.out.println(MainActivity.appData.getJSONArray("events"));
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                 	context.mainPagerAdapter.getMain().populateEvents();
                 }
                 
-                if(((Bundle)msg.obj).getString("type").equals("chat"))
+                if(msg.getData().getString("type").equals("chat"))
                 {
-                	if(context.mainPagerAdapter.getMain().getDetailFrag() != null)
+                	if(context.mainPagerAdapter.getMain().getDetailFrag() != null) 
                 		context.mainPagerAdapter.getMain().getDetailFrag().updateList();
+                
+                	if(!context.getForeground() && msg.getData().getBoolean("member"))
+                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"));
                 }
             }
         };
