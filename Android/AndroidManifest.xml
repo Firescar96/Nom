@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.firescar96.nom"
-    android:versionCode="150"
-    android:versionName="1.5" >    
+    android:versionCode="162"
+    android:versionName="1.62" >    
     
     <uses-sdk
         android:minSdkVersion="14"

@@ -1,64 +1,42 @@
 package com.firescar96.nom.fragment;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.firescar96.nom.GCMIntentService;
-import com.firescar96.nom.MainActivity;
-import com.firescar96.nom.MainBroadcastReceiver;
-import com.firescar96.nom.R;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+
+import com.firescar96.nom.MainActivity;
+import com.firescar96.nom.MainBroadcastReceiver;
+import com.firescar96.nom.R;
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
 
 public class MainFragment extends Fragment {
 
 	static MainActivity context = MainActivity.context;
 	static private MainFragment thisFrag;
 	public View frame;
-	static View hostPopView;
 	
 	public boolean privacy = false;
 	
 	private EventDetailFragment detailFrag;
+	private HostDialogFragment hostFrag;
 	AlarmManager alarmMgr;
 	PendingIntent alarmIntent;
 	 @Override
@@ -75,7 +53,7 @@ public class MainFragment extends Fragment {
 			 intent.setAction("com.firescar96.nom.update.times");
 			 alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-			 alarmMgr.setRepeating (AlarmManager.RTC, ((int)System.currentTimeMillis()/60000)*60000, 60000, alarmIntent);
+			 alarmMgr.setRepeating (AlarmManager.RTC, (int)System.currentTimeMillis()/60000*60000, 60000, alarmIntent);
 		 }
 		 
 		 try {
@@ -101,7 +79,6 @@ public class MainFragment extends Fragment {
 				final JSONArray prEve = MainActivity.appData.getJSONArray("events");
 				ArrayList<Object> transArr = new ArrayList<Object>();
 				for(int i=0; i< prEve.length(); i++)
-				{
 					//System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
 					//System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
 					/*if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
@@ -116,12 +93,12 @@ public class MainFragment extends Fragment {
 						
 						transArr.add(prEve.get(i));
 	
-						int date = (int) (Long.parseLong(((JSONObject) prEve.get(i)).getString("date")));
+						int date = (int) Long.parseLong(((JSONObject) prEve.get(i)).getString("date"));
 						int curDate = (int) Calendar.getInstance().getTimeInMillis();
 						int diff = date-curDate;
 						diff /=60000;
 						int nHour = diff/60;
-						int nMin = (diff%60);
+						int nMin = diff%60;
 						String info = ((JSONObject) prEve.get(i)).getString("host")+" - "+nHour+" "+
 								singlePlural(nHour,"hour","hours")+" "+nMin+" "+
 								singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) prEve.get(i)).getString("location");
@@ -130,7 +107,6 @@ public class MainFragment extends Fragment {
 						else
 							cloList.add(info);
 					}
-				}
 				final JSONArray eve = new JSONArray();
 				for(Object item : transArr)
 					eve.put(item);
@@ -231,9 +207,8 @@ public class MainFragment extends Fragment {
 		objs.remove(idx);
 
 		final JSONArray ja = new JSONArray();
-		for (final JSONObject obj : objs) {
+		for (final JSONObject obj : objs)
 			ja.put(obj);
-		}
 
 		return ja;
 	}
@@ -242,9 +217,8 @@ public class MainFragment extends Fragment {
 			final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
 			for (int i = 0; i < len; i++) {
 				final JSONObject obj = ja.optJSONObject(i);
-				if (obj != null) {
+				if (obj != null)
 					result.add(obj);
-				}
 			}
 			return result;
 		}
@@ -252,172 +226,29 @@ public class MainFragment extends Fragment {
 	public void requestHostname() //User needs to create a username if they want to use this app
 	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();
-		HostDialogFragment newFragment = new HostDialogFragment();
-		newFragment.show(fragmentManager, "hostnameDialog");
+		hostFrag = new HostDialogFragment();
+		hostFrag.show(fragmentManager, "hostnameDialog");
 	}
 
-	public static class HostDialogFragment extends DialogFragment {
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			// Build the dialog and set up the button click handlers
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			// Get the layout inflater
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			hostPopView = inflater.inflate(R.layout.popup_checkmate,null);
-			builder.setMessage("Choose a Username")
-			.setView(hostPopView)
-			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-		    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.nameGood);
-					EditText hostname = (EditText) hostPopView.findViewById(R.id.nameText);
-					if(good.getVisibility() != View.VISIBLE || hostname.getText().length() == 0)
-					{
-						thisFrag.requestHostname();
-						return;
-					}
-					try {
-						MainActivity.appData.put("host",hostname.getText().toString().toUpperCase(Locale.US));
-						GCMIntentService.registerInBackground();
-						System.out.println(hostname);
-						System.out.println(MainActivity.appData.getString("host"));
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			return builder.create();
-		}
-	}
 	
-	public void checkHostname()
-	{           
-		new AsyncTask<Object, Object, Object>() {
-			
-			@Override
-			protected Object doInBackground(Object... arg0) {
-				if (Looper.myLooper() == null) {
-			        Looper.prepare();
-			    }
-            	Message msg = new Message();
-        	    msg.obj = null;
-        	    contextHandler.sendMessage(msg);
-        	    
-				InputStream inputStream = null;
-
-				try {
-
-					// 1. create HttpClient
-					HttpClient httpclient = new DefaultHttpClient();
-
-					// 2. make POST request to the given URL
-    					EditText hostname = (EditText) hostPopView.findViewById(R.id.nameText);
-    					System.out.println(hostname.getText());
-   
-    					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+hostname.getText().toString().toUpperCase(Locale.US));
-
-					// 7. Set some headers to inform server about the type of the content   
-					httpGet.setHeader("Accept", "application/json");
-					httpGet.setHeader("Content-type", "application/json");
-
-					HttpParams httpParams = httpclient.getParams();
-					HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
-					HttpConnectionParams.setSoTimeout(httpParams, 5000);
-					httpGet.setParams(httpParams);
-
-					// 8. Execute POST request to the given URL
-					System.out.println("executing");
-					HttpResponse httpResponse = httpclient.execute(httpGet);
-					// 9. receive response as inputStream
-					inputStream = httpResponse.getEntity().getContent();
-
-					// 10. convert inputstream to string
-					msg = new Message();
-					if(inputStream != null)
-						if(convertStreamToString(inputStream).contains("true"))
-							msg.obj = true;
-						else
-							msg.obj = false;
-					else
-						msg.obj = false;
-					contextHandler.sendMessage(msg);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return false;
-			}
-		}.execute(null, null, null);
-	}
-	
-	private static Handler contextHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-           System.out.println(msg.obj);
-    		ProgressBar hostProg = (ProgressBar) hostPopView.findViewById(R.id.nameProgress);
-    		RelativeLayout good = (RelativeLayout) hostPopView.findViewById(R.id.nameGood);
-    		RelativeLayout bad = (RelativeLayout) hostPopView.findViewById(R.id.nameBad);
-    		if(msg.obj == null)
-    		{
-    			hostProg.setVisibility(View.VISIBLE);
-    			good.setVisibility(View.GONE);
-    			bad.setVisibility(View.GONE);
-    		}else if((Boolean) msg.obj)
-        	{
-        		bad.setVisibility(View.VISIBLE);
-        		hostProg.setVisibility(View.GONE);
-        		good.setVisibility(View.GONE);
-        	}
-        	else
-        	{
-        		good.setVisibility(View.VISIBLE);
-        		hostProg.setVisibility(View.GONE);
-        		bad.setVisibility(View.GONE);
-        	}
-        }
-    };
-	
-	private String convertStreamToString(InputStream is) {
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-	    StringBuilder sb = new StringBuilder();
-
-	    String line = null;
-	    try {
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line + "\n");
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            is.close();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return sb.toString();
-	}
-	
-	public EventDetailFragment getDetailFrag()
+	public void onEventMembershipChanged()
 	{
-		/*
-		if(detailFrag == null)
-		{
-			try {
-				JSONArray opMsgs = MainActivity.appData.getJSONArray("events").getJSONArray("open");
-	        	JSONArray cloMsgs = MainActivity.appData.getJSONArray("events").getJSONArray("closed");
-	        	for(int i = 0; i < opMsgs.length(); i++)
-	            	if(opMsgs.getJSONObject(i).getBoolean("selected") == true)
-	            	{
-	            		FragmentManager fragmentManager = getActivity().getFragmentManager();
-	            		detailFrag = new EventDetailFragment();
-						detailFrag.hash = "hash";
-						detailFrag.show(fragmentManager, "dialog");
-	            	}
-			} catch (JSONException e) {e.printStackTrace();}
-		}*/
-		
-		return detailFrag;
+		detailFrag.onEventMembershipChanged();
+	}
+	
+	public void onChatMsg()
+	{
+		detailFrag.onChatMsg();
+	}
+	
+	public void checkName()
+	{
+		hostFrag.checkName();
+	}
+	
+	public void updateDetailFrag()
+	{
+		detailFrag.updateList();
 	}
 	
 	@Override
@@ -427,5 +258,7 @@ public class MainFragment extends Fragment {
 		alarmMgr.cancel(alarmIntent);
 		if(detailFrag != null)
 			detailFrag.dismiss();
+		if(hostFrag != null)
+			hostFrag.dismiss();
 	}
 }

@@ -10,9 +10,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,6 +27,8 @@ import android.widget.ListView;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
 
 public class EventDetailFragment extends DialogFragment {
 	static MainActivity context = MainActivity.context;
@@ -84,7 +84,7 @@ public class EventDetailFragment extends DialogFragment {
 		return builder.create();
 	}
 	
-	public void onEventMembershipChanged(View v)
+	public void onEventMembershipChanged()
 	{
 		try {
 			JSONArray eve = MainActivity.appData.getJSONArray("events");
@@ -173,7 +173,7 @@ public class EventDetailFragment extends DialogFragment {
 		}
 	}
 	
-	public void onChatMsg(View v)
+	public void onChatMsg()
 	{
 		postMsg(((EditText)frame.findViewById(R.id.eventChatText)).getText().toString());
 		((EditText)frame.findViewById(R.id.eventChatText)).setText("");

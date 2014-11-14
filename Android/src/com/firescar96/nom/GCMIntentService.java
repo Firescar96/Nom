@@ -14,8 +14,21 @@
 
 package com.firescar96.nom;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.cloud.backend.core.Consts;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONException;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
@@ -35,23 +48,10 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.cloud.backend.core.Consts;
 
 /**
  * This class manages Google Cloud Messaging push notifications and CloudQuery
@@ -86,18 +86,18 @@ public class GCMIntentService extends IntentService {
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
-        if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
-            /*
+        if (!extras.isEmpty())
+			/*
              * Filter messages based on message type. Since it is likely that GCM will be
              * extended in the future with new message types, just ignore any message types you're
              * not interested in, or that you don't recognize.
              */
-            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-                Log.i(Consts.TAG, "onHandleIntent: message error");
-            } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
-                Log.i(Consts.TAG, "onHandleIntent: message deleted");
+            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType))
+				Log.i(Consts.TAG, "onHandleIntent: message error");
+			else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType))
+				Log.i(Consts.TAG, "onHandleIntent: message deleted");
             // If it's a regular GCM message, do some work.
-            } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+			else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
             	// Post notification of received message.
                 System.out.println("Received: " + extras.toString());
                 
@@ -153,8 +153,7 @@ public class GCMIntentService extends IntentService {
 	                	JSONObject chatData=new JSONObject("{\"chat\":"+extras.get("chat")+"}").getJSONObject("chat");
 	                	JSONArray eve = MainActivity.appData.getJSONArray("events");
 	                	for(int i = 0; i < eve.length(); i++)
-	                	{
-	                		if(chatData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
+							if(chatData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
 	                			msgSon.accumulate("author", chatData.getString("author"));
@@ -174,7 +173,6 @@ public class GCMIntentService extends IntentService {
 	    					    
 	                			return;
 	                		}
-	                	}
 	                }
 
                 	MainActivity.closeAppData(getFilesDir().getAbsolutePath());
@@ -183,7 +181,6 @@ public class GCMIntentService extends IntentService {
 					e1.printStackTrace();
 				}
             }
-        }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         MainBroadcastReceiver.completeWakefulIntent(intent);
     }
@@ -203,7 +200,7 @@ public class GCMIntentService extends IntentService {
                 	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host")); 
                 }
                 
-                if(context != null && (msg.getData().getString("type").contains("event")))
+                if(context != null && msg.getData().getString("type").contains("event"))
                 {
                 	try {
 						System.out.println(MainActivity.appData.getJSONArray("events"));
@@ -215,8 +212,8 @@ public class GCMIntentService extends IntentService {
                 
                 if(msg.getData().getString("type").equals("chat"))
                 {
-                	if(context.mainPagerAdapter.getMain().getDetailFrag() != null) 
-                		context.mainPagerAdapter.getMain().getDetailFrag().updateList();
+                	if(context.mainPagerAdapter.getMain() != null) 
+                		context.mainPagerAdapter.getMain().updateDetailFrag();
                 
                 	if(!context.getForeground() && msg.getData().getBoolean("member"))
                 		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"));
@@ -305,12 +302,12 @@ public class GCMIntentService extends IntentService {
      */
     public static void registerInBackground() {
         new AsyncTask<Object, Object, Object>() {
-            protected String doInBackground(Object... params) {
+            @Override
+			protected String doInBackground(Object... params) {
                 String msg = "";
                 try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
+                    if (gcm == null)
+						gcm = GoogleCloudMessaging.getInstance(context);
                     regId = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regId;
 

@@ -17,26 +17,25 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class MainActivity extends Activity{
 
@@ -87,15 +86,12 @@ public class MainActivity extends Activity{
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = GCMIntentService.getRegistrationId(this);
 			System.err.println("need new register");
-			if (regid.isEmpty()) {
+			if (regid.isEmpty())
 				GCMIntentService.registerInBackground();
-			}
-		} else {
+		} else
 			System.out.println("No valid Google Play Services APK found.");
-		}
 		
 		if(getIntent().getDataString() != null)
-    	{	
 			if(getIntent().getDataString().contains("nchinda2.mit.edu:666"))
 	    	{				
 	    		final String data = getIntent().getDataString().substring(28);
@@ -165,7 +161,6 @@ public class MainActivity extends Activity{
 					appData.getJSONArray("mates").put(nommate);
 				} catch (JSONException e) {}*/
 	    	}
-    	}
 		
 		locServices = new LocationServices();
 
@@ -179,17 +174,16 @@ public class MainActivity extends Activity{
 		mViewPager.setAdapter(mainPagerAdapter);
 		mViewPager.setOffscreenPageLimit(2);
 		
+		isForeground = true;
 	}
 
 	public static void initAppData(String fileDir)
 	{
 		File defFile = new File(fileDir+"/appData.txt");
 		if(!defFile.exists())
-		{
 			try {
 				new PrintWriter(new FileWriter(defFile.getAbsolutePath()));
 			}catch(IOException e) {}
-		}
 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(defFile));
@@ -205,7 +199,7 @@ public class MainActivity extends Activity{
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			System.out.println("recreating appdata");
 			JSONArray eve = new JSONArray();
 			JSONArray mate = new JSONArray();
@@ -215,7 +209,7 @@ public class MainActivity extends Activity{
 				appData.put("events", eve);
 				appData.put("mates", mate);
 				appData.put("host", usr);
-			} catch (JSONException e1) {}
+			} catch (Exception e1) {}
 		}
 	}
 	
@@ -259,10 +253,10 @@ public class MainActivity extends Activity{
 		 System.out.println("checking play services");
 		 int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 		 if (resultCode != ConnectionResult.SUCCESS) {
-			 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				 GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+			 if (GooglePlayServicesUtil.isUserRecoverableError(resultCode))
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
 						 PLAY_SERVICES_RESOLUTION_REQUEST).show();
-			 } else {
+			else {
 				 System.out.println("This device is not supported.");
 				 finish();
 			 }
@@ -276,9 +270,8 @@ public class MainActivity extends Activity{
 			new AsyncTask<Object, Object, Object>() {
 				@Override
 				protected Object doInBackground(Object... arg0) {
-					if (Looper.myLooper() == null) {
-				        Looper.prepare();
-				    }
+					if (Looper.myLooper() == null)
+						Looper.prepare();
 					String msg = "";
 					InputStream inputStream = null;
 
@@ -341,7 +334,7 @@ public class MainActivity extends Activity{
 				 	mainPagerAdapter.getMain().requestHostname();
 				 	return;
 				 }
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		 
@@ -372,9 +365,9 @@ public class MainActivity extends Activity{
 	 public void checkHostname(View v)
 	 {
 		 if(mViewPager.getCurrentItem() == 0)
-			 mainPagerAdapter.getMain().checkHostname();
+			 mainPagerAdapter.getMain().checkName();
 		 if(mViewPager.getCurrentItem() == 2)
-			 mainPagerAdapter.getClosed2().checkHostname();
+			 mainPagerAdapter.getClosed2().checkName();
 	 }
 	 
 	 public void onShareClick(View v) 
@@ -395,28 +388,35 @@ public class MainActivity extends Activity{
 		 mainPagerAdapter.getClosed2().addNommate(v);
 	 }
 	    
+	 public void updateNommates()
+	 {
+		 mainPagerAdapter.getClosed2().populateUsers();
+	 }
+	 
 	 public void onEventMembershipChanged(View v)
 	 {
-		mainPagerAdapter.getMain().getDetailFrag().onEventMembershipChanged(v); 
+		mainPagerAdapter.getMain().onEventMembershipChanged(); 
 	 }
 	 
 	 public void onChatMsg(View v)
 	 {
-		 mainPagerAdapter.getMain().getDetailFrag().onChatMsg(v);
+		 mainPagerAdapter.getMain().onChatMsg();
 	 }
 	 
 	 public boolean getForeground() {
 		return isForeground;
 	 }
 	 
-	 protected void onPause()
+	 @Override
+	protected void onPause()
 	 {
 		 super.onStop();
 		
 		 isForeground = false;
 	 }
 	 
-	 protected void onStop()
+	 @Override
+	protected void onStop()
 	 {
 		 super.onStop();
 		closeAppData(getFilesDir().getAbsolutePath());

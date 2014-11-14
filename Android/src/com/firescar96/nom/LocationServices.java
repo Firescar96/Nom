@@ -1,11 +1,10 @@
 package com.firescar96.nom;
 
-import org.json.JSONObject;
-
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.firescar96.nom.org.json.JSONObject;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -86,19 +85,18 @@ GooglePlayServicesClient.OnConnectionFailedListener, LocationListener{
          * start a Google Play services activity that can resolve
          * error.
          */
-        if (connectionResult.hasResolution()) {
-            System.out.println("location could not happen but a solution exists");
+        if (connectionResult.hasResolution())
+			System.out.println("location could not happen but a solution exists");
 			/*
 			 * Thrown if Google Play services canceled the original
 			 * PendingIntent
 			 */
-        } else {
-            /*
+		else
+			/*
              * If no resolution is available, display a dialog to the
              * user with the error.
              */
             System.exit(1);
-        }
     }
     
     @Override
