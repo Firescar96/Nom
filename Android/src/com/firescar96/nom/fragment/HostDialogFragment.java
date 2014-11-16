@@ -25,6 +25,7 @@ public class HostDialogFragment extends AddNameDialog {
 		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		frame = inflater.inflate(R.layout.popup_checkmate,null);
+		MainActivity.setupUI(frame);
 		builder.setMessage("Choose a Username")
 		.setView(frame)
 		.setPositiveButton("Add", new DialogInterface.OnClickListener() {

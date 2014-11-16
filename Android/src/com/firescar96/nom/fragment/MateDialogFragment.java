@@ -27,6 +27,7 @@ public class MateDialogFragment extends AddNameDialog {
 		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		frame = inflater.inflate(R.layout.popup_checkmate,null);
+		MainActivity.setupUI(frame);
 		builder.setMessage("Enter Username")
 		.setView(frame)
 		.setPositiveButton("Add", new DialogInterface.OnClickListener() {			
@@ -63,6 +64,7 @@ public class MateDialogFragment extends AddNameDialog {
 
 		goodName = false;
 		matchName = true;
+		
 		return builder.create();
 	}
 	
@@ -73,7 +75,7 @@ public class MateDialogFragment extends AddNameDialog {
 			Message superMsg = new Message();
 			superMsg.setData(msg.getData());
 			AddNameDialog.contextHandler.sendMessage(superMsg);
-			if(msg.getData().getString("command").equals("updateNommates"));
+			if(msg.getData().getString("command").equals("updateNommate"));
 				context.updateNommates();
 		}
 	};

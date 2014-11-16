@@ -168,6 +168,7 @@ public class GCMIntentService extends IntentService {
 	    						data.putString("author", chatData.getString("author"));
 	    						data.putString("message", chatData.getString("message"));
 	    						data.putBoolean("member", eve.getJSONObject(i).getBoolean("member"));
+	    						data.putString("hash", chatData.getString("hash"));
 	    					    msg.setData(data);
 	    					    contextHandler.sendMessage(msg);
 	    					    
@@ -197,7 +198,7 @@ public class GCMIntentService extends IntentService {
     				long nHour = date.get(Calendar.HOUR_OF_DAY);
     				String day = Calendar.getInstance().getTimeInMillis() > date.getTimeInMillis()? " (tomorrow)" : "";
     				
-                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host")); 
+                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host"), new Bundle(), 0); 
                 }
                 
                 if(context != null && msg.getData().getString("type").contains("event"))
@@ -215,22 +216,28 @@ public class GCMIntentService extends IntentService {
                 	if(context.mainPagerAdapter.getMain() != null) 
                 		context.mainPagerAdapter.getMain().updateDetailFrag();
                 
+                	Bundle data = new Bundle();
+                	data.putString("sender", "chat");
+                	data.putString("hash", msg.getData().getString("hash"));
+                	
                 	if(!context.getForeground() && msg.getData().getBoolean("member"))
-                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"));
+                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"), data,1);
                 }
             }
         };
         
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private static void Notify(String notificationTitle, String notificationMessage) 
+	private static void Notify(String notificationTitle, String notificationMessage,Bundle data, int id) 
         {
         	NotificationCompat.Builder mBuilder =
         	        new NotificationCompat.Builder(thisService)
         	        .setSmallIcon(R.drawable.ic_launcher)
         	        .setContentTitle(notificationTitle)
-        	        .setContentText(notificationMessage);
+        	        .setContentText(notificationMessage)
+        	        .setAutoCancel(true);
         	// Creates an explicit intent for an Activity in your app
         	Intent resultIntent = new Intent(thisService, MainActivity.class);
+        	resultIntent.putExtras(data);
 
         	// The stack builder object will contain an artificial back stack for the
         	// started Activity.
@@ -250,7 +257,7 @@ public class GCMIntentService extends IntentService {
         	NotificationManager mNotificationManager =
         	    (NotificationManager) thisService.getSystemService(Context.NOTIFICATION_SERVICE);
         	// mId allows you to update the notification later on.
-        	mNotificationManager.notify((int) System.currentTimeMillis(), mBuilder.build());
+        	mNotificationManager.notify(id, mBuilder.build());
         	 }
     
     /**

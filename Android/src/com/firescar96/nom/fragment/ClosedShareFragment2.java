@@ -1,5 +1,6 @@
 package com.firescar96.nom.fragment;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -37,15 +38,17 @@ public class ClosedShareFragment2 extends ShareFragment {
 	static MainActivity context;
 
 	static private View frame;
+	private static WeakReference<ClosedShareFragment2> weakThis;
 	private MateDialogFragment mateFrag;
 	private ArrayList<String> mateList;
 	private ArrayAdapter<String> mateAdapter;
 	private ArrayList<Boolean> mateSelected;
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
 		context = (MainActivity) getActivity();
+		weakThis = new WeakReference<ClosedShareFragment2>(this);
 		frame = inflater.inflate(R.layout.fragment_add_closed2, container, false);
 		mateList = new ArrayList<String>();
 		mateSelected = new ArrayList<Boolean>();
@@ -88,15 +91,16 @@ public class ClosedShareFragment2 extends ShareFragment {
 
 						view.setBackground(null);
 						try {
-							MainActivity.appData.getJSONArray("mates").remove(position);
+							Object elem = MainActivity.appData.getJSONArray("mates").remove(position);
+							Bundle data = new Bundle();
+							data.putString("element", (String) elem);
+							Message msg= new Message();
+							msg.setData(data);
+							msg.what = REMOVE_COMMAND;
+							contextHandler.sendMessage(msg);
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						Bundle data = new Bundle();
-						data.putString("command", "updateNommates");
-						Message msg = new Message();
-						msg.setData(data);
-						contextHandler.sendMessage(msg);
 					}
 				});
 				alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"No", new DialogInterface.OnClickListener() {
@@ -134,14 +138,9 @@ public class ClosedShareFragment2 extends ShareFragment {
 			for(int i=0; i< mateData.length(); i++)
 				mateList.add(mateData.getString(i));
 
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		} catch (JSONException e) {}
 		Log.i("ClosedShare", "data set changed");
-		//mateAdapter.notifyDataSetChanged();
-		ListView useView = (ListView) frame.findViewById(R.id.matesList);
-		mateAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList);
-		useView.setAdapter(mateAdapter);
+		mateAdapter.addAll(mateList);;
 	}
 
 	public void closeShare(View v) {
@@ -192,12 +191,15 @@ public class ClosedShareFragment2 extends ShareFragment {
 		mateFrag.show(fragmentManager, "dialog");
 	}
 
+	private static int REMOVE_COMMAND = 1;
 	private static Handler contextHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if(msg.getData().getString("command").equals("updateNommates"))
-					context.updateNommates();
+			if(msg.what == REMOVE_COMMAND) {
+				weakThis.get().mateAdapter.remove(msg.getData().getString("element"));
+				weakThis.get().mateAdapter.notifyDataSetChanged();
+			}
 		}
 	};
 	

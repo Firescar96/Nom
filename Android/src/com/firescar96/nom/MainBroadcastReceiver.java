@@ -16,22 +16,20 @@ public class MainBroadcastReceiver extends WakefulBroadcastReceiver {
     		return;
     	
 		if(intent.getAction().equals("com.firescar96.nom.update.times"))
-		{
 			try {
 				MainActivity.context.mainPagerAdapter.getMain().populateEvents();
 			} catch (NullPointerException e)
 			{
 				return;
 			}
-		}
 		
-		if(intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE"))
+		if(intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE") || intent.getAction().equals("android.intent.action.BOOT_COMPLETED"))
 		{
 	        // Explicitly specify that GcmIntentService will handle the intent.
 	        ComponentName comp = new ComponentName(context.getPackageName(),
 	                GCMIntentService.class.getName());
 	        // Start the service, keeping the device awake while it is launching.
-	        startWakefulService(context, (intent.setComponent(comp)));
+	        startWakefulService(context, intent.setComponent(comp));
 	        setResultCode(Activity.RESULT_OK);
 		}
     }

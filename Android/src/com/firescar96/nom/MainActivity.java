@@ -17,8 +17,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONException;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -28,9 +30,15 @@ import android.os.Looper;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.firescar96.nom.fragment.EventDetailFragment;
 import com.firescar96.nom.org.json.JSONArray;
 import com.firescar96.nom.org.json.JSONObject;
 import com.google.android.gms.common.ConnectionResult;
@@ -156,11 +164,25 @@ public class MainActivity extends Activity{
 	    					return msg;
 	    				}
 	    			}.execute(null, null, null);
-	    		}
-	    		/*try {
-					appData.getJSONArray("mates").put(nommate);
-				} catch (JSONException e) {}*/
+	    		}    
 	    	}
+		
+			Bundle data = getIntent().getExtras();
+			if(data != null)
+				if(data.getString("sender").equals("chat"))
+					try {
+					JSONArray eve = appData.getJSONArray("events");
+					for(int i =0; i < eve.length(); i++) {
+						JSONObject curEve = eve.getJSONObject(i);
+						if(curEve.getString("hash").equals(data.get("hash"))) {
+							FragmentManager fragmentManager = getFragmentManager();
+							EventDetailFragment detailFrag = new EventDetailFragment();
+							detailFrag.setArguments(data);
+							detailFrag.show(fragmentManager, "dialog");
+							break;
+						}
+					}
+				} catch (JSONException e) {e.printStackTrace();}
 		
 		locServices = new LocationServices();
 
@@ -265,6 +287,33 @@ public class MainActivity extends Activity{
 		 return true;
 	 }
 
+	 public static void hideSoftKeyboard(Activity activity) {
+		    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+		    inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+		}
+	 
+	 public static void setupUI(View view) {
+
+		    //Set up touch listener for non-text box views to hide keyboard.
+		    if(!(view instanceof EditText))
+				view.setOnTouchListener(new OnTouchListener() {
+
+		            @Override
+					public boolean onTouch(View v, MotionEvent event) {
+		                hideSoftKeyboard(context);
+		                return false;
+		            }
+
+		        });
+
+		    //If a layout container, iterate over children and seed recursion.
+		    if (view instanceof ViewGroup)
+				for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+		            View innerView = ((ViewGroup) view).getChildAt(i);
+		            setupUI(innerView);
+		        }
+		}
+	 
 	 public static void sendJSONToBackend(final JSONObject jsonObject)
 		{
 			new AsyncTask<Object, Object, Object>() {
@@ -410,8 +459,8 @@ public class MainActivity extends Activity{
 	 @Override
 	protected void onPause()
 	 {
-		 super.onStop();
-		
+		 super.onPause();
+		 closeAppData(getFilesDir().getAbsolutePath());
 		 isForeground = false;
 	 }
 	 

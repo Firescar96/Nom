@@ -49,6 +49,7 @@ public class EventDetailFragment extends DialogFragment {
 		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		frame = inflater.inflate(R.layout.fragment_event_details,null);
+		MainActivity.setupUI(frame);
 		builder.setView(frame);
 		
 		detailList = new ArrayList<String>();
