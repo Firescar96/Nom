@@ -30,7 +30,7 @@ public abstract class AddNameDialog extends DialogFragment {
 	
 	static MainActivity context = MainActivity.context;
 	protected static View frame;
-	protected static boolean matchName; //whether we are matching the entered name
+	protected static boolean precise; //whether we are matching the entered name
 	protected static boolean goodName; //whether the foundName is good
 
 	public void checkName()
@@ -81,8 +81,12 @@ public abstract class AddNameDialog extends DialogFragment {
 					EditText name = (EditText) frame.findViewById(R.id.nameText);
 					System.out.println(name.getText());
 
-					HttpGet httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+name.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
-
+					HttpGet httpGet;
+					if(precise)
+						httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+name.getText().toString().toUpperCase(Locale.US)+"&regId="+GCMIntentService.getRegistrationId(context));
+					else
+						httpGet = new HttpGet("http://nchinda2.mit.edu:666?checkName="+name.getText().toString().toUpperCase(Locale.US));
+					
 					// 7. Set some headers to inform server about the type of the content   
 					httpGet.setHeader("Accept", "application/json");
 					httpGet.setHeader("Content-type", "application/json");
@@ -132,46 +136,26 @@ public abstract class AddNameDialog extends DialogFragment {
 				View gone2;
 				if(msg.getData().getString("value").equals("true"))
 				{
-					if(!matchName) {
-						visible = frame.findViewById(R.id.nameGood);
-						gone1 = frame.findViewById(R.id.nameBad);
-						goodName = matchName;
-						try {
-							((Callable<?>)msg.obj).call();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					else {
-						goodName = !matchName;
-						visible = frame.findViewById(R.id.nameBad);
-						gone1 = frame.findViewById(R.id.nameGood);
-					}
-					
+					visible = frame.findViewById(R.id.nameGood);
+					gone1 = frame.findViewById(R.id.nameBad);
 					gone2 = frame.findViewById(R.id.nameProgress);
+					goodName = true;
+					try {
+						((Callable<?>)msg.obj).call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				else if(msg.getData().getString("value").equals("false"))
 				{
-					if(matchName) {
-						goodName = matchName;
-						visible = frame.findViewById(R.id.nameGood);
-						gone1 = frame.findViewById(R.id.nameBad);
-						try {
-							((Callable<?>)msg.obj).call();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					else {
-						goodName = !matchName;
-						visible = frame.findViewById(R.id.nameBad);
-						gone1 = frame.findViewById(R.id.nameGood);
-					}
 					
+					goodName = false;
+					visible = frame.findViewById(R.id.nameBad);
+					gone1 = frame.findViewById(R.id.nameGood);
 					gone2 = frame.findViewById(R.id.nameProgress);
 				}
 				else {
-					goodName = !matchName;
+					goodName = false;
 					visible = frame.findViewById(R.id.nameProgress);
 					gone1 = frame.findViewById(R.id.nameGood);
 					gone2 = frame.findViewById(R.id.nameBad);

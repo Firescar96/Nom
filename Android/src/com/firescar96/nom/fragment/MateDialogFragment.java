@@ -63,8 +63,7 @@ public class MateDialogFragment extends AddNameDialog {
 		});
 
 		goodName = false;
-		matchName = true;
-		
+		precise = false;
 		return builder.create();
 	}
 	

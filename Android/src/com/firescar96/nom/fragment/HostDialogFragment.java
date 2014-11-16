@@ -53,7 +53,7 @@ public class HostDialogFragment extends AddNameDialog {
 		});
 		
 		goodName = false;
-		matchName = false;
+		precise = true;
 		return builder.create();
 	}
 }
