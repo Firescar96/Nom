@@ -10,15 +10,14 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,36 +27,42 @@ import android.widget.ListView;
 
 import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
 
 public class EventDetailFragment extends DialogFragment {
 	static MainActivity context = MainActivity.context;
 	public View frame;
-	public String hash;
+	private String hash;
 
 	static JSONArray detailData;
 	static ArrayList<String> detailList;
+	static ListView detailListView;
 	static ArrayAdapter<String> detailAdapter;
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		hash = getArguments().getString("hash");
+		
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		// Get the layout inflater
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		frame = inflater.inflate(R.layout.fragment_event_details,null);
+		MainActivity.setupUI(frame);
 		builder.setView(frame);
 		
 		detailList = new ArrayList<String>();
-		updateList();	
 		//change the editable parts depending on whether the user is part of the group
 		configureEditable(false);
 		
 		//Setup the listview adapter for closed events
-		ListView useView = (ListView) frame.findViewById(R.id.eventMembershipList);
+		detailListView = (ListView) frame.findViewById(R.id.eventMembershipList);
 		detailAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, detailList);
-		useView.setAdapter(detailAdapter);
-		
-		useView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		detailListView.setAdapter(detailAdapter);
+
+		updateList();	
+		detailListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) 
 			{
@@ -80,7 +85,7 @@ public class EventDetailFragment extends DialogFragment {
 		return builder.create();
 	}
 	
-	public void onEventMembershipChanged(View v)
+	public void onEventMembershipChanged()
 	{
 		try {
 			JSONArray eve = MainActivity.appData.getJSONArray("events");
@@ -149,8 +154,9 @@ public class EventDetailFragment extends DialogFragment {
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("author")+": "+detailData.getJSONObject(i).getString("message"));
 
-			if(detailAdapter != null)
-				detailAdapter.notifyDataSetChanged();
+			detailAdapter.notifyDataSetChanged();
+			detailListView.setSelection(detailAdapter.getCount()-1);
+			Log.i("detailAdapter", detailList.toString());
 		} catch (JSONException e) {
 			try {
 				JSONArray eve = MainActivity.appData.getJSONArray("events");
@@ -168,7 +174,7 @@ public class EventDetailFragment extends DialogFragment {
 		}
 	}
 	
-	public void onChatMsg(View v)
+	public void onChatMsg()
 	{
 		postMsg(((EditText)frame.findViewById(R.id.eventChatText)).getText().toString());
 		((EditText)frame.findViewById(R.id.eventChatText)).setText("");

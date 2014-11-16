@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.text.Editable;
 import android.widget.TimePicker;
 
 import com.firescar96.nom.MainActivity;
+import com.firescar96.nom.org.json.JSONObject;
 
 public abstract class ShareFragment extends Fragment{
 
@@ -65,9 +65,8 @@ public abstract class ShareFragment extends Fragment{
 			both.addAll(Arrays.asList(locByt));
 			i = 0;
 			byte[] hotilocBytes = new byte[both.size()];
-			for (Byte b : both) {
+			for (Byte b : both)
 				hotilocBytes[i++] = b.byteValue();
-			}
 			MessageDigest md;
 			md = MessageDigest.getInstance("MD5");
 
@@ -82,7 +81,7 @@ public abstract class ShareFragment extends Fragment{
 			eventSon.accumulate("hash", digHash);
 			jsonObject.accumulate("event", eventSon);
 
-			context.sendJSONToBackend(jsonObject);
+			MainActivity.sendJSONToBackend(jsonObject);
 			
 			if(makeIntent) {
 				Intent shareIntent = new Intent(Intent.ACTION_SEND);

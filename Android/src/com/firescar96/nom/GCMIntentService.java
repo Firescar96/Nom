@@ -14,8 +14,21 @@
 
 package com.firescar96.nom;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.cloud.backend.core.Consts;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONException;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
@@ -35,23 +48,10 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.firescar96.nom.org.json.JSONArray;
+import com.firescar96.nom.org.json.JSONObject;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.cloud.backend.core.Consts;
 
 /**
  * This class manages Google Cloud Messaging push notifications and CloudQuery
@@ -86,18 +86,18 @@ public class GCMIntentService extends IntentService {
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
-        if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
-            /*
+        if (!extras.isEmpty())
+			/*
              * Filter messages based on message type. Since it is likely that GCM will be
              * extended in the future with new message types, just ignore any message types you're
              * not interested in, or that you don't recognize.
              */
-            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-                Log.i(Consts.TAG, "onHandleIntent: message error");
-            } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
-                Log.i(Consts.TAG, "onHandleIntent: message deleted");
+            if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType))
+				Log.i(Consts.TAG, "onHandleIntent: message error");
+			else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType))
+				Log.i(Consts.TAG, "onHandleIntent: message deleted");
             // If it's a regular GCM message, do some work.
-            } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+			else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
             	// Post notification of received message.
                 System.out.println("Received: " + extras.toString());
                 
@@ -144,7 +144,7 @@ public class GCMIntentService extends IntentService {
 						data.putString("type", "event."+eveData.getString("privacy"));
 						data.putString("host", eveData.getString("host"));
 						data.putString("date", eveData.getString("date"));
-					    msg.obj = data;
+					    msg.setData(data);
 					    contextHandler.sendMessage(msg);
 	                }
 	                
@@ -153,8 +153,7 @@ public class GCMIntentService extends IntentService {
 	                	JSONObject chatData=new JSONObject("{\"chat\":"+extras.get("chat")+"}").getJSONObject("chat");
 	                	JSONArray eve = MainActivity.appData.getJSONArray("events");
 	                	for(int i = 0; i < eve.length(); i++)
-	                	{
-	                		if(chatData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
+							if(chatData.getString("hash").equals(eve.getJSONObject(i).getString("hash")))
 	                		{
 	                			JSONObject msgSon = new JSONObject();
 	                			msgSon.accumulate("author", chatData.getString("author"));
@@ -166,12 +165,15 @@ public class GCMIntentService extends IntentService {
 	                			Message msg = new Message();
 	    						Bundle data = new Bundle();
 	    						data.putString("type", "chat");
-	    					    msg.obj = data;
+	    						data.putString("author", chatData.getString("author"));
+	    						data.putString("message", chatData.getString("message"));
+	    						data.putBoolean("member", eve.getJSONObject(i).getBoolean("member"));
+	    						data.putString("hash", chatData.getString("hash"));
+	    					    msg.setData(data);
 	    					    contextHandler.sendMessage(msg);
 	    					    
 	                			return;
 	                		}
-	                	}
 	                }
 
                 	MainActivity.closeAppData(getFilesDir().getAbsolutePath());
@@ -180,7 +182,6 @@ public class GCMIntentService extends IntentService {
 					e1.printStackTrace();
 				}
             }
-        }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         MainBroadcastReceiver.completeWakefulIntent(intent);
     }
@@ -189,46 +190,54 @@ public class GCMIntentService extends IntentService {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(((Bundle)msg.obj).getString("type").contains("event"))
+                if(msg.getData().getString("type").contains("event"))
                 {
                 	Calendar date = Calendar.getInstance();
-                	date.setTimeInMillis(Long.parseLong(((Bundle)msg.obj).getString("date")));
+                	date.setTimeInMillis(Long.parseLong(msg.getData().getString("date")));
     				long nMin = date.get(Calendar.MINUTE);
     				long nHour = date.get(Calendar.HOUR_OF_DAY);
     				String day = Calendar.getInstance().getTimeInMillis() > date.getTimeInMillis()? " (tomorrow)" : "";
     				
-                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+((Bundle)msg.obj).getString("host")); 
+                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host"), new Bundle(), 0); 
                 }
                 
-                if(context != null && (((Bundle)msg.obj).getString("type").contains("event")))
+                if(context != null && msg.getData().getString("type").contains("event"))
                 {
                 	try {
 						System.out.println(MainActivity.appData.getJSONArray("events"));
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                 	context.mainPagerAdapter.getMain().populateEvents();
                 }
                 
-                if(((Bundle)msg.obj).getString("type").equals("chat"))
+                if(msg.getData().getString("type").equals("chat"))
                 {
-                	if(context.mainPagerAdapter.getMain().getDetailFrag() != null)
-                		context.mainPagerAdapter.getMain().getDetailFrag().updateList();
+                	if(context.mainPagerAdapter.getMain() != null) 
+                		context.mainPagerAdapter.getMain().updateDetailFrag();
+                
+                	Bundle data = new Bundle();
+                	data.putString("sender", "chat");
+                	data.putString("hash", msg.getData().getString("hash"));
+                	
+                	if(!context.getForeground() && msg.getData().getBoolean("member"))
+                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"), data,1);
                 }
             }
         };
         
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private static void Notify(String notificationTitle, String notificationMessage) 
+	private static void Notify(String notificationTitle, String notificationMessage,Bundle data, int id) 
         {
         	NotificationCompat.Builder mBuilder =
         	        new NotificationCompat.Builder(thisService)
         	        .setSmallIcon(R.drawable.ic_launcher)
         	        .setContentTitle(notificationTitle)
-        	        .setContentText(notificationMessage);
+        	        .setContentText(notificationMessage)
+        	        .setAutoCancel(true);
         	// Creates an explicit intent for an Activity in your app
         	Intent resultIntent = new Intent(thisService, MainActivity.class);
+        	resultIntent.putExtras(data);
 
         	// The stack builder object will contain an artificial back stack for the
         	// started Activity.
@@ -248,7 +257,7 @@ public class GCMIntentService extends IntentService {
         	NotificationManager mNotificationManager =
         	    (NotificationManager) thisService.getSystemService(Context.NOTIFICATION_SERVICE);
         	// mId allows you to update the notification later on.
-        	mNotificationManager.notify((int) System.currentTimeMillis(), mBuilder.build());
+        	mNotificationManager.notify(id, mBuilder.build());
         	 }
     
     /**
@@ -300,12 +309,12 @@ public class GCMIntentService extends IntentService {
      */
     public static void registerInBackground() {
         new AsyncTask<Object, Object, Object>() {
-            protected String doInBackground(Object... params) {
+            @Override
+			protected String doInBackground(Object... params) {
                 String msg = "";
                 try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
+                    if (gcm == null)
+						gcm = GoogleCloudMessaging.getInstance(context);
                     regId = gcm.register(SENDER_ID);
                     msg = "Device registered, registration ID=" + regId;
 
