@@ -67,18 +67,18 @@ Router.map(function () {
       		var exists = resUsr != undefined;
       		console.log(exists);
       		this.response.writeHead(200, {'Content-Type': 'text/plain'});
-      		//return true if no matching user found, or if the requesting user is in the database
-		if(exists)
-  		{
-			if(this.request.query.regId == null)
-				this.response.end("false")
-			else if(resUsr.regId == this.request.query.regId)
-      				this.response.end("true");
-      			else
-      				this.response.end("false");
-      		}
+      		
+      		console.log(this.request.query.regId)
+				if(this.request.query.regId == null && exists)
+					this.response.end("true")
+				if(this.request.query.regId == null && !exists)
+					this.response.end("false")
+				else if(exists && resUsr.regId == this.request.query.regId) //return true if matching user found, or if the requesting user is in the database
+					this.response.end("true");
+				else if(!exist)
+					this.response.end("true");
       		else
-      			this.response.end("true");
+      			this.response.end("false");
 			}      
       }
     }
