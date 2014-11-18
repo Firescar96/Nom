@@ -32,6 +32,7 @@ import com.firescar96.nom.org.json.JSONObject;
 
 public class EventDetailFragment extends DialogFragment {
 	static MainActivity context = MainActivity.context;
+	static EventDetailFragment thisFrag;
 	public View frame;
 	private String hash;
 
@@ -43,6 +44,7 @@ public class EventDetailFragment extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		hash = getArguments().getString("hash");
+		thisFrag = this;
 		
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -154,7 +156,8 @@ public class EventDetailFragment extends DialogFragment {
 			for(int i = 0; i < detailData.length(); i++)
 				detailList.add(detailData.getJSONObject(i).getString("author")+": "+detailData.getJSONObject(i).getString("message"));
 
-			detailAdapter.notifyDataSetChanged();
+			detailAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, detailList);
+			detailListView.setAdapter(detailAdapter);
 			detailListView.setSelection(detailAdapter.getCount()-1);
 			Log.i("detailAdapter", detailList.toString());
 		} catch (JSONException e) {
@@ -252,4 +255,11 @@ public class EventDetailFragment extends DialogFragment {
 			}
 		}.execute(null, null, null);
 	}
+	
+	@Override
+	public void onStop()
+	 {
+		super.onStop();
+		thisFrag=null;
+	 }
 }

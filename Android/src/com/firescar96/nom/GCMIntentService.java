@@ -40,6 +40,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,7 +63,6 @@ public class GCMIntentService extends IntentService {
 
     public GCMIntentService(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
     public static final String PROPERTY_REG_ID = "registration_id";
 
@@ -178,7 +179,6 @@ public class GCMIntentService extends IntentService {
 
                 	MainActivity.closeAppData(getFilesDir().getAbsolutePath());
 				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
             }
@@ -198,17 +198,21 @@ public class GCMIntentService extends IntentService {
     				long nHour = date.get(Calendar.HOUR_OF_DAY);
     				String day = Calendar.getInstance().getTimeInMillis() > date.getTimeInMillis()? " (tomorrow)" : "";
     				
-                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host"), new Bundle(), 0); 
-                }
-                
-                if(context != null && msg.getData().getString("type").contains("event"))
-                {
-                	try {
-						System.out.println(MainActivity.appData.getJSONArray("events"));
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-                	context.mainPagerAdapter.getMain().populateEvents();
+
+					boolean annoy = false;
+    				if(msg.getData().getString("type").contains("closed"))
+    					annoy = true;
+    				
+                	Notify("Food at "+nHour+":"+ String.format("%02d",nMin) + day,"Eat with "+msg.getData().getString("host"), new Bundle(), 0,annoy); 
+                	
+                	if(context != null) {
+                		try {
+    						System.out.println(MainActivity.appData.getJSONArray("events"));
+    					} catch (JSONException e) {
+    						e.printStackTrace();
+    					}
+                    	context.mainPagerAdapter.getMain().updateEvents();
+                	}
                 }
                 
                 if(msg.getData().getString("type").equals("chat"))
@@ -221,13 +225,13 @@ public class GCMIntentService extends IntentService {
                 	data.putString("hash", msg.getData().getString("hash"));
                 	
                 	if(!context.getForeground() && msg.getData().getBoolean("member"))
-                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"), data,1);
+                		Notify("Message from " + msg.getData().getString("author"), msg.getData().getString("message"), data,1,true);
                 }
             }
         };
         
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-	private static void Notify(String notificationTitle, String notificationMessage,Bundle data, int id) 
+	private static void Notify(String notificationTitle, String notificationMessage,Bundle data, int id,boolean annoy) 
         {
         	NotificationCompat.Builder mBuilder =
         	        new NotificationCompat.Builder(thisService)
@@ -254,6 +258,12 @@ public class GCMIntentService extends IntentService {
         	            PendingIntent.FLAG_UPDATE_CURRENT
         	        );
         	mBuilder.setContentIntent(resultPendingIntent);
+        	if(annoy) {
+        		Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        		mBuilder.setSound(alarmSound);
+        		long[] pattern = {50,100,10,100,10,200};
+        		mBuilder.setVibrate(pattern);
+        	}
         	NotificationManager mNotificationManager =
         	    (NotificationManager) thisService.getSystemService(Context.NOTIFICATION_SERVICE);
         	// mId allows you to update the notification later on.
@@ -373,8 +383,6 @@ public class GCMIntentService extends IntentService {
          
                     // 3. build jsonObject
                     JSONObject jsonObject = new JSONObject();
-                    String id = Integer.toString(msgId.incrementAndGet());
-                    jsonObject.accumulate("id", id);
                     jsonObject.accumulate("regId", regId);
                     jsonObject.accumulate("host", MainActivity.appData.getString("host"));
          

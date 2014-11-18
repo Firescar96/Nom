@@ -89,11 +89,8 @@ public class MainActivity extends Activity{
 		//Check device for Play Services APK. If check succeeds, proceed with
 		//GCM registration.
 		if (checkPlayServices()) {
-			Log.i("MainActivity", "we have the google play");
-			System.out.println("we have the google play");
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = GCMIntentService.getRegistrationId(this);
-			System.err.println("need new register");
 			if (regid.isEmpty())
 				GCMIntentService.registerInBackground();
 		} else
@@ -168,8 +165,10 @@ public class MainActivity extends Activity{
 	    	}
 		
 			Bundle data = getIntent().getExtras();
+			if(data!=null)
+				Log.i("mainact", data.toString());
 			if(data != null)
-				if(data.getString("sender").equals("chat"))
+				if(data.getString("sender") != null && data.getString("sender").equals("chat"))
 					try {
 					JSONArray eve = appData.getJSONArray("events");
 					for(int i =0; i < eve.length(); i++) {
@@ -190,7 +189,6 @@ public class MainActivity extends Activity{
 		// primary sections of the activity.
 		mainPagerAdapter = new MainPagerAdapter(getFragmentManager());
 	
-		 System.out.println("init main pager"+mainPagerAdapter);
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (MainViewPager) findViewById(R.id.main_activity);
 		mViewPager.setAdapter(mainPagerAdapter);
@@ -287,9 +285,9 @@ public class MainActivity extends Activity{
 		 return true;
 	 }
 
-	 public static void hideSoftKeyboard(Activity activity) {
+	 public static void hideSoftKeyboard(Activity activity, View v) {
 		    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		    inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+		    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
 		}
 	 
 	 public static void setupUI(View view) {
@@ -300,7 +298,7 @@ public class MainActivity extends Activity{
 
 		            @Override
 					public boolean onTouch(View v, MotionEvent event) {
-		                hideSoftKeyboard(context);
+		                hideSoftKeyboard(context,v);
 		                return false;
 		            }
 
@@ -367,7 +365,6 @@ public class MainActivity extends Activity{
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					System.out.println(msg);
 					return msg;
 				}
 			}.execute(null, null, null);
@@ -444,7 +441,7 @@ public class MainActivity extends Activity{
 	 
 	 public void onEventMembershipChanged(View v)
 	 {
-		mainPagerAdapter.getMain().onEventMembershipChanged(); 
+		mainPagerAdapter.getMain().onEventMembershipChanged();
 	 }
 	 
 	 public void onChatMsg(View v)
@@ -459,7 +456,7 @@ public class MainActivity extends Activity{
 	 @Override
 	protected void onPause()
 	 {
-		 super.onPause();
+		 super.onPause() ;
 		 closeAppData(getFilesDir().getAbsolutePath());
 		 isForeground = false;
 	 }

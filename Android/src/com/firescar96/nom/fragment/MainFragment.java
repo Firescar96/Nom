@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +36,6 @@ public class MainFragment extends Fragment {
 	
 	public boolean privacy = false;
 	
-	private EventDetailFragment detailFrag;
-	private HostDialogFragment hostFrag;
 	AlarmManager alarmMgr;
 	PendingIntent alarmIntent;
 	 @Override
@@ -46,14 +45,12 @@ public class MainFragment extends Fragment {
 		frame = inflater.inflate(R.layout.fragment_main, container, false);
 		 if(MainActivity.appData != null)
 		 {
-			 populateEvents();
+			 updateEvents();
 
 			 alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			 Intent intent = new Intent(context, MainBroadcastReceiver.class);
 			 intent.setAction("com.firescar96.nom.update.times");
 			 alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-			 alarmMgr.setRepeating (AlarmManager.RTC, (int)System.currentTimeMillis()/60000*60000, 60000, alarmIntent);
 		 }
 		 
 		 try {
@@ -65,9 +62,16 @@ public class MainFragment extends Fragment {
 		 return frame;
 	 }
 	 
-	 public void populateEvents()
+	 @Override
+	 public void onResume() {
+		 super.onResume();
+		 alarmMgr.setRepeating (AlarmManager.RTC, (int)System.currentTimeMillis()/60000*60000, 60000, alarmIntent);
+	 }
+	 
+	 public void updateEvents()
 		{
 			try {
+				Log.i("MainFrag", "updating events");
 				//Setup the listview adapter for open events
 				ListView opView = (ListView) frame.findViewById(R.id.open_events);
 				ArrayList<String> opList = new ArrayList<String>();
@@ -76,9 +80,8 @@ public class MainFragment extends Fragment {
 				ArrayList<String> cloList = new ArrayList<String>();
 
 
-				final JSONArray prEve = MainActivity.appData.getJSONArray("events");
-				ArrayList<Object> transArr = new ArrayList<Object>();
-				for(int i=0; i< prEve.length(); i++)
+				final JSONArray eve = MainActivity.appData.getJSONArray("events");
+				for(int i=0; i< eve.length(); i++)
 					//System.out.println(Calendar.getInstance().getTimeInMillis()/1000);
 					//System.out.println(Long.parseLong(((JSONObject) opDat.get(i)).getString("date"))/1000);
 					/*if(((JSONObject) opDat.get(i)).getString("hour").equals("Now"))
@@ -88,30 +91,27 @@ public class MainFragment extends Fragment {
 					}
 					
 					else*/ 
-					if(Calendar.getInstance().getTimeInMillis()/1000 < Long.parseLong(((JSONObject) prEve.get(i)).getString("date"))/1000)
-					{
-						
-						transArr.add(prEve.get(i));
-	
-						int date = (int) Long.parseLong(((JSONObject) prEve.get(i)).getString("date"));
+					if(Calendar.getInstance().getTimeInMillis()/1000 < Long.parseLong(eve.getJSONObject(i).getString("date"))/1000)
+					{	
+						int date = (int) Long.parseLong(eve.getJSONObject(i).getString("date"));
 						int curDate = (int) Calendar.getInstance().getTimeInMillis();
 						int diff = date-curDate;
 						diff /=60000;
 						int nHour = diff/60;
 						int nMin = diff%60;
-						String info = ((JSONObject) prEve.get(i)).getString("host")+" - "+nHour+" "+
+						String info = eve.getJSONObject(i).getString("host")+" - "+nHour+" "+
 								singlePlural(nHour,"hour","hours")+" "+nMin+" "+
-								singlePlural(nMin,"min","mins")+"\nat "+ ((JSONObject) prEve.get(i)).getString("location");
-						if(prEve.getJSONObject(i).getString("privacy").equals("open"))
+								singlePlural(nMin,"min","mins")+"\nat "+ eve.getJSONObject(i).getString("location");
+						if(eve.getJSONObject(i).getString("privacy").equals("open"))
 							opList.add(info);
 						else
 							cloList.add(info);
 					}
-				final JSONArray eve = new JSONArray();
-				for(Object item : transArr)
-					eve.put(item);
+					else
+						eve.remove(i);
 				MainActivity.appData.put("events", eve);
-				
+
+				Log.i("MainFrag", eve.toString());
 				ArrayAdapter<String> opAdapter = new ArrayAdapter<String>(context,
 						android.R.layout.simple_list_item_1, opList);
 				opView.setAdapter(opAdapter);
@@ -138,7 +138,7 @@ public class MainFragment extends Fragment {
 						view.animate().setDuration(1000).alpha(1);
 						
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
-						detailFrag = new EventDetailFragment();
+						EventDetailFragment detailFrag = new EventDetailFragment();
 						Bundle data = new Bundle();
 						try {
 							data.putString("hash", opEve.valueAt(position).getString("hash"));
@@ -170,7 +170,7 @@ public class MainFragment extends Fragment {
 						view.animate().setDuration(1000).alpha(1);
 
 						FragmentManager fragmentManager = getActivity().getFragmentManager();
-						detailFrag = new EventDetailFragment();
+						EventDetailFragment detailFrag = new EventDetailFragment();
 						Bundle data = new Bundle();
 						try {
 							data.putString("hash", cloEve.valueAt(position).getString("hash"));
@@ -226,29 +226,33 @@ public class MainFragment extends Fragment {
 	public void requestHostname() //User needs to create a username if they want to use this app
 	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();
-		hostFrag = new HostDialogFragment();
-		hostFrag.show(fragmentManager, "hostnameDialog");
+		new HostDialogFragment().show(fragmentManager, "hostnameDialog");
 	}
 
 	
 	public void onEventMembershipChanged()
 	{
-		detailFrag.onEventMembershipChanged();
+		if(EventDetailFragment.thisFrag!=null)
+			EventDetailFragment.thisFrag.onEventMembershipChanged();
 	}
 	
 	public void onChatMsg()
 	{
-		detailFrag.onChatMsg();
+		if(EventDetailFragment.thisFrag!=null)
+			EventDetailFragment.thisFrag.onChatMsg();
 	}
 	
 	public void checkName()
 	{
-		hostFrag.checkName();
+		if(HostDialogFragment.thisFrag !=null)
+			HostDialogFragment.thisFrag.checkName();
 	}
 	
 	public void updateDetailFrag()
 	{
-		detailFrag.updateList();
+		System.out.println(EventDetailFragment.thisFrag);
+		if(EventDetailFragment.thisFrag!=null)
+			EventDetailFragment.thisFrag.updateList();
 	}
 	
 	@Override
@@ -256,9 +260,5 @@ public class MainFragment extends Fragment {
 	{
 		super.onPause();
 		alarmMgr.cancel(alarmIntent);
-		if(detailFrag != null)
-			detailFrag.dismiss();
-		if(hostFrag != null)
-			hostFrag.dismiss();
 	}
 }

@@ -26,7 +26,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
 	private ClosedShareFragment1 closed1;
 	private ClosedShareFragment2 closed2;
 	
-	private SparseArray<Fragment> views = new SparseArray<Fragment>();
+	private final SparseArray<Fragment> views = new SparseArray<Fragment>();
 	
 	private int pageCount = 1;
 	
@@ -36,37 +36,35 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     
     @Override
     public Fragment getItem(int position) {
-    	Fragment newFragment = null;
         switch (position)
         {
         case 0:
-        	newFragment = new MainFragment();
-        	main = (MainFragment) newFragment;
+        	main = new MainFragment();
+            views.put(position,main);
         	break;
         case 1:
         	if(!main.privacy)
         	{
-        		newFragment = new OpenShareFragment();
-        		open = (OpenShareFragment) newFragment;
+        		open = new OpenShareFragment();
+                views.put(position,open);
         	}
         	else
         	{
-        		newFragment = new ClosedShareFragment1();
-        		closed1 = (ClosedShareFragment1) newFragment;
+        		closed1 = new ClosedShareFragment1();
+                views.put(position,closed1);
         	}
         	break;
         case 2:
-        	newFragment = new ClosedShareFragment2();
-        	closed2 = (ClosedShareFragment2) newFragment;
+        	closed2 = new ClosedShareFragment2();
+            views.put(position,closed2);
         	break;
         default:
-        	newFragment = new MainFragment();
-        	main = (MainFragment) newFragment;
+        	main = new MainFragment();
+            views.put(position,main);
         	break;
         }
         
-        views.put(position,newFragment);
-        return newFragment;
+        return views.get(position);
     }
 
     public void setCount(int p) {
@@ -104,6 +102,7 @@ public class MainPagerAdapter extends FragmentStatePagerAdapter {
     }
 
 	public MainFragment getMain() {
+		System.out.println("main val "+main);
 		if(main == null)
 			updateView(0);
 		return main;

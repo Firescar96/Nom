@@ -17,9 +17,12 @@ import com.firescar96.nom.MainActivity;
 import com.firescar96.nom.R;
 
 public class HostDialogFragment extends AddNameDialog {
+	static HostDialogFragment thisFrag;
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		thisFrag = this;
+		
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		// Get the layout inflater
@@ -38,7 +41,7 @@ public class HostDialogFragment extends AddNameDialog {
 			
 			public void addName() {
 				EditText hostname = (EditText) frame.findViewById(R.id.nameText);
-				if(!goodName  || hostname.getText().length() == 0)
+				if(hostname.getText().length() == 0)
 					return;
 
 				try {
@@ -52,8 +55,14 @@ public class HostDialogFragment extends AddNameDialog {
 			}
 		});
 		
-		goodName = false;
 		precise = true;
 		return builder.create();
 	}
+	
+	@Override
+	public void onStop()
+	 {
+		super.onStop();
+		thisFrag=null;
+	 }
 }

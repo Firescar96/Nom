@@ -39,7 +39,6 @@ public class ClosedShareFragment2 extends ShareFragment {
 
 	static private View frame;
 	private static WeakReference<ClosedShareFragment2> weakThis;
-	private MateDialogFragment mateFrag;
 	private ArrayList<String> mateList;
 	private ArrayAdapter<String> mateAdapter;
 	private ArrayList<Boolean> mateSelected;
@@ -125,9 +124,6 @@ public class ClosedShareFragment2 extends ShareFragment {
 		super.onResume();
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(frame.getWindowToken(), 0);
-
-		ListView listView = (ListView) frame.findViewById(R.id.matesList);
-		listView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList)); 
 	}
 
 	public void populateUsers()
@@ -140,7 +136,9 @@ public class ClosedShareFragment2 extends ShareFragment {
 
 		} catch (JSONException e) {}
 		Log.i("ClosedShare", "data set changed");
-		mateAdapter.addAll(mateList);;
+		ListView useView = (ListView) frame.findViewById(R.id.matesList);
+		mateAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, mateList);
+		useView.setAdapter(mateAdapter);
 	}
 
 	public void closeShare(View v) {
@@ -187,8 +185,7 @@ public class ClosedShareFragment2 extends ShareFragment {
 	public void addNommate(View v)
 	{
 		FragmentManager fragmentManager = getActivity().getFragmentManager();
-		mateFrag = new MateDialogFragment();
-		mateFrag.show(fragmentManager, "dialog");
+		new MateDialogFragment().show(fragmentManager, "dialog");
 	}
 
 	private static int REMOVE_COMMAND = 1;
@@ -199,20 +196,13 @@ public class ClosedShareFragment2 extends ShareFragment {
 			if(msg.what == REMOVE_COMMAND) {
 				weakThis.get().mateAdapter.remove(msg.getData().getString("element"));
 				weakThis.get().mateAdapter.notifyDataSetChanged();
+				Log.i("ClosedShare", "data set remove "+msg.getData().getString("element"));
 			}
 		}
 	};
 	
 	public void checkName()
 	{
-		mateFrag.checkName();
-	}
-	
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		if(mateFrag != null)
-			mateFrag.dismiss();
+		MateDialogFragment.thisFrag.checkName();
 	}
 }

@@ -20,8 +20,11 @@ import com.firescar96.nom.R;
 
 public class MateDialogFragment extends AddNameDialog {
 	
+	static MateDialogFragment thisFrag;
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		thisFrag = this;
 		// Build the dialog and set up the button click handlers
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		// Get the layout inflater
@@ -40,8 +43,9 @@ public class MateDialogFragment extends AddNameDialog {
 			}
 			
 			public void addName() {
+				Log.i("MateDialogFragment", "adding");
 				EditText matename = (EditText) frame.findViewById(R.id.nameText);
-				if(!goodName  || matename.getText().length() == 0)
+				if(matename.getText().length() == 0)
 					return;
 				
 				try {
@@ -62,7 +66,6 @@ public class MateDialogFragment extends AddNameDialog {
 			}
 		});
 
-		goodName = false;
 		precise = false;
 		return builder.create();
 	}
@@ -71,11 +74,20 @@ public class MateDialogFragment extends AddNameDialog {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			Message superMsg = new Message();
-			superMsg.setData(msg.getData());
-			AddNameDialog.contextHandler.sendMessage(superMsg);
-			if(msg.getData().getString("command").equals("updateNommate"));
+			if(msg.getData().getString("command").equals("updateNommates"))
 				context.updateNommates();
+			else {
+				Message superMsg = new Message();
+				superMsg.setData(msg.getData());
+				AddNameDialog.contextHandler.sendMessage(superMsg);
+			}
 		}
 	};
+	
+	@Override
+	public void onStop()
+	 {
+		super.onStop();
+		thisFrag=null;
+	 }
 }

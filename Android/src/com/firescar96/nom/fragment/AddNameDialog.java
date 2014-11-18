@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -30,8 +31,7 @@ public abstract class AddNameDialog extends DialogFragment {
 	
 	static MainActivity context = MainActivity.context;
 	protected static View frame;
-	protected static boolean precise; //whether we are matching the entered name
-	protected static boolean goodName; //whether the foundName is good
+	protected static boolean precise; //whether we are matching the entered name and regId
 
 	public void checkName()
 	{   
@@ -63,12 +63,12 @@ public abstract class AddNameDialog extends DialogFragment {
 			protected Object doInBackground(Object... arg0) {
 				if (Looper.myLooper() == null)
 					Looper.prepare();
-				Message msg = new Message();
-				Bundle data = new Bundle();
-				data.putString("command", "checkName");
-				data.putString("value", "progress");
-				msg.setData(data);
-				contextHandler.sendMessage(msg);
+				Message ms = new Message();
+				Bundle dat = new Bundle();
+				dat.putString("command", "checkName");
+				dat.putString("value", "progress");
+				ms.setData(dat);
+				contextHandler.sendMessage(ms);
 
 				InputStream inputStream = null;
 
@@ -103,8 +103,8 @@ public abstract class AddNameDialog extends DialogFragment {
 					inputStream = httpResponse.getEntity().getContent();
 
 					// 10. convert inputstream to string
-					msg = new Message();
-					data = new Bundle();
+					Message msg = new Message();
+					Bundle data = new Bundle();
 					data.putString("command", "checkName");
 					if(inputStream != null)
 						if(convertStreamToString(inputStream).contains("true"))
@@ -136,10 +136,10 @@ public abstract class AddNameDialog extends DialogFragment {
 				View gone2;
 				if(msg.getData().getString("value").equals("true"))
 				{
+					Log.i("AddNameDialog", "here");
 					visible = frame.findViewById(R.id.nameGood);
 					gone1 = frame.findViewById(R.id.nameBad);
 					gone2 = frame.findViewById(R.id.nameProgress);
-					goodName = true;
 					try {
 						((Callable<?>)msg.obj).call();
 					} catch (Exception e) {
@@ -148,14 +148,11 @@ public abstract class AddNameDialog extends DialogFragment {
 				}
 				else if(msg.getData().getString("value").equals("false"))
 				{
-					
-					goodName = false;
 					visible = frame.findViewById(R.id.nameBad);
 					gone1 = frame.findViewById(R.id.nameGood);
 					gone2 = frame.findViewById(R.id.nameProgress);
 				}
 				else {
-					goodName = false;
 					visible = frame.findViewById(R.id.nameProgress);
 					gone1 = frame.findViewById(R.id.nameGood);
 					gone2 = frame.findViewById(R.id.nameBad);
