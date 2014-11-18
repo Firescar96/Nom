@@ -65,17 +65,15 @@ Router.map(function () {
       		console.log(this.request.query.checkName);
       		var resUsr = Users.findOne({name:this.request.query.checkName});
       		var exists = resUsr != undefined;
-      		console.log(exists);
       		this.response.writeHead(200, {'Content-Type': 'text/plain'});
       		
-      		console.log(this.request.query.regId)
 				if(this.request.query.regId == null && exists)
 					this.response.end("true")
 				if(this.request.query.regId == null && !exists)
 					this.response.end("false")
 				else if(exists && resUsr.regId == this.request.query.regId) //return true if matching user found, or if the requesting user is in the database
 					this.response.end("true");
-				else if(!exist)
+				else if(!exists)
 					this.response.end("true");
       		else
       			this.response.end("false");
@@ -93,7 +91,6 @@ var gcm = new GCM(apiKey);
 var HandleData = function(query)
 {
 	//Users.remove({});
-	
 	if(query.location != undefined)
 	{
 		Users.update({name: query.host}, {$set: {location: query.location}});	
@@ -102,72 +99,19 @@ var HandleData = function(query)
 		return;
 	}	
 
-	if(query.host != undefined && query.regId != undefined && Users.findOne({name:query.host}) == undefined)
-	{
-		var editUsr = Users.findOne({regId:query.regId});
-		if(editUsr == undefined)
-		{
-			Users.insert({name: query.host, regId: query.regId});	
-			console.log("New user: " + query.host);	
-		}else 
-		{
-			Users.update({regId: query.regId}, {$set: {name: query.host}});	
-			console.log("Updated user: " + query.host + " found using regId");	
-		}
-		
+	if(query.host != undefined && query.regId != undefined) {
+		nameUser = Users.findOne({name:query.host});
+		regIdUser = Users.findOne({name:query.regId});
+		if (nameUser == undefined && regIdUser == undefined)
+				Users.insert({name: query.host, regId: query.regId});	
+		else if (nameUser == undefined)
+			if(regIdUser != undefined)
+				Users.update({regId: query.regId}, {$set: {name: query.host}});
+		else if (regIdUser == undefined)
+			if(nameUser != undefined)
+				Users.update({name: query.host}, {$set: {regId: query.regId}});
 		return;
 	}
-	
-	/*var nodegcm = Npm.require('node-gcm');
-
-	// create a message with default values
-	var message = new nodegcm.Message();
-	
-	// or with object values
-	var message = new nodegcm.Message({
-	    collapseKey: 'demo',
-	    delayWhileIdle: true,
-	    timeToLive: 3,
-	    data: {
-	        key1: 'message1',
-	        key2: 'message2'
-	    }
-	});
-	
-	var sender = new nodegcm.Sender('AIzaSyAk_PxK_3WfDeFQOL0fDpPpqaA5scekrEk');
-	var registrationIds = [];
-	
-	// OPTIONAL
-	// add new key-value in data object
-	message.addDataWithKeyValue('key1','message1');
-	message.addDataWithKeyValue('key2','message2');
-	
-	// or add a data object
-	message.addDataWithObject({
-	    key1: 'message1',
-	    key2: 'message2'
-	});
-	
-	// or with backwards compability of previous versions
-	message.addData('key1','message1');
-	message.addData('key2','message2');
-	
-	
-	message.collapseKey = 'demo';
-	message.delayWhileIdle = true;
-	message.timeToLive = 3;
-	message.dryRun = true;
-	// END OPTIONAL
-	
-	// At least one required
-	registrationIds.push(query.regId);
-*/
-	/**
-	 * Params: message-literal, registrationIds-array, No. of retries, callback-function
-	 **/
-	/*sender.send(message, registrationIds, 4, function (err, result) {
-	    console.log(result);
-	});*/
 	if(query.event != undefined)
 	{
 		if (query.event.privacy == "open") 
@@ -218,7 +162,7 @@ var HandleData = function(query)
 		else 
 			var hostUsr = Users.findOne({name:query.host});
 		//console.log(query.event.host);
-		console.log(toUsr[i].location);
+		//console.log(toUsr[i].location);
 		//console.log(Users.findOne({name:query.event.host}));
 		if(toUsr[i].location.latitude != undefined)
 		{
@@ -231,7 +175,6 @@ var HandleData = function(query)
 		}	
 			
 		if(query.chat == "true")
-		{
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
 		    	"data.chat": "{\
@@ -243,19 +186,8 @@ var HandleData = function(query)
 		    		host:\""+query.host+"\"\
 		    	}"
 			};
-		
-			gcm.send(mess, function(err, messageId){
-		    	if (err) {
-		    		console.log("Something has gone wrong!");
-		    	} else {
-		        	console.log("Sent with message ID: ", messageId);
-		    	}
-			});
-			return;
-		}
 	
 		if(toUsr[i].regId && query.event != null)
-		{
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
 		    	"data.event": "{\
@@ -267,17 +199,7 @@ var HandleData = function(query)
 		    	}"
 			};
 		
-			gcm.send(mess, function(err, messageId){
-		    	if (err) {
-		    		console.log("Something has gone wrong!");
-		    	} else {
-		        	console.log("Sent with message ID: ", messageId);
-		    	}
-			});
-		}
-		
-		if(toUsr[i].regId && query.hash!= null)
-		{
+		/*if(toUsr[i].regId && query.hash!= null) {
 			var curEve = Events.findOne({hash:query.hash});
 			var mess = {
 		   	registration_id: toUsr[i].regId , // required
@@ -289,6 +211,7 @@ var HandleData = function(query)
 		    		host:\""+curEve.host+"\"\
 		    	}"
 			};
+		}*/
 		
 			gcm.send(mess, function(err, messageId){
 		    	if (err) {
@@ -297,7 +220,6 @@ var HandleData = function(query)
 		        	console.log("Sent with message ID: ", messageId);
 		    	}
 			});
-		}
 	}
 }
 }
