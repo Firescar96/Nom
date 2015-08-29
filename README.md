@@ -1,5 +1,7 @@
 Nom
 ===
+##{Not in active Devlopment}
+Although it was a fun project, it failed to reach the activation potential required to reach usage. The energy required to install a new app is too high.
 
 Fast way to eat with others, use your existing social groups or let the app hook you up.
 Inspired by /lasernite and the Yo app. Nom is designed with simplicity as a priority.
